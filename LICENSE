@@ -1,0 +1,42 @@
+Copyright (c) 2026 Miguel. Todos los derechos reservados. / All rights reserved.
+
+==============================================================================
+ENGLISH
+==============================================================================
+
+This software and all associated files in this repository (source code, documentation, configurations, and assets not exempted by other licenses) are the exclusive property of its author.
+
+Any reproduction, distribution, copying, modification, sublicensing, commercialization, or public communication, in whole or in part, of this software by any means is strictly prohibited without the prior and express written consent of the copyright owner.
+
+---
+
+### Third-Party Assets and Exceptions
+This project uses third-party assets and libraries under their respective licenses:
+*   **Flame Engine**: MIT License (Copyright (c) 2020 Blue Fire).
+*   **Flutter SDK**: BSD 3-Clause License.
+*   **Graphics & UI Assets (Kenney)**: Creative Commons Zero License (CC0 1.0 Universal).
+
+---
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+==============================================================================
+ESPAÑOL (SPANISH)
+==============================================================================
+
+Este software y todos los archivos asociados en este repositorio (código fuente, documentación, configuraciones y recursos no exentos por otras licencias) son propiedad exclusiva de su autor.
+
+Queda estrictamente prohibida la reproducción, distribución, copia, modificación, sublicencia, comercialización o comunicación pública, total o parcial, de este software por cualquier medio sin la autorización previa y expresa por escrito del titular del copyright.
+
+---
+
+### Excepciones y Recursos de Terceros
+Este proyecto utiliza recursos y librerías creados por terceros bajo sus respectivas licencias:
+*   **Flame Engine**: Licencia MIT (Copyright (c) 2020 Blue Fire).
+*   **Flutter SDK**: Licencia BSD 3-Clause.
+*   **Recursos Gráficos y UI (Kenney)**: Licencia Creative Commons Zero (CC0 1.0 Universal).
+
+---
+
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS AUTORES O TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑOS U OTRAS RESPONSABILIDADES, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO MODO, QUE SURJA DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.

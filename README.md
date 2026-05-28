@@ -119,3 +119,9 @@ All graphics and UI design assets are courtesy of **Kenney** (https://kenney.nl)
 *   Space Shooter Sprites: *Space Shooter Redux* pack.
 *   Virtual Controls & Icons: *Mobile Elements* pack.
 *   Planet Parts: *Planet Parts* pack.
+
+---
+
+## 📄 License
+
+This project is proprietary. All rights reserved to the copyright owner. See the [LICENSE](file:///home/miguel/code/space_shooter/LICENSE) file for more details.
