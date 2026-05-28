@@ -135,7 +135,9 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
   void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
-    if (other is PlayerShip) {
+    final collidedComponent = other is ShapeHitbox ? other.parent : other;
+
+    if (collidedComponent is PlayerShip) {
       // Damage player
       double collisionDmg = 15.0;
       if (sizeType == MeteorSize.medium) collisionDmg = 25.0;

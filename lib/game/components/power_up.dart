@@ -62,14 +62,16 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceS
   void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
-    if (other is PlayerShip) {
+    final collidedComponent = other is ShapeHitbox ? other.parent : other;
+
+    if (collidedComponent is PlayerShip) {
       // Apply Power-up effects
       switch (type) {
         case PowerUpType.shield:
-          other.restoreShield(25.0);
+          collidedComponent.restoreShield(25.0);
           break;
         case PowerUpType.weaponUpgrade:
-          other.upgradeWeapon();
+          collidedComponent.upgradeWeapon();
           break;
         case PowerUpType.fireRate:
           // We can grant double fire rate on the player ship

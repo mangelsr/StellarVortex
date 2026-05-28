@@ -38,7 +38,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
     angle = atan2(velocity.y, velocity.x) + pi / 2;
 
     // 3. Add hitbox
-    add(RectangleHitbox(anchor: Anchor.center, position: size / 2));
+    add(RectangleHitbox());
   }
 
   @override
@@ -59,22 +59,24 @@ class Bullet extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
   void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
+    final collidedComponent = other is ShapeHitbox ? other.parent : other;
+
     if (isPlayerBullet) {
       // Player Bullet hits Enemy
-      if (other is EnemyShip) {
-        other.takeDamage(damage);
+      if (collidedComponent is EnemyShip) {
+        collidedComponent.takeDamage(damage);
         _spawnImpactEffect();
         removeFromParent();
       }
       // Player Bullet hits Meteor
-      else if (other is Meteor) {
-        other.takeDamage(damage);
+      else if (collidedComponent is Meteor) {
+        collidedComponent.takeDamage(damage);
         _spawnImpactEffect();
         removeFromParent();
       }
     } else {
       // Enemy Bullet hits Player
-      if (other is PlayerShip) {
+      if (collidedComponent is PlayerShip) {
         gameRef.playerHit(damage);
         _spawnImpactEffect();
         removeFromParent();

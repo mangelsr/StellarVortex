@@ -326,7 +326,9 @@ class EnemyShip extends PositionComponent
   void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
 
-    if (other is PlayerShip) {
+    final collidedComponent = other is ShapeHitbox ? other.parent : other;
+
+    if (collidedComponent is PlayerShip) {
       // Damage player
       double collisionDmg = 20.0;
       if (type == EnemyType.kamikaze) collisionDmg = 35.0;
