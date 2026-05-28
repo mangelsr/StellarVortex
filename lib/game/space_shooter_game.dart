@@ -14,6 +14,7 @@ import 'components/enemy_ship.dart';
 import 'components/meteor.dart';
 import 'components/power_up.dart';
 import 'components/bullet.dart';
+import 'components/background_planet.dart';
 
 enum GameState { menu, shipSelection, playing, paused, gameOver }
 
@@ -90,6 +91,8 @@ class SpaceShooterGame extends FlameGame
   // Timers for spawning
   double _meteorSpawnTimer = 0;
   double _enemySpawnTimer = 0;
+  double _planetSpawnTimer = 0;
+  double _nextPlanetSpawnInterval = 10.0;
   final _random = Random();
   
   // Wave state
@@ -114,9 +117,24 @@ class SpaceShooterGame extends FlameGame
     final controlsXml = await rootBundle.loadString('assets/mobile_controls.xml');
     mobileControlsAtlas = XmlSpriteSheet.parse(controlsXml);
 
+    // Preload planet parts
+    for (int i = 0; i < 3; i++) {
+      await images.load('planet_parts/sphere$i.png');
+    }
+    for (int i = 0; i < 28; i++) {
+      final numStr = i.toString().padLeft(2, '0');
+      await images.load('planet_parts/noise$numStr.png');
+    }
+    for (int i = 0; i < 11; i++) {
+      await images.load('planet_parts/light$i.png');
+    }
+
     // 4. Add parallax background (always present, even in menus)
     starfield = StarfieldBackground();
     await add(starfield);
+
+    // Spawn initial planets on load
+    _spawnInitialPlanets();
 
     // 5. Open Main Menu Overlay
     overlays.add('startMenu');
@@ -136,6 +154,20 @@ class SpaceShooterGame extends FlameGame
 
     // Clear existing game components (bullets, enemies, meteors, powerups, joysticks, players)
     _clearPlayableComponents();
+
+    // Ensure we have at least 2 planets in the background
+    final activePlanets = children.whereType<BackgroundPlanet>();
+    if (activePlanets.length < 2) {
+      final needed = 2 - activePlanets.length;
+      for (int i = 0; i < needed; i++) {
+        add(BackgroundPlanet(
+          position: Vector2(
+            _random.nextDouble() * size.x,
+            _random.nextDouble() * size.y,
+          ),
+        ));
+      }
+    }
 
     // Add Player Ship
     playerShip = PlayerShip(
@@ -223,6 +255,14 @@ class SpaceShooterGame extends FlameGame
   @override
   void update(double dt) {
     super.update(dt);
+
+    // Planet spawning (runs in all states so background is always alive)
+    _planetSpawnTimer += dt;
+    if (_planetSpawnTimer >= _nextPlanetSpawnInterval) {
+      _planetSpawnTimer = 0;
+      _nextPlanetSpawnInterval = 20.0 + _random.nextDouble() * 25.0;
+      _spawnBackgroundPlanet();
+    }
 
     if (state != GameState.playing) return;
 
@@ -420,5 +460,30 @@ class SpaceShooterGame extends FlameGame
     state = GameState.menu;
     overlays.remove('shipSelectionMenu');
     overlays.add('startMenu');
+  }
+
+  void _spawnInitialPlanets() {
+    // Spawn 2 planets at random positions on screen
+    add(BackgroundPlanet(
+      position: Vector2(
+        _random.nextDouble() * size.x,
+        _random.nextDouble() * (size.y * 0.4) + (size.y * 0.1),
+      ),
+    ));
+    add(BackgroundPlanet(
+      position: Vector2(
+        _random.nextDouble() * size.x,
+        _random.nextDouble() * (size.y * 0.4) + (size.y * 0.5),
+      ),
+    ));
+  }
+
+  void _spawnBackgroundPlanet() {
+    add(BackgroundPlanet(
+      position: Vector2(
+        _random.nextDouble() * size.x,
+        -130.0,
+      ),
+    ));
   }
 }

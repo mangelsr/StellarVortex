@@ -26,6 +26,7 @@ class StarfieldBackground extends Component with HasGameReference<SpaceShooterGa
 
   @override
   Future<void> onLoad() async {
+    priority = -100;
     // Generate initial stars distributed randomly across the whole screen.
     for (int i = 0; i < _starCount; i++) {
       _stars.add(_createStar(randomY: true));
