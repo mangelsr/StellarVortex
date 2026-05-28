@@ -8,7 +8,7 @@ import 'explosion_particle.dart';
 
 enum MeteorSize { large, medium, small }
 
-class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceShooterGame> {
+class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<SpaceShooterGame> {
   final Vector2 velocity;
   final MeteorSize sizeType;
   
@@ -31,7 +31,7 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
     // spaceMeteors_001.png through spaceMeteors_004.png
     final meteorNum = 1 + _random.nextInt(4);
     final spriteName = 'spaceMeteors_00$meteorNum.png';
-    sprite = gameRef.spaceShooterAtlas.getSprite(spriteName, gameRef.spaceShooterImage);
+    sprite = game.spaceShooterAtlas.getSprite(spriteName, game.spaceShooterImage);
 
     // 2. Set stats based on size
     switch (sizeType) {
@@ -70,9 +70,9 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
 
     // Cleanup when off-screen
     if (position.y < -120 ||
-        position.y > gameRef.size.y + 120 ||
+        position.y > game.size.y + 120 ||
         position.x < -120 ||
-        position.x > gameRef.size.x + 120) {
+        position.x > game.size.x + 120) {
       removeFromParent();
     }
   }
@@ -88,7 +88,7 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
 
   void _explodeAndSplit({required bool withScore}) {
     // 1. Add explosion effect
-    gameRef.add(ExplosionParticle(
+    game.add(ExplosionParticle(
       position: position,
       size: size * 1.2,
       isMeteorExplosion: true,
@@ -96,7 +96,7 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
 
     // 2. Reward score
     if (withScore) {
-      gameRef.addScore(scoreValue);
+      game.addScore(scoreValue);
     }
 
     // 3. Handle splitting
@@ -118,13 +118,13 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
     final dir1 = velocity.normalized()..rotate(0.5); // rotate roughly 30 deg
     final dir2 = velocity.normalized()..rotate(-0.5);
 
-    gameRef.add(Meteor(
+    game.add(Meteor(
       position: position.clone(),
       velocity: dir1 * speed,
       sizeType: newSize,
     ));
 
-    gameRef.add(Meteor(
+    game.add(Meteor(
       position: position.clone(),
       velocity: dir2 * speed,
       sizeType: newSize,
@@ -143,7 +143,7 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
       if (sizeType == MeteorSize.medium) collisionDmg = 25.0;
       if (sizeType == MeteorSize.large) collisionDmg = 45.0;
 
-      gameRef.playerHit(collisionDmg);
+      game.playerHit(collisionDmg);
 
       // Meteor explodes on collision with player but doesn't give score
       _explodeAndSplit(withScore: false);

@@ -16,7 +16,7 @@ class GameOverMenu extends StatelessWidget {
     final bool isNewHighScore = score >= highScore && score > 0;
 
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.70), // Dim canvas further
+      backgroundColor: Colors.black.withValues(alpha: 0.70), // Dim canvas further
       body: Stack(
         children: [
           // Blurred background
@@ -33,15 +33,15 @@ class GameOverMenu extends StatelessWidget {
               width: 380,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1123).withOpacity(0.85),
+                color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: const Color(0xFFE53935).withOpacity(0.35), // Red alert border
+                  color: const Color(0xFFE53935).withValues(alpha: 0.35), // Red alert border
                   width: 2.0,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.12),
+                    color: Colors.red.withValues(alpha: 0.12),
                     blurRadius: 30,
                     spreadRadius: 2,
                   ),
@@ -54,9 +54,9 @@ class GameOverMenu extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.12),
+                      color: Colors.red.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFE53935).withOpacity(0.4)),
+                      border: Border.all(color: const Color(0xFFE53935).withValues(alpha: 0.4)),
                     ),
                     child: const Icon(
                       Icons.gpp_bad,
@@ -80,7 +80,7 @@ class GameOverMenu extends StatelessWidget {
                   Text(
                     'TELEMETRY SYNCHRONIZATION TERMINATED',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
@@ -134,9 +134,9 @@ class GameOverMenu extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00E676).withOpacity(0.12),
+                            color: const Color(0xFF00E676).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: const Color(0xFF00E676).withOpacity(0.4)),
+                            border: Border.all(color: const Color(0xFF00E676).withValues(alpha: 0.4)),
                           ),
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
@@ -159,7 +159,7 @@ class GameOverMenu extends StatelessWidget {
                         Text(
                           'RECORD HOLDER: ${highScore.toString().padLeft(7, '0')}',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.4),
+                            color: Colors.white.withValues(alpha: 0.4),
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.0,
@@ -195,7 +195,7 @@ class GameOverMenu extends StatelessWidget {
                   _buildActionButton(
                     text: 'EXIT TO STATION',
                     icon: Icons.exit_to_app,
-                    primaryColor: Colors.white.withOpacity(0.5),
+                    primaryColor: Colors.white.withValues(alpha: 0.5),
                     onTap: game.quitToMenu,
                   ),
                 ],
@@ -219,16 +219,16 @@ class GameOverMenu extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor == Colors.white
-              ? Colors.white.withOpacity(0.06)
-              : primaryColor == Colors.white.withOpacity(0.5)
-                  ? Colors.white.withOpacity(0.03)
-                  : primaryColor.withOpacity(0.12),
-          foregroundColor: primaryColor == Colors.white.withOpacity(0.5) ? Colors.white70 : primaryColor,
+              ? Colors.white.withValues(alpha: 0.06)
+              : primaryColor == Colors.white.withValues(alpha: 0.5)
+                  ? Colors.white.withValues(alpha: 0.03)
+                  : primaryColor.withValues(alpha: 0.12),
+          foregroundColor: primaryColor == Colors.white.withValues(alpha: 0.5) ? Colors.white70 : primaryColor,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: primaryColor.withOpacity(0.35),
+              color: primaryColor.withValues(alpha: 0.35),
               width: 1.5,
             ),
           ),

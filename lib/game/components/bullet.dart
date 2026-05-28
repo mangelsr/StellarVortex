@@ -8,7 +8,7 @@ import 'meteor.dart';
 import 'player_ship.dart';
 import 'explosion_particle.dart';
 
-class Bullet extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceShooterGame> {
+class Bullet extends SpriteComponent with CollisionCallbacks, HasGameReference<SpaceShooterGame> {
   final Vector2 velocity;
   final bool isPlayerBullet;
   final double damage;
@@ -31,7 +31,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
         ? 'spaceMissiles_027.png' // Glowing blue/green long laser
         : 'spaceMissiles_012.png'; // Glowing red laser
 
-    sprite = gameRef.spaceShooterAtlas.getSprite(spriteName, gameRef.spaceShooterImage);
+    sprite = game.spaceShooterAtlas.getSprite(spriteName, game.spaceShooterImage);
 
     // 2. Rotate bullet to point in direction of velocity
     // Bullet sprite points UP natively, so we add pi/2.
@@ -48,9 +48,9 @@ class Bullet extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
 
     // Remove if off screen boundaries
     if (position.y < -50 ||
-        position.y > gameRef.size.y + 50 ||
+        position.y > game.size.y + 50 ||
         position.x < -50 ||
-        position.x > gameRef.size.x + 50) {
+        position.x > game.size.x + 50) {
       removeFromParent();
     }
   }
@@ -77,7 +77,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
     } else {
       // Enemy Bullet hits Player
       if (collidedComponent is PlayerShip) {
-        gameRef.playerHit(damage);
+        game.playerHit(damage);
         _spawnImpactEffect();
         removeFromParent();
       }
@@ -86,7 +86,7 @@ class Bullet extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceSh
 
   void _spawnImpactEffect() {
     // Spawn a quick sparks particle at collision center
-    gameRef.add(ExplosionParticle(
+    game.add(ExplosionParticle(
       position: position,
       size: Vector2.all(30),
       isSparkOnly: true,

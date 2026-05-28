@@ -1,16 +1,14 @@
 import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 import 'package:flame/collisions.dart';
-import 'package:flutter/material.dart' show Colors, Paint;
 
 import '../space_shooter_game.dart';
 import 'bullet.dart';
 import 'explosion_particle.dart';
 
 class PlayerShip extends PositionComponent
-    with CollisionCallbacks, HasGameRef<SpaceShooterGame>, KeyboardHandler {
+    with CollisionCallbacks, HasGameReference<SpaceShooterGame>, KeyboardHandler {
   
   final PlayerShipType shipType;
 
@@ -55,14 +53,14 @@ class PlayerShip extends PositionComponent
   Future<void> onLoad() async {
     // 1. Ship Sprite Component
     _shipSprite = SpriteComponent(
-      sprite: gameRef.spaceShooterAtlas.getSprite(shipType.spriteName, gameRef.spaceShooterImage),
+      sprite: game.spaceShooterAtlas.getSprite(shipType.spriteName, game.spaceShooterImage),
       size: size,
     );
     add(_shipSprite);
 
     // 2. Thruster Flame Sprite Component
     _thrusterSprite = SpriteComponent(
-      sprite: gameRef.spaceShooterAtlas.getSprite('spaceEffects_009.png', gameRef.spaceShooterImage),
+      sprite: game.spaceShooterAtlas.getSprite('spaceEffects_009.png', game.spaceShooterImage),
       size: Vector2(size.x * 0.4, size.y * 0.4),
       anchor: Anchor.topCenter,
       // Positioned at the bottom back end of the ship
@@ -72,7 +70,7 @@ class PlayerShip extends PositionComponent
 
     // 3. Shield Bubble Sprite Component
     _shieldSprite = SpriteComponent(
-      sprite: gameRef.spaceShooterAtlas.getSprite('spaceEffects_014.png', gameRef.spaceShooterImage),
+      sprite: game.spaceShooterAtlas.getSprite('spaceEffects_014.png', game.spaceShooterImage),
       size: size * 1.4,
       anchor: Anchor.center,
       position: size / 2,
@@ -123,7 +121,7 @@ class PlayerShip extends PositionComponent
     if (_invulnerableTimer > 0) {
       _invulnerableTimer -= dt;
       // Flashing ship effect during invulnerability
-      _shipSprite.opacity = (gameRef.gameTime * 12).toInt() % 2 == 0 ? 0.3 : 1.0;
+      _shipSprite.opacity = (game.gameTime * 12).toInt() % 2 == 0 ? 0.3 : 1.0;
     } else {
       _shipSprite.opacity = 1.0;
     }
@@ -174,7 +172,7 @@ class PlayerShip extends PositionComponent
     Vector2 movementDir = Vector2(dx, dy);
 
     // 2. Read Left Virtual Joystick (if active)
-    final joystickL = gameRef.joystickLeft;
+    final joystickL = game.joystickLeft;
     if (joystickL != null && joystickL.relativeDelta.length > 0.1) {
       movementDir = joystickL.relativeDelta;
     }
@@ -189,8 +187,8 @@ class PlayerShip extends PositionComponent
     // 3. Clamp position inside screen boundaries
     final halfWidth = size.x / 2;
     final halfHeight = size.y / 2;
-    position.x = position.x.clamp(halfWidth, gameRef.size.x - halfWidth);
-    position.y = position.y.clamp(halfHeight, gameRef.size.y - halfHeight);
+    position.x = position.x.clamp(halfWidth, game.size.x - halfWidth);
+    position.y = position.y.clamp(halfHeight, game.size.y - halfHeight);
   }
 
   void _handleAimAndShoot(double dt) {
@@ -198,7 +196,7 @@ class PlayerShip extends PositionComponent
     bool isFiring = false;
 
     // Priority 1: Right Joystick
-    final joystickR = gameRef.joystickRight;
+    final joystickR = game.joystickRight;
     if (joystickR != null && joystickR.relativeDelta.length > 0.15) {
       aimDir = joystickR.relativeDelta;
       isFiring = true;
@@ -241,7 +239,7 @@ class PlayerShip extends PositionComponent
     }
 
     // Dynamic mouse control access:
-    final dynamicGame = gameRef as dynamic;
+    final dynamicGame = game as dynamic;
     Vector2? mousePos;
     try {
       mousePos = dynamicGame.mousePosition as Vector2?;
@@ -280,21 +278,21 @@ class PlayerShip extends PositionComponent
     switch (weaponLevel) {
       case 3: // Triple Spread Shot
         // Center bullet
-        gameRef.add(Bullet(
+        game.add(Bullet(
           position: position + bulletDir * (size.y * 0.4),
           velocity: bulletDir * bulletSpeed,
           isPlayerBullet: true,
         ));
         // Left bullet (rotated -15 degrees / -0.26 rad)
         final leftDir = Vector2(bulletDir.x, bulletDir.y)..rotate(-0.26);
-        gameRef.add(Bullet(
+        game.add(Bullet(
           position: position + leftDir * (size.y * 0.4),
           velocity: leftDir * bulletSpeed,
           isPlayerBullet: true,
         ));
         // Right bullet (rotated +15 degrees / +0.26 rad)
         final rightDir = Vector2(bulletDir.x, bulletDir.y)..rotate(0.26);
-        gameRef.add(Bullet(
+        game.add(Bullet(
           position: position + rightDir * (size.y * 0.4),
           velocity: rightDir * bulletSpeed,
           isPlayerBullet: true,
@@ -307,12 +305,12 @@ class PlayerShip extends PositionComponent
         final offsetLeft = perp * 18;
         final offsetRight = -perp * 18;
 
-        gameRef.add(Bullet(
+        game.add(Bullet(
           position: position + bulletDir * (size.y * 0.3) + offsetLeft,
           velocity: bulletDir * bulletSpeed,
           isPlayerBullet: true,
         ));
-        gameRef.add(Bullet(
+        game.add(Bullet(
           position: position + bulletDir * (size.y * 0.3) + offsetRight,
           velocity: bulletDir * bulletSpeed,
           isPlayerBullet: true,
@@ -321,7 +319,7 @@ class PlayerShip extends PositionComponent
 
       case 1: // Single Central Laser
       default:
-        gameRef.add(Bullet(
+        game.add(Bullet(
           position: position + bulletDir * (size.y * 0.45),
           velocity: bulletDir * bulletSpeed,
           isPlayerBullet: true,
@@ -369,7 +367,7 @@ class PlayerShip extends PositionComponent
     if (health <= 0) {
       health = 0;
       _explode();
-      gameRef.playerDestroyed();
+      game.playerDestroyed();
     } else {
       // Invulnerability frames on taking hit (1.2 seconds)
       triggerInvulnerability(1.2);
@@ -378,15 +376,9 @@ class PlayerShip extends PositionComponent
 
   void _explode() {
     // Add particle explosion
-    gameRef.add(ExplosionParticle(
+    game.add(ExplosionParticle(
       position: position,
       size: size * 1.5,
     ));
-  }
-
-  @override
-  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-    // Bullet collision handled by Bullet class
   }
 }

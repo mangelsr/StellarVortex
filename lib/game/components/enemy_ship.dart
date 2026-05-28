@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
-import 'package:flutter/material.dart' show Colors, Paint;
 
 import '../space_shooter_game.dart';
 import 'player_ship.dart';
@@ -12,7 +11,7 @@ import 'explosion_particle.dart';
 enum EnemyType { scout, kamikaze, elite, boss }
 
 class EnemyShip extends PositionComponent
-    with CollisionCallbacks, HasGameRef<SpaceShooterGame> {
+    with CollisionCallbacks, HasGameReference<SpaceShooterGame> {
   
   final EnemyType type;
   PlayerShip? targetPlayer;
@@ -71,7 +70,7 @@ class EnemyShip extends PositionComponent
       case EnemyType.boss:
         spriteName = 'spaceShips_005.png'; // Huge ship
         size = Vector2.all(160);
-        maxHealth = 600.0 + (gameRef.wave * 150.0); // Health scales with wave
+        maxHealth = 600.0 + (game.wave * 150.0); // Health scales with wave
         speed = 40.0;
         scoreValue = 1500;
         break;
@@ -81,7 +80,7 @@ class EnemyShip extends PositionComponent
 
     // 1. Add Sprite Component (pointing DOWN by default, so we rotate 180 deg / pi rad)
     final shipSprite = SpriteComponent(
-      sprite: gameRef.spaceShooterAtlas.getSprite(spriteName, gameRef.spaceShooterImage),
+      sprite: game.spaceShooterAtlas.getSprite(spriteName, game.spaceShooterImage),
       size: size,
     );
     // Kenney enemy ships face UP by default, so to make them face DOWN (towards player), 
@@ -101,7 +100,7 @@ class EnemyShip extends PositionComponent
   }
 
   void _calculateKamikazeVector() {
-    final player = gameRef.playerShip;
+    final player = game.playerShip;
     if (player != null) {
       _chargeDirection = (player.position - position).normalized();
       // Rotate ship to face charging target
@@ -125,7 +124,7 @@ class EnemyShip extends PositionComponent
     _handleFiring(dt);
 
     // 3. Remove if off-screen
-    if (position.y > gameRef.size.y + 100 || position.x < -100 || position.x > gameRef.size.x + 100) {
+    if (position.y > game.size.y + 100 || position.x < -100 || position.x > game.size.x + 100) {
       removeFromParent();
     }
   }
@@ -149,7 +148,7 @@ class EnemyShip extends PositionComponent
         
       case EnemyType.elite:
         // Moves down to 1/4 of screen, then side-to-side while slowly drifting down
-        if (position.y < gameRef.size.y * 0.25) {
+        if (position.y < game.size.y * 0.25) {
           position.y += speed * dt;
         } else {
           position.y += (speed * 0.15) * dt; // slow drift
@@ -158,7 +157,7 @@ class EnemyShip extends PositionComponent
           // Reverse direction at screen bounds
           if (position.x < 50 && _horizontalDirection < 0) {
             _horizontalDirection = 1.0;
-          } else if (position.x > gameRef.size.x - 50 && _horizontalDirection > 0) {
+          } else if (position.x > game.size.x - 50 && _horizontalDirection > 0) {
             _horizontalDirection = -1.0;
           }
         }
@@ -174,7 +173,7 @@ class EnemyShip extends PositionComponent
           // Hover logic
           if (position.x < size.x && _horizontalDirection < 0) {
             _horizontalDirection = 1.0;
-          } else if (position.x > gameRef.size.x - size.x && _horizontalDirection > 0) {
+          } else if (position.x > game.size.x - size.x && _horizontalDirection > 0) {
             _horizontalDirection = -1.0;
           }
         }
@@ -186,7 +185,7 @@ class EnemyShip extends PositionComponent
     _fireTimer += dt;
     _specialAttackTimer += dt;
 
-    final player = gameRef.playerShip;
+    final player = game.playerShip;
     if (player == null) return;
 
     switch (type) {
@@ -237,21 +236,21 @@ class EnemyShip extends PositionComponent
       final offsetLeft = perp * (size.x * 0.25);
       final offsetRight = -perp * (size.x * 0.25);
       
-      gameRef.add(Bullet(
+      game.add(Bullet(
         position: position + offsetLeft,
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
         damage: dmg,
       ));
       
-      gameRef.add(Bullet(
+      game.add(Bullet(
         position: position + offsetRight,
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
         damage: dmg,
       ));
     } else {
-      gameRef.add(Bullet(
+      game.add(Bullet(
         position: position + dir * (size.y * 0.5),
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
@@ -268,7 +267,7 @@ class EnemyShip extends PositionComponent
       final angle = (2 * pi / bulletCount) * i;
       final dir = Vector2(cos(angle), sin(angle));
       
-      gameRef.add(Bullet(
+      game.add(Bullet(
         position: position,
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
@@ -290,13 +289,13 @@ class EnemyShip extends PositionComponent
 
   void _explode() {
     // 1. Particle Explosion
-    gameRef.add(ExplosionParticle(
+    game.add(ExplosionParticle(
       position: position,
       size: size * 1.3,
     ));
 
     // 2. Add score to game
-    gameRef.addScore(scoreValue);
+    game.addScore(scoreValue);
 
     // 3. Drop power-up on chance (15% for scouts, 30% for elites, 100% for boss)
     double dropChance = 0.15;
@@ -315,7 +314,7 @@ class EnemyShip extends PositionComponent
         powerType = PowerUpType.fireRate;
       }
 
-      gameRef.add(PowerUp(
+      game.add(PowerUp(
         position: position,
         type: powerType,
       ));
@@ -335,12 +334,12 @@ class EnemyShip extends PositionComponent
       if (type == EnemyType.elite) collisionDmg = 40.0;
       if (type == EnemyType.boss) collisionDmg = 60.0;
       
-      gameRef.playerHit(collisionDmg);
+      game.playerHit(collisionDmg);
 
       // Colliding with player destroys scouts and kamikazes instantly
       if (type == EnemyType.scout || type == EnemyType.kamikaze) {
         // Explode and remove, but don't add score (since it crashed)
-        gameRef.add(ExplosionParticle(
+        game.add(ExplosionParticle(
           position: position,
           size: size * 1.2,
         ));

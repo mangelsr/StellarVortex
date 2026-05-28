@@ -8,7 +8,7 @@ import 'explosion_particle.dart';
 
 enum PowerUpType { shield, weaponUpgrade, fireRate }
 
-class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceShooterGame> {
+class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<SpaceShooterGame> {
   final PowerUpType type;
   
   double _time = 0;
@@ -37,7 +37,7 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceS
         break;
     }
 
-    sprite = gameRef.spaceShooterAtlas.getSprite(spriteName, gameRef.spaceShooterImage);
+    sprite = game.spaceShooterAtlas.getSprite(spriteName, game.spaceShooterImage);
 
     // Add hitbox
     add(CircleHitbox(radius: size.x * 0.45, anchor: Anchor.center, position: size / 2));
@@ -53,7 +53,7 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceS
     position.x += sin(_time * 3.5) * 25.0 * dt;
 
     // Remove if off bottom of screen
-    if (position.y > gameRef.size.y + 50) {
+    if (position.y > game.size.y + 50) {
       removeFromParent();
     }
   }
@@ -88,14 +88,14 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameRef<SpaceS
       }
 
       // Add collection spark effect
-      gameRef.add(ExplosionParticle(
+      game.add(ExplosionParticle(
         position: position,
         size: size * 1.5,
         isSparkOnly: true,
       ));
 
       // Plus points for picking up!
-      gameRef.addScore(150);
+      game.addScore(150);
 
       removeFromParent();
     }

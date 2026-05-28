@@ -78,7 +78,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                         valueText: '${shield.toInt()}/${maxShield.toInt()}',
                         percent: shieldPercent,
                         barColor: const Color(0xFF00E5FF), // Cyan glow
-                        glowColor: Colors.cyan.withOpacity(0.5),
+                        glowColor: Colors.cyan.withValues(alpha: 0.5),
                         icon: Icons.shield,
                       ),
                       const SizedBox(height: 8),
@@ -88,7 +88,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                         valueText: '${health.toInt()}/${maxHealth.toInt()}',
                         percent: healthPercent,
                         barColor: const Color(0xFF00E676), // Green glow
-                        glowColor: Colors.green.withOpacity(0.5),
+                        glowColor: Colors.green.withValues(alpha: 0.5),
                         icon: Icons.favorite,
                       ),
                     ],
@@ -118,7 +118,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                       Text(
                         'LIVES: $lives',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.5,
@@ -151,7 +151,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                           Text(
                             'HIGH: ${highScore.toString().padLeft(7, '0')}',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 1.5,
@@ -192,7 +192,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                   child: Text(
                     'CONTROLS: WASD to Move  |  Mouse Pointer to Aim + Hold Click to Shoot  |  Arrow Keys for Twin-Stick Shooting',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 1.0,
@@ -215,15 +215,15 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: const Color(0xFF0F1123).withOpacity(0.7), // Sleek translucent dark
+        color: const Color(0xFF0F1123).withValues(alpha: 0.7), // Sleek translucent dark
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: Colors.white.withOpacity(0.12),
+          color: Colors.white.withValues(alpha: 0.12),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -261,7 +261,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                 Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
@@ -272,7 +272,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
             Text(
               valueText,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Courier New',
@@ -286,7 +286,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
           height: 8,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(4),
           ),
           child: LayoutBuilder(

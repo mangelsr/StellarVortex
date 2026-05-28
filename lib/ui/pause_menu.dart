@@ -11,7 +11,7 @@ class PauseMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.55), // Dim the canvas
+      backgroundColor: Colors.black.withValues(alpha: 0.55), // Dim the canvas
       body: Stack(
         children: [
           // Blurred background
@@ -28,15 +28,15 @@ class PauseMenu extends StatelessWidget {
               width: 320,
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1123).withOpacity(0.85),
+                color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                   width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     blurRadius: 20,
                     spreadRadius: 2,
                   ),
@@ -61,7 +61,7 @@ class PauseMenu extends StatelessWidget {
                   Text(
                     'TACTICAL ANALYSIS IN PROGRESS',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 1.0,
@@ -118,14 +118,14 @@ class PauseMenu extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor == Colors.white
-              ? Colors.white.withOpacity(0.06)
-              : primaryColor.withOpacity(0.12),
+              ? Colors.white.withValues(alpha: 0.06)
+              : primaryColor.withValues(alpha: 0.12),
           foregroundColor: primaryColor,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: primaryColor.withOpacity(0.35),
+              color: primaryColor.withValues(alpha: 0.35),
               width: 1.5,
             ),
           ),

@@ -28,7 +28,7 @@ class _StartMenuState extends State<StartMenu> {
               gradient: RadialGradient(
                 colors: [
                   Colors.transparent,
-                  Colors.black.withOpacity(0.65),
+                  Colors.black.withValues(alpha: 0.65),
                 ],
                 radius: 1.2,
               ),
@@ -68,7 +68,7 @@ class _StartMenuState extends State<StartMenu> {
                   Text(
                     'A DUAL-STICK SCI-FI SHOOTER',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 4.0,
@@ -120,15 +120,15 @@ class _StartMenuState extends State<StartMenu> {
                 width: 480,
                 padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F1123).withOpacity(0.85),
+                  color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.18),
+                    color: Colors.white.withValues(alpha: 0.18),
                     width: 2.0,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyan.withOpacity(0.2),
+                      color: Colors.cyan.withValues(alpha: 0.2),
                       blurRadius: 30,
                       spreadRadius: 2,
                     ),
@@ -163,7 +163,7 @@ class _StartMenuState extends State<StartMenu> {
                               child: Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: Colors.white.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -243,15 +243,15 @@ class _StartMenuState extends State<StartMenu> {
                 width: 480,
                 padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F1123).withOpacity(0.85),
+                  color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.18),
+                    color: Colors.white.withValues(alpha: 0.18),
                     width: 2.0,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyan.withOpacity(0.2),
+                      color: Colors.cyan.withValues(alpha: 0.2),
                       blurRadius: 30,
                       spreadRadius: 2,
                     ),
@@ -286,7 +286,7 @@ class _StartMenuState extends State<StartMenu> {
                               child: Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: Colors.white.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -365,17 +365,17 @@ class _StartMenuState extends State<StartMenu> {
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           decoration: BoxDecoration(
             color: primaryColor == Colors.white
-                ? Colors.white.withOpacity(0.06)
-                : primaryColor.withOpacity(0.12),
+                ? Colors.white.withValues(alpha: 0.06)
+                : primaryColor.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: primaryColor.withOpacity(0.4),
+              color: primaryColor.withValues(alpha: 0.4),
               width: 1.5,
             ),
             boxShadow: [
               if (primaryColor != Colors.white)
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.15),
+                  color: primaryColor.withValues(alpha: 0.15),
                   blurRadius: 10,
                   spreadRadius: 1,
                 ),
@@ -429,7 +429,7 @@ class _StartMenuState extends State<StartMenu> {
               Text(
                 body,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 11,
                   height: 1.4,
                 ),

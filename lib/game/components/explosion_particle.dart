@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 
 import '../space_shooter_game.dart';
 
-class ExplosionParticle extends SpriteComponent with HasGameRef<SpaceShooterGame> {
+class ExplosionParticle extends SpriteComponent with HasGameReference<SpaceShooterGame> {
   final bool isSparkOnly;
   final bool isMeteorExplosion;
   final double animationDuration = 0.35;
@@ -22,8 +22,8 @@ class ExplosionParticle extends SpriteComponent with HasGameRef<SpaceShooterGame
 
   @override
   Future<void> onLoad() async {
-    final atlas = gameRef.spaceShooterAtlas;
-    final image = gameRef.spaceShooterImage;
+    final atlas = game.spaceShooterAtlas;
+    final image = game.spaceShooterImage;
 
     if (isSparkOnly) {
       // 1. Spark impacts - single frame that shrinks rapidly

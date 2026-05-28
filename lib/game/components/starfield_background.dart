@@ -19,7 +19,7 @@ class Star {
   });
 }
 
-class StarfieldBackground extends Component with HasGameRef<SpaceShooterGame> {
+class StarfieldBackground extends Component with HasGameReference<SpaceShooterGame> {
   final List<Star> _stars = [];
   final Random _random = Random();
   final int _starCount = 120;
@@ -58,8 +58,8 @@ class StarfieldBackground extends Component with HasGameRef<SpaceShooterGame> {
     }
 
     return Star(
-      x: _random.nextDouble() * gameRef.size.x,
-      y: randomY ? _random.nextDouble() * gameRef.size.y : -10.0,
+      x: _random.nextDouble() * game.size.x,
+      y: randomY ? _random.nextDouble() * game.size.y : -10.0,
       speed: speed,
       size: size,
       color: color,
@@ -70,15 +70,15 @@ class StarfieldBackground extends Component with HasGameRef<SpaceShooterGame> {
   void update(double dt) {
     super.update(dt);
 
-    final double screenWidth = gameRef.size.x;
-    final double screenHeight = gameRef.size.y;
+    final double screenWidth = game.size.x;
+    final double screenHeight = game.size.y;
 
     // Get player's velocity to drift stars in the opposite direction
     double playerVx = 0;
     double playerVy = 0;
-    if (gameRef.playerShip != null) {
-      playerVx = gameRef.playerShip!.velocity.x;
-      playerVy = gameRef.playerShip!.velocity.y;
+    if (game.playerShip != null) {
+      playerVx = game.playerShip!.velocity.x;
+      playerVy = game.playerShip!.velocity.y;
     }
 
     for (final star in _stars) {

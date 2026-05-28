@@ -91,7 +91,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
               gradient: RadialGradient(
                 colors: [
                   Colors.transparent,
-                  Colors.black.withOpacity(0.75),
+                  Colors.black.withValues(alpha: 0.75),
                 ],
                 radius: 1.3,
               ),
@@ -104,15 +104,15 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
               width: 520,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1123).withOpacity(0.85),
+                color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                   width: 2.0,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.cyan.withOpacity(0.15),
+                    color: Colors.cyan.withValues(alpha: 0.15),
                     blurRadius: 25,
                     spreadRadius: 1,
                   ),
@@ -138,7 +138,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
                                 Text(
                                   'BACK',
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.6),
+                                    color: Colors.white.withValues(alpha: 0.6),
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1.5,
@@ -214,7 +214,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
                         currentShip.description,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           fontSize: 12,
                           height: 1.4,
                         ),
@@ -279,10 +279,10 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.06),
+          color: Colors.white.withValues(alpha: 0.06),
           shape: BoxShape.circle,
           border: Border.all(
-            color: Colors.white.withOpacity(0.12),
+            color: Colors.white.withValues(alpha: 0.12),
             width: 1.5,
           ),
         ),
@@ -299,7 +299,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
           child: Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.0,
@@ -311,7 +311,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
           child: Container(
             height: 10,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(5),
             ),
             child: LayoutBuilder(
@@ -326,7 +326,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
                         borderRadius: BorderRadius.circular(5),
                         boxShadow: [
                           BoxShadow(
-                            color: barColor.withOpacity(0.4),
+                            color: barColor.withValues(alpha: 0.4),
                             blurRadius: 6,
                           ),
                         ],
