@@ -8,6 +8,7 @@ A premium, modern, and highly-immersive **Dual-Stick Arcade Space Shooter** game
 
 ### 🌌 Immersive Visuals & Environment
 *   **Parallax Starfield Background**: Multi-layered starfields scrolling at varying speeds create a convincing sense of depth and deep-space velocity.
+*   **Dynamic Background Planets**: Procedural, rotating, and parallax-drifting planets generated dynamically using various base spheres, noise layers, and shadow maps tinted with custom vibrant HSL colors.
 *   **Fluid Particle Explosions**: High-performance custom particle engines render cinematic explosions and projectile impact debris.
 *   **Glassmorphic UI Design**: Start menus, ship selection grids, pause menus, and end-screen leaderboards built with modern glassmorphism (real-time backdrop filters, neon border glows, and responsive styling).
 
@@ -75,6 +76,7 @@ The project code is cleanly organized into functional layers under `lib/`:
     *   `meteor.dart`: Drifting rock math, rotating sprites, and split-into-children logic.
     *   `power_up.dart`: Floating buff boxes that check collision with the player.
     *   `starfield_background.dart`: Parallax deep-space starry layers.
+    *   `background_planet.dart`: Procedural 3D-shaded background planets with independent texture rotation and parallax motion.
     *   `explosion_particle.dart`: Particle-based animations for hits and deaths.
 *   **`lib/ui/`**
     *   `start_menu.dart`: Start screen with instructions and a credits section thanking Kenney.
@@ -116,3 +118,4 @@ Make sure you have the [Flutter SDK](https://docs.flutter.dev/get-started/instal
 All graphics and UI design assets are courtesy of **Kenney** (https://kenney.nl):
 *   Space Shooter Sprites: *Space Shooter Redux* pack.
 *   Virtual Controls & Icons: *Mobile Elements* pack.
+*   Planet Parts: *Planet Parts* pack.
