@@ -3,8 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
 import '../space_shooter_game.dart';
-import 'player_ship.dart';
-import 'explosion_particle.dart';
+import 'components.dart';
 
 enum MeteorSize { large, medium, small }
 

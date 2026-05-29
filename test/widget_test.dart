@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:space_shooter/main.dart';
-import 'package:space_shooter/game/space_shooter_game.dart';
+import 'package:stellar_vortex/main.dart';
+import 'package:stellar_vortex/game/space_shooter_game.dart';
 
 void main() {
   testWidgets('Stellar Vortex smoke test', (WidgetTester tester) async {

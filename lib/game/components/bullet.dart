@@ -3,10 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
 import '../space_shooter_game.dart';
-import 'enemy_ship.dart';
-import 'meteor.dart';
-import 'player_ship.dart';
-import 'explosion_particle.dart';
+import 'components.dart';
 
 class Bullet extends SpriteComponent with CollisionCallbacks, HasGameReference<SpaceShooterGame> {
   final Vector2 velocity;

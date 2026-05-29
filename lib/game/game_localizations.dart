@@ -1,4 +1,4 @@
-import 'space_shooter_game.dart';
+import 'player_ship_type.dart';
 
 enum GameLanguage {
   en,

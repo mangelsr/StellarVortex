@@ -4,8 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
 import '../space_shooter_game.dart';
-import 'bullet.dart';
-import 'explosion_particle.dart';
+import 'components.dart';
 
 class PlayerShip extends PositionComponent
     with CollisionCallbacks, HasGameReference<SpaceShooterGame>, KeyboardHandler {

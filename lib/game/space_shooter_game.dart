@@ -11,62 +11,13 @@ import 'package:flame/input.dart' show HudButtonComponent;
 import 'dart:ui' show Image, Paint, Color, ColorFilter, BlendMode;
 
 import 'xml_spritesheet_parser.dart';
-import 'components/starfield_background.dart';
-import 'components/player_ship.dart';
-import 'components/enemy_ship.dart';
-import 'components/meteor.dart';
-import 'components/power_up.dart';
-import 'components/bullet.dart';
-import 'components/background_planet.dart';
 import 'game_localizations.dart';
+import 'game_state.dart';
+import 'player_ship_type.dart';
+import 'components/components.dart';
 
-enum GameState { menu, shipSelection, playing, paused, gameOver }
-
-enum PlayerShipType {
-  vanguard(
-    name: 'Vanguard',
-    spriteName: 'spaceShips_001.png',
-    maxHealth: 100,
-    speed: 350.0,
-    fireInterval: 0.22,
-    description:
-        'Balanced interstellar fighter. Equipped with standard high-velocity plasma lasers.',
-  ),
-  reaper(
-    name: 'Reaper',
-    spriteName: 'spaceShips_006.png',
-    maxHealth: 80,
-    speed: 450.0,
-    fireInterval: 0.14,
-    description:
-        'Fast interceptor. Rapid fire rate but lower structural integrity. Dual pulse canons.',
-  ),
-  leviathan(
-    name: 'Leviathan',
-    spriteName: 'spaceShips_008.png',
-    maxHealth: 160,
-    speed: 240.0,
-    fireInterval: 0.35,
-    description:
-        'Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles.',
-  );
-
-  final String name;
-  final String spriteName;
-  final double maxHealth;
-  final double speed;
-  final double fireInterval;
-  final String description;
-
-  const PlayerShipType({
-    required this.name,
-    required this.spriteName,
-    required this.maxHealth,
-    required this.speed,
-    required this.fireInterval,
-    required this.description,
-  });
-}
+export 'game_state.dart';
+export 'player_ship_type.dart';
 
 class SpaceShooterGame extends FlameGame
     with
@@ -89,6 +40,7 @@ class SpaceShooterGame extends FlameGame
 
   PlayerShip? playerShip;
   late StarfieldBackground starfield;
+  late SpawnManager spawnManager;
 
   JoystickComponent? joystickLeft;
   JoystickComponent? joystickRight;
@@ -113,18 +65,7 @@ class SpaceShooterGame extends FlameGame
   int lives = 3;
   double gameTime = 0;
 
-  // Timers for spawning
-  double _meteorSpawnTimer = 0;
-  double _enemySpawnTimer = 0;
-  double _planetSpawnTimer = 0;
-  double _nextPlanetSpawnInterval = 10.0;
   final _random = Random();
-
-  // Wave state
-  int _enemiesSpawnedThisWave = 0;
-  int _enemiesToKillThisWave = 0;
-  bool _isWaveTransition = false;
-  double _waveTransitionTimer = 0;
 
   @override
   Future<void> onLoad() async {
@@ -162,8 +103,12 @@ class SpaceShooterGame extends FlameGame
     starfield = StarfieldBackground();
     await add(starfield);
 
+    // Add spawning and wave manager
+    spawnManager = SpawnManager();
+    await add(spawnManager);
+
     // Spawn initial planets on load
-    _spawnInitialPlanets();
+    spawnManager.spawnInitialPlanets();
 
     // 5. Open Main Menu Overlay
     overlays.add('startMenu');
@@ -179,7 +124,6 @@ class SpaceShooterGame extends FlameGame
     wave = 1;
     lives = 3;
     gameTime = 0;
-    _isWaveTransition = false;
 
     // Clear existing game components (bullets, enemies, meteors, powerups, joysticks, players)
     _clearPlayableComponents();
@@ -208,7 +152,7 @@ class SpaceShooterGame extends FlameGame
     _setupJoysticks();
 
     // Prepare first wave
-    _startWave();
+    spawnManager.startWave();
 
     // Update UI Overlays
     overlays.remove('startMenu');
@@ -350,150 +294,13 @@ class SpaceShooterGame extends FlameGame
     isFiringButtonDown = false;
   }
 
-  void _startWave() {
-    _enemiesSpawnedThisWave = 0;
-    _enemiesToKillThisWave = 5 + (wave * 3); // Wave scales up enemies
-    _isWaveTransition = false;
-    _enemySpawnTimer = 0;
-    _meteorSpawnTimer = 0;
-  }
-
   @override
   void update(double dt) {
     super.update(dt);
 
-    // Planet spawning (runs in all states so background is always alive)
-    _planetSpawnTimer += dt;
-    if (_planetSpawnTimer >= _nextPlanetSpawnInterval) {
-      _planetSpawnTimer = 0;
-      _nextPlanetSpawnInterval = 20.0 + _random.nextDouble() * 25.0;
-      _spawnBackgroundPlanet();
-    }
-
     if (state != GameState.playing) return;
 
     gameTime += dt;
-
-    // 1. Spawning Meteors
-    _meteorSpawnTimer += dt;
-    // Spawns a meteor every 4-7 seconds depending on wave density
-    double meteorInterval = max(3.0, 7.0 - (wave * 0.2));
-    if (_meteorSpawnTimer >= meteorInterval) {
-      _meteorSpawnTimer = 0;
-      _spawnMeteor();
-    }
-
-    // 2. Wave Transition and Spawning Enemies
-    if (_isWaveTransition) {
-      _waveTransitionTimer -= dt;
-      if (_waveTransitionTimer <= 0) {
-        _isWaveTransition = false;
-        _startWave();
-      }
-      return;
-    }
-
-    // Check if wave is completed (all enemies spawned and no enemies remaining)
-    final activeEnemies = children.whereType<EnemyShip>();
-    if (_enemiesSpawnedThisWave >= _enemiesToKillThisWave &&
-        activeEnemies.isEmpty) {
-      _triggerNextWaveTransition();
-      return;
-    }
-
-    // Spawn enemies
-    if (_enemiesSpawnedThisWave < _enemiesToKillThisWave) {
-      _enemySpawnTimer += dt;
-      // Spawns an enemy every 1.5 - 3 seconds
-      double spawnInterval = max(1.0, 3.5 - (wave * 0.15));
-      if (_enemySpawnTimer >= spawnInterval) {
-        _enemySpawnTimer = 0;
-        _spawnEnemy();
-      }
-    }
-  }
-
-  void _triggerNextWaveTransition() {
-    _isWaveTransition = true;
-    _waveTransitionTimer = 3.0; // 3 seconds of calm before next wave
-    wave++;
-    // Spawn shield/health drop as a reward at the end of the wave!
-    if (playerShip != null) {
-      final reward = PowerUp(
-        position: Vector2(size.x / 2, size.y / 3),
-        type: _random.nextBool()
-            ? PowerUpType.shield
-            : PowerUpType.weaponUpgrade,
-      );
-      add(reward);
-    }
-  }
-
-  void _spawnMeteor() {
-    // Spawns meteor at random edge of screen drifting inwards
-    Vector2 spawnPos = _getRandomEdgePosition();
-    Vector2 targetPos = Vector2(
-      _random.nextDouble() * size.x,
-      _random.nextDouble() * size.y,
-    );
-    Vector2 velocity =
-        (targetPos - spawnPos).normalized() *
-        (50.0 + _random.nextDouble() * 70.0);
-
-    final meteor = Meteor(
-      position: spawnPos,
-      velocity: velocity,
-      sizeType: MeteorSize.large, // Large meteors break into medium then small
-    );
-    add(meteor);
-  }
-
-  void _spawnEnemy() {
-    Vector2 spawnPos = Vector2(
-      _random.nextDouble() * size.x,
-      -50,
-    ); // Spawns from top
-
-    // Choose enemy type based on current wave
-    EnemyType type = EnemyType.scout;
-
-    // Boss spawns every 5 waves at the start of the wave!
-    if (wave % 5 == 0 && _enemiesSpawnedThisWave == 0) {
-      type = EnemyType.boss;
-      _enemiesSpawnedThisWave =
-          _enemiesToKillThisWave; // Boss is the only enemy of this wave!
-      spawnPos = Vector2(size.x / 2, -120);
-    } else {
-      double randVal = _random.nextDouble();
-      if (wave >= 4 && randVal < 0.25) {
-        type = EnemyType.elite;
-      } else if (wave >= 2 && randVal < 0.5) {
-        type = EnemyType.kamikaze;
-      }
-      _enemiesSpawnedThisWave++;
-    }
-
-    final enemy = EnemyShip(
-      type: type,
-      position: spawnPos,
-      targetPlayer: playerShip,
-    );
-    add(enemy);
-  }
-
-  Vector2 _getRandomEdgePosition() {
-    int edge = _random.nextInt(4);
-    switch (edge) {
-      case 0: // Top
-        return Vector2(_random.nextDouble() * size.x, -50);
-      case 1: // Right
-        return Vector2(size.x + 50, _random.nextDouble() * size.y);
-      case 2: // Bottom
-        return Vector2(_random.nextDouble() * size.x, size.y + 50);
-      case 3: // Left
-      default:
-        return Vector2(-50, _random.nextDouble() * size.y);
-    }
   }
 
   /// Handles player taking damage
@@ -583,33 +390,5 @@ class SpaceShooterGame extends FlameGame
 
   void closeSettings() {
     overlays.remove('settingsMenu');
-  }
-
-  void _spawnInitialPlanets() {
-    // Spawn 2 planets at random positions on screen
-    add(
-      BackgroundPlanet(
-        position: Vector2(
-          _random.nextDouble() * size.x,
-          _random.nextDouble() * (size.y * 0.4) + (size.y * 0.1),
-        ),
-      ),
-    );
-    add(
-      BackgroundPlanet(
-        position: Vector2(
-          _random.nextDouble() * size.x,
-          _random.nextDouble() * (size.y * 0.4) + (size.y * 0.5),
-        ),
-      ),
-    );
-  }
-
-  void _spawnBackgroundPlanet() {
-    add(
-      BackgroundPlanet(
-        position: Vector2(_random.nextDouble() * size.x, -130.0),
-      ),
-    );
   }
 }
