@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "space_shooter" "\0"
+            VALUE "FileDescription", "stellar_vortex" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "space_shooter" "\0"
+            VALUE "InternalName", "stellar_vortex" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "space_shooter.exe" "\0"
-            VALUE "ProductName", "space_shooter" "\0"
+            VALUE "OriginalFilename", "stellar_vortex.exe" "\0"
+            VALUE "ProductName", "stellar_vortex" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
