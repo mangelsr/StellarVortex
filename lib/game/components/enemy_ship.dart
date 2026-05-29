@@ -48,28 +48,28 @@ class EnemyShip extends PositionComponent
     switch (type) {
       case EnemyType.scout:
         spriteName = 'spaceShips_007.png'; // Orange ship
-        size = Vector2.all(55);
+        size = Vector2.all(42);
         maxHealth = 30.0;
         speed = 130.0;
         scoreValue = 50;
         break;
       case EnemyType.kamikaze:
         spriteName = 'spaceShips_003.png'; // Red Batwing ship
-        size = Vector2.all(50);
+        size = Vector2.all(38);
         maxHealth = 20.0;
         speed = 250.0;
         scoreValue = 100;
         break;
       case EnemyType.elite:
         spriteName = 'spaceShips_004.png'; // Green/black ship
-        size = Vector2.all(80);
+        size = Vector2.all(60);
         maxHealth = 120.0;
         speed = 80.0;
         scoreValue = 250;
         break;
       case EnemyType.boss:
         spriteName = 'spaceShips_005.png'; // Huge ship
-        size = Vector2.all(160);
+        size = Vector2.all(120);
         maxHealth = 600.0 + (game.wave * 150.0); // Health scales with wave
         speed = 40.0;
         scoreValue = 1500;

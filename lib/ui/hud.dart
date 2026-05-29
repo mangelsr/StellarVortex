@@ -37,6 +37,12 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final isShortScreen = screenHeight < 500;
+    final isNarrowScreen = screenWidth < 680;
+
     return ValueListenableBuilder<GameLanguage>(
       valueListenable: widget.game.languageNotifier,
       builder: (context, language, _) {
@@ -64,19 +70,19 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
             children: [
               // 1. Top HUD Bar
               Positioned(
-                top: 20,
-                left: 20,
-                right: 20,
+                top: isShortScreen ? 8 : 20,
+                left: isNarrowScreen ? 8 : 20,
+                right: isNarrowScreen ? 8 : 20,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Left Side: Health & Shield Bars
                     _buildGlassmorphicContainer(
-                      width: 240,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
+                      width: isNarrowScreen ? 180 : 240,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isNarrowScreen ? 8 : 14,
+                        vertical: isShortScreen ? 6 : 10,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,8 +96,9 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                             barColor: const Color(0xFF00E5FF), // Cyan glow
                             glowColor: Colors.cyan.withValues(alpha: 0.5),
                             icon: Icons.shield,
+                            isNarrow: isNarrowScreen,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: isNarrowScreen ? 4 : 8),
                           // Health Row
                           _buildStatBar(
                             label: loc.hull,
@@ -100,6 +107,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                             barColor: const Color(0xFF00E676), // Green glow
                             glowColor: Colors.green.withValues(alpha: 0.5),
                             icon: Icons.favorite,
+                            isNarrow: isNarrowScreen,
                           ),
                         ],
                       ),
@@ -107,22 +115,22 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
 
                     // Center: Wave indicator
                     _buildGlassmorphicContainer(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isNarrowScreen ? 12 : 24,
+                        vertical: isShortScreen ? 6 : 12,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             '${loc.sector} ${wave.toString().padLeft(2, '0')}',
-                            style: const TextStyle(
-                              color: Color(0xFFFFB300), // Amber glow
-                              fontSize: 18,
+                            style: TextStyle(
+                              color: const Color(0xFFFFB300), // Amber glow
+                              fontSize: isShortScreen ? 14 : 18,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 3.5,
+                              letterSpacing: isNarrowScreen ? 1.5 : 3.5,
                               fontFamily: 'Courier New', // Monospace sci-fi
-                              shadows: [
+                              shadows: const [
                                 Shadow(color: Colors.amber, blurRadius: 10),
                               ],
                             ),
@@ -132,9 +140,9 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                             '${loc.lives}: $lives',
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.7),
-                              fontSize: 11,
+                              fontSize: isShortScreen ? 9 : 11,
                               fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
+                              letterSpacing: isNarrowScreen ? 1.0 : 1.5,
                             ),
                           ),
                         ],
@@ -146,9 +154,9 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildGlassmorphicContainer(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isNarrowScreen ? 10 : 18,
+                            vertical: isShortScreen ? 6 : 10,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -156,9 +164,9 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                             children: [
                               Text(
                                 '${loc.score}: ${score.toString().padLeft(7, '0')}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: isShortScreen ? 12 : 15,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
                                 ),
@@ -168,7 +176,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                                 '${loc.high}: ${highScore.toString().padLeft(7, '0')}',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.5),
-                                  fontSize: 11,
+                                  fontSize: isShortScreen ? 9 : 11,
                                   fontWeight: FontWeight.w500,
                                   letterSpacing: 1.5,
                                 ),
@@ -176,16 +184,16 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                             ],
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: isNarrowScreen ? 6 : 10),
                         // Pause Button
                         GestureDetector(
                           onTap: game.togglePause,
                           child: _buildGlassmorphicContainer(
-                            padding: const EdgeInsets.all(12),
-                            child: const Icon(
+                            padding: EdgeInsets.all(isShortScreen ? 8 : 12),
+                            child: Icon(
                               Icons.pause,
                               color: Colors.white,
-                              size: 24,
+                              size: isShortScreen ? 20 : 24,
                             ),
                           ),
                         ),
@@ -198,16 +206,16 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
               // 2. Desktop Keyboard Guide (only show on desktop/web non-mobile)
               if (!isMobile)
                 Positioned(
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
+                  bottom: isShortScreen ? 8 : 20,
+                  left: isShortScreen ? 8 : 20,
+                  right: isShortScreen ? 8 : 20,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _buildGlassmorphicContainer(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 8,
+                          vertical: isShortScreen ? 4 : 8,
                         ),
                         child: Text(
                           loc.keyboardControlsGuide,
@@ -271,6 +279,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
     required Color barColor,
     required Color glowColor,
     required IconData icon,
+    required bool isNarrow,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,13 +289,13 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
           children: [
             Row(
               children: [
-                Icon(icon, size: 12, color: barColor),
+                Icon(icon, size: isNarrow ? 10 : 12, color: barColor),
                 const SizedBox(width: 5),
                 Text(
                   label,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 10,
+                    fontSize: isNarrow ? 8 : 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
                   ),
@@ -297,7 +306,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
               valueText,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.9),
-                fontSize: 10,
+                fontSize: isNarrow ? 8 : 10,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Courier New',
               ),
@@ -307,7 +316,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
         const SizedBox(height: 4),
         // Progress Bar Track
         Container(
-          height: 8,
+          height: isNarrow ? 6 : 8,
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.1),

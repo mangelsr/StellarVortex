@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:math' show min;
 import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
@@ -11,6 +12,11 @@ class SettingsMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final isShortScreen = screenHeight < 500;
+
     return Scaffold(
       backgroundColor: Colors.black.withValues(alpha: 0.55), // Dim the canvas
       body: Stack(
@@ -31,8 +37,8 @@ class SettingsMenu extends StatelessWidget {
                 final loc = game.loc;
 
                 return Container(
-                  width: 380,
-                  padding: const EdgeInsets.all(28),
+                  width: min(380, screenWidth - 32),
+                  constraints: BoxConstraints(maxHeight: screenHeight * 0.9),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(20),
@@ -48,105 +54,119 @@ class SettingsMenu extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Title
-                      Text(
-                        loc.settingsTitle,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF00E5FF),
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 3.0,
-                          height: 1.2,
-                        ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isShortScreen ? 16 : 28,
+                        vertical: isShortScreen ? 16 : 28,
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        loc.settingsSubtitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5),
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      const Divider(color: Colors.white24, height: 32),
-
-                      // Language Selection Section Label
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          loc.languageSelect,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-
-                      // Language Toggle Buttons (English vs Spanish)
-                      Row(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: _buildLanguageOption(
-                              label: loc.languageEnglish,
-                              flag: '🇺🇸',
-                              isSelected: currentLanguage == GameLanguage.en,
-                              onTap: () {
-                                game.languageNotifier.value = GameLanguage.en;
-                              },
+                          // Title
+                          Text(
+                            loc.settingsTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: const Color(0xFF00E5FF),
+                              fontSize: isShortScreen ? 18 : 22,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 3.0,
+                              height: 1.2,
                             ),
                           ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: _buildLanguageOption(
-                              label: loc.languageSpanish,
-                              flag: '🇪🇨',
-                              isSelected: currentLanguage == GameLanguage.es,
-                              onTap: () {
-                                game.languageNotifier.value = GameLanguage.es;
-                              },
+                          const SizedBox(height: 10),
+                          Text(
+                            loc.settingsSubtitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.5),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.white24,
+                            height: isShortScreen ? 16 : 32,
+                          ),
+
+                          // Language Selection Section Label
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              loc.languageSelect,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+
+                          // Language Toggle Buttons (English vs Spanish)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildLanguageOption(
+                                  label: loc.languageEnglish,
+                                  flag: '🇺🇸',
+                                  isSelected: currentLanguage == GameLanguage.en,
+                                  isShort: isShortScreen,
+                                  onTap: () {
+                                    game.languageNotifier.value = GameLanguage.en;
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: _buildLanguageOption(
+                                  label: loc.languageSpanish,
+                                  flag: '🇪🇨',
+                                  isSelected: currentLanguage == GameLanguage.es,
+                                  isShort: isShortScreen,
+                                  onTap: () {
+                                    game.languageNotifier.value = GameLanguage.es;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: isShortScreen ? 14 : 28),
+
+                          // Save and Close Button
+                          SizedBox(
+                            width: double.infinity,
+                            height: isShortScreen ? 38 : 48,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF00E5FF),
+                                foregroundColor: Colors.black,
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                shadowColor: const Color(
+                                  0xFF00E5FF,
+                                ).withValues(alpha: 0.3),
+                              ),
+                              onPressed: game.closeSettings,
+                              child: Text(
+                                loc.saveAndClose,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 28),
-
-                      // Save and Close Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00E5FF),
-                            foregroundColor: Colors.black,
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            shadowColor: const Color(
-                              0xFF00E5FF,
-                            ).withValues(alpha: 0.3),
-                          ),
-                          onPressed: game.closeSettings,
-                          child: Text(
-                            loc.saveAndClose,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 );
               },
@@ -161,6 +181,7 @@ class SettingsMenu extends StatelessWidget {
     required String label,
     required String flag,
     required bool isSelected,
+    required bool isShort,
     required VoidCallback onTap,
   }) {
     final activeColor = const Color(0xFF00E5FF);
@@ -171,7 +192,10 @@ class SettingsMenu extends StatelessWidget {
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          padding: EdgeInsets.symmetric(
+            vertical: isShort ? 8 : 14,
+            horizontal: isShort ? 8 : 12,
+          ),
           decoration: BoxDecoration(
             color: isSelected
                 ? activeColor.withValues(alpha: 0.12)
@@ -193,8 +217,8 @@ class SettingsMenu extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(flag, style: const TextStyle(fontSize: 26)),
-              const SizedBox(height: 8),
+              Text(flag, style: TextStyle(fontSize: isShort ? 20 : 26)),
+              SizedBox(height: isShort ? 4 : 8),
               Text(
                 label,
                 style: TextStyle(

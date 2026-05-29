@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:math' show min;
 import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
@@ -11,6 +12,11 @@ class PauseMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final isShortScreen = screenHeight < 500;
+
     return ValueListenableBuilder<GameLanguage>(
       valueListenable: game.languageNotifier,
       builder: (context, language, _) {
@@ -31,8 +37,8 @@ class PauseMenu extends StatelessWidget {
               // Central modal dialog
               Center(
                 child: Container(
-                  width: 320,
-                  padding: const EdgeInsets.all(28),
+                  width: min(320, screenWidth - 32),
+                  constraints: BoxConstraints(maxHeight: screenHeight * 0.9),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(20),
@@ -48,71 +54,87 @@ class PauseMenu extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Title
-                      Text(
-                        loc.transmissionPaused,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF00E5FF),
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 3.0,
-                          height: 1.2,
-                        ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isShortScreen ? 16 : 28,
+                        vertical: isShortScreen ? 16 : 28,
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        loc.tacticalAnalysisInProgress,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5),
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      const Divider(color: Colors.white24, height: 32),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Title
+                          Text(
+                            loc.transmissionPaused,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: const Color(0xFF00E5FF),
+                              fontSize: isShortScreen ? 18 : 22,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 3.0,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            loc.tacticalAnalysisInProgress,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.5),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.white24,
+                            height: isShortScreen ? 16 : 32,
+                          ),
 
-                      // Resume Button
-                      _buildPauseButton(
-                        text: loc.resumeFlight,
-                        icon: Icons.play_arrow,
-                        primaryColor: const Color(0xFF00E5FF),
-                        onTap: game.togglePause,
-                      ),
-                      const SizedBox(height: 14),
+                          // Resume Button
+                          _buildPauseButton(
+                            text: loc.resumeFlight,
+                            icon: Icons.play_arrow,
+                            primaryColor: const Color(0xFF00E5FF),
+                            isShort: isShortScreen,
+                            onTap: game.togglePause,
+                          ),
+                          SizedBox(height: isShortScreen ? 8 : 14),
 
-                      // Restart Button
-                      _buildPauseButton(
-                        text: loc.restartMission,
-                        icon: Icons.refresh,
-                        primaryColor: Colors.white,
-                        onTap: () {
-                          game.startGame(game.selectedShipType);
-                          // StartGame automatically resets stats and resumes engine
-                        },
-                      ),
-                      const SizedBox(height: 14),
+                          // Restart Button
+                          _buildPauseButton(
+                            text: loc.restartMission,
+                            icon: Icons.refresh,
+                            primaryColor: Colors.white,
+                            isShort: isShortScreen,
+                            onTap: () {
+                              game.startGame(game.selectedShipType);
+                              // StartGame automatically resets stats and resumes engine
+                            },
+                          ),
+                          SizedBox(height: isShortScreen ? 8 : 14),
 
-                      // Settings Button
-                      _buildPauseButton(
-                        text: loc.settings,
-                        icon: Icons.settings,
-                        primaryColor: Colors.white,
-                        onTap: game.openSettings,
-                      ),
-                      const SizedBox(height: 14),
+                          // Settings Button
+                          _buildPauseButton(
+                            text: loc.settings,
+                            icon: Icons.settings,
+                            primaryColor: Colors.white,
+                            isShort: isShortScreen,
+                            onTap: game.openSettings,
+                          ),
+                          SizedBox(height: isShortScreen ? 8 : 14),
 
-                      // Quit Button
-                      _buildPauseButton(
-                        text: loc.abortMission,
-                        icon: Icons.exit_to_app,
-                        primaryColor: const Color(0xFFE53935), // Red
-                        onTap: game.quitToMenu,
+                          // Quit Button
+                          _buildPauseButton(
+                            text: loc.abortMission,
+                            icon: Icons.exit_to_app,
+                            primaryColor: const Color(0xFFE53935), // Red
+                            isShort: isShortScreen,
+                            onTap: game.quitToMenu,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -127,11 +149,12 @@ class PauseMenu extends StatelessWidget {
     required String text,
     required IconData icon,
     required Color primaryColor,
+    required bool isShort,
     required VoidCallback onTap,
   }) {
     return SizedBox(
       width: double.infinity,
-      height: 46,
+      height: isShort ? 38 : 46,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor == Colors.white
@@ -151,13 +174,13 @@ class PauseMenu extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18),
-            const SizedBox(width: 10),
+            Icon(icon, size: isShort ? 16 : 18),
+            SizedBox(width: isShort ? 6 : 10),
             Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: isShort ? 11 : 12,
                 letterSpacing: 1.5,
               ),
             ),

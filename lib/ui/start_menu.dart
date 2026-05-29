@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:math' show min;
 import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
@@ -19,6 +20,11 @@ class _StartMenuState extends State<StartMenu> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final isShortScreen = screenHeight < 500;
+
     return ValueListenableBuilder<GameLanguage>(
       valueListenable: widget.game.languageNotifier,
       builder: (context, language, _) {
@@ -46,84 +52,91 @@ class _StartMenuState extends State<StartMenu> {
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 300),
                   opacity: (_showInstructions || _showCredits) ? 0.15 : 1.0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Title Logo/Text
-                      Hero(
-                        tag: 'game_title',
-                        child: Text(
-                          loc.gameTitle,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 68,
-                            fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
-                            letterSpacing: 8.0,
-                            color: Colors.white,
-                            height: 1.1,
-                            fontFamily: 'Impact', // Blocky arcade styling
-                            shadows: [
-                              Shadow(color: Color(0xFF00E5FF), blurRadius: 15),
-                              Shadow(color: Color(0xFF00E676), blurRadius: 30),
-                            ],
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Title Logo/Text
+                        Hero(
+                          tag: 'game_title',
+                          child: Text(
+                            loc.gameTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: isShortScreen ? 44 : 68,
+                              fontWeight: FontWeight.w900,
+                              fontStyle: FontStyle.italic,
+                              letterSpacing: isShortScreen ? 4.0 : 8.0,
+                              color: Colors.white,
+                              height: 1.1,
+                              fontFamily: 'Impact', // Blocky arcade styling
+                              shadows: const [
+                                Shadow(color: Color(0xFF00E5FF), blurRadius: 15),
+                                Shadow(color: Color(0xFF00E676), blurRadius: 30),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        loc.gameSubtitle,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 4.0,
+                        SizedBox(height: isShortScreen ? 8 : 15),
+                        Text(
+                          loc.gameSubtitle,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.6),
+                            fontSize: isShortScreen ? 10 : 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: isShortScreen ? 2.0 : 4.0,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 50),
+                        SizedBox(height: isShortScreen ? 24 : 50),
 
-                      // Menu Buttons
-                      _buildMenuButton(
-                        text: loc.launchMission,
-                        icon: Icons.play_arrow,
-                        primaryColor: const Color(0xFF00E5FF),
-                        onTap: () {
-                          // Open ship selection hangar first
-                          widget.game.openShipSelection();
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildMenuButton(
-                        text: loc.tacticalGuide,
-                        icon: Icons.menu_book,
-                        primaryColor: Colors.white,
-                        onTap: () {
-                          setState(() {
-                            _showInstructions = true;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildMenuButton(
-                        text: loc.credits,
-                        icon: Icons.info_outline,
-                        primaryColor: Colors.white,
-                        onTap: () {
-                          setState(() {
-                            _showCredits = true;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildMenuButton(
-                        text: loc.settings,
-                        icon: Icons.settings,
-                        primaryColor: Colors.white,
-                        onTap: () {
-                          widget.game.openSettings();
-                        },
-                      ),
-                    ],
+                        // Menu Buttons
+                        _buildMenuButton(
+                          text: loc.launchMission,
+                          icon: Icons.play_arrow,
+                          primaryColor: const Color(0xFF00E5FF),
+                          isShort: isShortScreen,
+                          onTap: () {
+                            // Open ship selection hangar first
+                            widget.game.openShipSelection();
+                          },
+                        ),
+                        SizedBox(height: isShortScreen ? 10 : 16),
+                        _buildMenuButton(
+                          text: loc.tacticalGuide,
+                          icon: Icons.menu_book,
+                          primaryColor: Colors.white,
+                          isShort: isShortScreen,
+                          onTap: () {
+                            setState(() {
+                              _showInstructions = true;
+                            });
+                          },
+                        ),
+                        SizedBox(height: isShortScreen ? 10 : 16),
+                        _buildMenuButton(
+                          text: loc.credits,
+                          icon: Icons.info_outline,
+                          primaryColor: Colors.white,
+                          isShort: isShortScreen,
+                          onTap: () {
+                            setState(() {
+                              _showCredits = true;
+                            });
+                          },
+                        ),
+                        SizedBox(height: isShortScreen ? 10 : 16),
+                        _buildMenuButton(
+                          text: loc.settings,
+                          icon: Icons.settings,
+                          primaryColor: Colors.white,
+                          isShort: isShortScreen,
+                          onTap: () {
+                            widget.game.openSettings();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -132,8 +145,8 @@ class _StartMenuState extends State<StartMenu> {
               if (_showInstructions)
                 Center(
                   child: Container(
-                    width: 480,
-                    padding: const EdgeInsets.all(28),
+                    width: min(480, screenWidth - 32),
+                    constraints: BoxConstraints(maxHeight: screenHeight * 0.9),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(20),
@@ -153,95 +166,107 @@ class _StartMenuState extends State<StartMenu> {
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  loc.tacticalProtocol,
-                                  style: const TextStyle(
-                                    color: Color(0xFF00E5FF),
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 2.0,
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isShortScreen ? 16 : 28,
+                            vertical: isShortScreen ? 16 : 28,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    loc.tacticalProtocol,
+                                    style: TextStyle(
+                                      color: const Color(0xFF00E5FF),
+                                      fontSize: isShortScreen ? 16 : 20,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2.0,
+                                    ),
                                   ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _showInstructions = false;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: isShortScreen ? 16 : 20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Divider(color: Colors.white24, height: isShortScreen ? 16 : 24),
+                              const SizedBox(height: 5),
+                              
+                              // Movement
+                              _buildInstructionRow(
+                                title: loc.steerShipTitle,
+                                body: loc.steerShipBody,
+                                icon: Icons.gamepad,
+                                isShort: isShortScreen,
+                              ),
+                              SizedBox(height: isShortScreen ? 10 : 15),
+
+                              // Shooting
+                              _buildInstructionRow(
+                                title: loc.weaponSystemsTitle,
+                                body: loc.weaponSystemsBody,
+                                icon: Icons.gps_fixed,
+                                isShort: isShortScreen,
+                              ),
+                              SizedBox(height: isShortScreen ? 10 : 15),
+
+                              // Powerups
+                              _buildInstructionRow(
+                                title: loc.fieldCoresTitle,
+                                body: loc.fieldCoresBody,
+                                icon: Icons.bolt,
+                                isShort: isShortScreen,
+                              ),
+                              SizedBox(height: isShortScreen ? 15 : 25),
+
+                              Center(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF00E5FF),
+                                    foregroundColor: Colors.black,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: isShortScreen ? 10 : 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () {
                                     setState(() {
                                       _showInstructions = false;
                                     });
                                   },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.1),
-                                      shape: BoxShape.circle,
+                                  child: Text(
+                                    loc.understood,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.5,
                                     ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Divider(color: Colors.white24, height: 24),
-                            const SizedBox(height: 5),
-                            
-                            // Movement
-                            _buildInstructionRow(
-                              title: loc.steerShipTitle,
-                              body: loc.steerShipBody,
-                              icon: Icons.gamepad,
-                            ),
-                            const SizedBox(height: 15),
-
-                            // Shooting
-                            _buildInstructionRow(
-                              title: loc.weaponSystemsTitle,
-                              body: loc.weaponSystemsBody,
-                              icon: Icons.gps_fixed,
-                            ),
-                            const SizedBox(height: 15),
-
-                            // Powerups
-                            _buildInstructionRow(
-                              title: loc.fieldCoresTitle,
-                              body: loc.fieldCoresBody,
-                              icon: Icons.bolt,
-                            ),
-                            const SizedBox(height: 25),
-
-                            Center(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF00E5FF),
-                                  foregroundColor: Colors.black,
-                                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _showInstructions = false;
-                                  });
-                                },
-                                child: Text(
-                                  loc.understood,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.5,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -252,8 +277,8 @@ class _StartMenuState extends State<StartMenu> {
               if (_showCredits)
                 Center(
                   child: Container(
-                    width: 480,
-                    padding: const EdgeInsets.all(28),
+                    width: min(480, screenWidth - 32),
+                    constraints: BoxConstraints(maxHeight: screenHeight * 0.9),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(20),
@@ -273,85 +298,96 @@ class _StartMenuState extends State<StartMenu> {
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  loc.transmissionCredits,
-                                  style: const TextStyle(
-                                    color: Color(0xFF00E5FF),
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 2.0,
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isShortScreen ? 16 : 28,
+                            vertical: isShortScreen ? 16 : 28,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    loc.transmissionCredits,
+                                    style: TextStyle(
+                                      color: const Color(0xFF00E5FF),
+                                      fontSize: isShortScreen ? 16 : 20,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2.0,
+                                    ),
                                   ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _showCredits = false;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: isShortScreen ? 16 : 20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Divider(color: Colors.white24, height: isShortScreen ? 16 : 24),
+                              const SizedBox(height: 5),
+                              
+                              _buildInstructionRow(
+                                title: loc.assetCreatorTitle,
+                                body: loc.assetCreatorBody,
+                                icon: Icons.palette,
+                                isShort: isShortScreen,
+                              ),
+                              SizedBox(height: isShortScreen ? 10 : 15),
+
+                              _buildInstructionRow(
+                                title: loc.kenneyAssetsTitle,
+                                body: loc.kenneyAssetsBody,
+                                icon: Icons.favorite,
+                                isShort: isShortScreen,
+                              ),
+                              SizedBox(height: isShortScreen ? 15 : 25),
+
+                              Center(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF00E5FF),
+                                    foregroundColor: Colors.black,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: isShortScreen ? 10 : 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () {
                                     setState(() {
                                       _showCredits = false;
                                     });
                                   },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.1),
-                                      shape: BoxShape.circle,
+                                  child: Text(
+                                    loc.transmissionTerminated,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.5,
                                     ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Divider(color: Colors.white24, height: 24),
-                            const SizedBox(height: 5),
-                            
-                            _buildInstructionRow(
-                              title: loc.assetCreatorTitle,
-                              body: loc.assetCreatorBody,
-                              icon: Icons.palette,
-                            ),
-                            const SizedBox(height: 15),
-
-                            _buildInstructionRow(
-                              title: loc.kenneyAssetsTitle,
-                              body: loc.kenneyAssetsBody,
-                              icon: Icons.favorite,
-                            ),
-                            const SizedBox(height: 25),
-
-                            Center(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF00E5FF),
-                                  foregroundColor: Colors.black,
-                                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _showCredits = false;
-                                  });
-                                },
-                                child: Text(
-                                  loc.transmissionTerminated,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.5,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -368,6 +404,7 @@ class _StartMenuState extends State<StartMenu> {
     required String text,
     required IconData icon,
     required Color primaryColor,
+    required bool isShort,
     required VoidCallback onTap,
   }) {
     return MouseRegion(
@@ -375,8 +412,8 @@ class _StartMenuState extends State<StartMenu> {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          width: 250,
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+          width: isShort ? 220 : 250,
+          padding: EdgeInsets.symmetric(vertical: isShort ? 8 : 14, horizontal: 20),
           decoration: BoxDecoration(
             color: primaryColor == Colors.white
                 ? Colors.white.withValues(alpha: 0.06)
@@ -398,13 +435,13 @@ class _StartMenuState extends State<StartMenu> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: primaryColor, size: 20),
-              const SizedBox(width: 12),
+              Icon(icon, color: primaryColor, size: isShort ? 16 : 20),
+              SizedBox(width: isShort ? 8 : 12),
               Text(
                 text,
                 style: TextStyle(
                   color: primaryColor,
-                  fontSize: 14,
+                  fontSize: isShort ? 12 : 14,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2.0,
                 ),
@@ -420,21 +457,22 @@ class _StartMenuState extends State<StartMenu> {
     required String title,
     required String body,
     required IconData icon,
+    required bool isShort,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: const Color(0xFF00E5FF), size: 22),
-        const SizedBox(width: 14),
+        Icon(icon, color: const Color(0xFF00E5FF), size: isShort ? 18 : 22),
+        SizedBox(width: isShort ? 10 : 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 13,
+                  fontSize: isShort ? 11 : 13,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.0,
                 ),
@@ -444,7 +482,7 @@ class _StartMenuState extends State<StartMenu> {
                 body,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.6),
-                  fontSize: 11,
+                  fontSize: isShort ? 10 : 11,
                   height: 1.4,
                 ),
               ),

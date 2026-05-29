@@ -36,17 +36,17 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
     // 2. Set stats based on size
     switch (sizeType) {
       case MeteorSize.large:
-        size = Vector2.all(80);
+        size = Vector2.all(60);
         maxHealth = 70.0;
         scoreValue = 40;
         break;
       case MeteorSize.medium:
-        size = Vector2.all(45);
+        size = Vector2.all(34);
         maxHealth = 30.0;
         scoreValue = 20;
         break;
       case MeteorSize.small:
-        size = Vector2.all(22);
+        size = Vector2.all(17);
         maxHealth = 10.0;
         scoreValue = 10;
         break;

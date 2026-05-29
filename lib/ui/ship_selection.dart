@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'dart:math' show min;
 import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
@@ -86,6 +87,11 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
             break;
         }
 
+        final mediaQuery = MediaQuery.of(context);
+        final screenWidth = mediaQuery.size.width;
+        final screenHeight = mediaQuery.size.height;
+        final isShortScreen = screenHeight < 500;
+
         return Scaffold(
           backgroundColor: Colors.transparent,
           body: Stack(
@@ -106,8 +112,8 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
               // Main selector card
               Center(
                 child: Container(
-                  width: 520,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+                  width: min(520, screenWidth - 32),
+                  constraints: BoxConstraints(maxHeight: screenHeight * 0.9),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0F1123).withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(20),
@@ -127,154 +133,160 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
                     borderRadius: BorderRadius.circular(20),
                     child: BackdropFilter(
                       filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Header
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: widget.game.closeShipSelection,
-                                child: Row(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isShortScreen ? 16 : 32,
+                          vertical: isShortScreen ? 16 : 28,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Header
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: widget.game.closeShipSelection,
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.arrow_back_ios, color: Colors.white60, size: 14),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        loc.back,
+                                        style: TextStyle(
+                                          color: Colors.white.withValues(alpha: 0.6),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1.5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  loc.shipSelectionTitle,
+                                  style: TextStyle(
+                                    color: const Color(0xFF00E5FF),
+                                    fontSize: isShortScreen ? 14 : 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                const SizedBox(width: 50), // spacer
+                              ],
+                            ),
+                            Divider(color: Colors.white24, height: isShortScreen ? 16 : 32),
+
+                            // Ship Carousel Selector (Chevrons + Sprite)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Left Chevron
+                                _buildCarouselArrow(
+                                  icon: Icons.chevron_left,
+                                  onTap: _prevShip,
+                                ),
+
+                                // Ship Preview
+                                Column(
                                   children: [
-                                    const Icon(Icons.arrow_back_ios, color: Colors.white60, size: 14),
-                                    const SizedBox(width: 4),
+                                    if (rect != null)
+                                      Container(
+                                        height: isShortScreen ? 100 : 150,
+                                        width: isShortScreen ? 100 : 150,
+                                        alignment: Alignment.center,
+                                        child: CustomPaint(
+                                          size: Size(isShortScreen ? 75 : 110, isShortScreen ? 75 : 110),
+                                          painter: SpritePainter(
+                                            image: widget.game.spaceShooterImage,
+                                            srcRect: rect,
+                                          ),
+                                        ),
+                                      ),
+                                    SizedBox(height: isShortScreen ? 8 : 15),
                                     Text(
-                                      loc.back,
+                                      loc.getShipName(currentShip).toUpperCase(),
                                       style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.6),
-                                        fontSize: 12,
+                                        color: Colors.white,
+                                        fontSize: isShortScreen ? 18 : 24,
                                         fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.5,
+                                        letterSpacing: 3.0,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              Text(
-                                loc.shipSelectionTitle,
-                                style: const TextStyle(
-                                  color: Color(0xFF00E5FF),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 2.0,
+
+                                // Right Chevron
+                                _buildCarouselArrow(
+                                  icon: Icons.chevron_right,
+                                  onTap: _nextShip,
                                 ),
-                              ),
-                              const SizedBox(width: 50), // spacer
-                            ],
-                          ),
-                          const Divider(color: Colors.white24, height: 32),
+                              ],
+                            ),
+                            SizedBox(height: isShortScreen ? 12 : 24),
 
-                          // Ship Carousel Selector (Chevrons + Sprite)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Left Chevron
-                              _buildCarouselArrow(
-                                icon: Icons.chevron_left,
-                                onTap: _prevShip,
+                            // Ship Description
+                            Text(
+                              loc.getShipDescription(currentShip),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                fontSize: 12,
+                                height: 1.4,
                               ),
+                            ),
+                            SizedBox(height: isShortScreen ? 12 : 30),
 
-                              // Ship Preview
-                              Column(
-                                children: [
-                                  if (rect != null)
-                                    Container(
-                                      height: 150,
-                                      width: 150,
-                                      alignment: Alignment.center,
-                                      child: CustomPaint(
-                                        size: const Size(110, 110),
-                                        painter: SpritePainter(
-                                          image: widget.game.spaceShooterImage,
-                                          srcRect: rect,
-                                        ),
-                                      ),
+                            // Stats Section
+                            Column(
+                              children: [
+                                _buildStatBar(loc.velocity, speedVal, const Color(0xFF00E5FF)),
+                                SizedBox(height: isShortScreen ? 6 : 12),
+                                _buildStatBar(loc.armorHull, armorVal, const Color(0xFF00E676)),
+                                SizedBox(height: isShortScreen ? 6 : 12),
+                                _buildStatBar(loc.firePower, fireRateVal, const Color(0xFFFFB300)),
+                              ],
+                            ),
+                            SizedBox(height: isShortScreen ? 16 : 36),
+
+                            // Launch Mission Button
+                            SizedBox(
+                              width: double.infinity,
+                              height: isShortScreen ? 40 : 50,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF00E5FF),
+                                    foregroundColor: Colors.black,
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                  const SizedBox(height: 15),
-                                  Text(
-                                    loc.getShipName(currentShip).toUpperCase(),
+                                  ),
+                                  onPressed: () {
+                                    widget.game.startGame(currentShip);
+                                  },
+                                  child: Text(
+                                    loc.engageHyperdrive,
                                     style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 3.0,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 2.0,
                                     ),
                                   ),
-                                ],
-                              ),
-
-                              // Right Chevron
-                              _buildCarouselArrow(
-                                icon: Icons.chevron_right,
-                                onTap: _nextShip,
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
-
-                          // Ship Description
-                          Text(
-                            loc.getShipDescription(currentShip),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.6),
-                              fontSize: 12,
-                              height: 1.4,
-                            ),
-                          ),
-                          const SizedBox(height: 30),
-
-                          // Stats Section
-                          Column(
-                            children: [
-                              _buildStatBar(loc.velocity, speedVal, const Color(0xFF00E5FF)),
-                              const SizedBox(height: 12),
-                              _buildStatBar(loc.armorHull, armorVal, const Color(0xFF00E676)),
-                              const SizedBox(height: 12),
-                              _buildStatBar(loc.firePower, fireRateVal, const Color(0xFFFFB300)),
-                            ],
-                          ),
-                          const SizedBox(height: 36),
-
-                          // Launch Mission Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF00E5FF),
-                                  foregroundColor: Colors.black,
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  widget.game.startGame(currentShip);
-                                },
-                                child: Text(
-                                  loc.engageHyperdrive,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 2.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      );
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildCarouselArrow({

@@ -45,7 +45,7 @@ class PlayerShip extends PositionComponent
     required this.shipType,
     required super.position,
   }) : super(
-          size: Vector2.all(70),
+          size: Vector2.all(50),
           anchor: Anchor.center,
         );
 
@@ -307,8 +307,8 @@ class PlayerShip extends PositionComponent
       case 2: // Double Parallel Laser
         // Fire two parallel lasers offset left and right
         final perp = Vector2(-bulletDir.y, bulletDir.x)..normalize();
-        final offsetLeft = perp * 18;
-        final offsetRight = -perp * 18;
+        final offsetLeft = perp * 13;
+        final offsetRight = -perp * 13;
 
         game.add(Bullet(
           position: position + bulletDir * (size.y * 0.3) + offsetLeft,
