@@ -256,6 +256,11 @@ class PlayerShip extends PositionComponent
       isFiring = mouseFiring;
     }
 
+    // Priority 4: On-Screen Mobile Fire Button
+    if (game.isFiringButtonDown) {
+      isFiring = true;
+    }
+
     // Update ship rotation if we have an aim direction
     if (aimDir != null && aimDir.length > 0.01) {
       // Rotate ship to face firing direction
@@ -266,7 +271,7 @@ class PlayerShip extends PositionComponent
     // Fire laser if firing is active
     if (isFiring && _fireTimer >= shipType.fireInterval) {
       _fireTimer = 0;
-      _fireLaser(aimDir ?? Vector2(0, -1));
+      _fireLaser(aimDir ?? Vector2(sin(angle), -cos(angle)));
     }
   }
 

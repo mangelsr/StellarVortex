@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart' show EdgeInsets;
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'dart:ui' show Image, Paint, Color;
+import 'package:flame/input.dart' show HudButtonComponent;
+import 'dart:ui' show Image, Paint, Color, ColorFilter, BlendMode;
 
 import 'xml_spritesheet_parser.dart';
 import 'components/starfield_background.dart';
@@ -25,7 +28,8 @@ enum PlayerShipType {
     maxHealth: 100,
     speed: 350.0,
     fireInterval: 0.22,
-    description: 'Balanced interstellar fighter. Equipped with standard high-velocity plasma lasers.',
+    description:
+        'Balanced interstellar fighter. Equipped with standard high-velocity plasma lasers.',
   ),
   reaper(
     name: 'Reaper',
@@ -33,7 +37,8 @@ enum PlayerShipType {
     maxHealth: 80,
     speed: 450.0,
     fireInterval: 0.14,
-    description: 'Fast interceptor. Rapid fire rate but lower structural integrity. Dual pulse canons.',
+    description:
+        'Fast interceptor. Rapid fire rate but lower structural integrity. Dual pulse canons.',
   ),
   leviathan(
     name: 'Leviathan',
@@ -41,7 +46,8 @@ enum PlayerShipType {
     maxHealth: 160,
     speed: 240.0,
     fireInterval: 0.35,
-    description: 'Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles.',
+    description:
+        'Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles.',
   );
 
   final String name;
@@ -62,22 +68,36 @@ enum PlayerShipType {
 }
 
 class SpaceShooterGame extends FlameGame
-    with HasCollisionDetection, HasKeyboardHandlerComponents {
-  
+    with
+        HasCollisionDetection,
+        HasKeyboardHandlerComponents,
+        DragCallbacks,
+        TapCallbacks {
   late XmlSpriteSheet spaceShooterAtlas;
   late XmlSpriteSheet mobileControlsAtlas;
-  
+
   late Image spaceShooterImage;
   late Image mobileControlsImage;
 
   GameState state = GameState.menu;
   PlayerShipType selectedShipType = PlayerShipType.vanguard;
-  
+
   PlayerShip? playerShip;
   late StarfieldBackground starfield;
-  
+
   JoystickComponent? joystickLeft;
   JoystickComponent? joystickRight;
+  HudButtonComponent? fireButton;
+
+  bool isFiringButtonDown = false;
+
+  bool forceMobileControls =
+      true; // Set to true to test mobile controls on touchscreen laptops
+
+  bool get showMobileControls =>
+      forceMobileControls ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
 
   Vector2? mousePosition;
   bool isMouseFiring = false;
@@ -94,7 +114,7 @@ class SpaceShooterGame extends FlameGame
   double _planetSpawnTimer = 0;
   double _nextPlanetSpawnInterval = 10.0;
   final _random = Random();
-  
+
   // Wave state
   int _enemiesSpawnedThisWave = 0;
   int _enemiesToKillThisWave = 0;
@@ -111,10 +131,14 @@ class SpaceShooterGame extends FlameGame
     mobileControlsImage = await images.load('mobile_controls.png');
 
     // 3. Load XML data
-    final spaceXml = await rootBundle.loadString('assets/spaceShooter_spritesheet.xml');
+    final spaceXml = await rootBundle.loadString(
+      'assets/spaceShooter_spritesheet.xml',
+    );
     spaceShooterAtlas = XmlSpriteSheet.parse(spaceXml);
 
-    final controlsXml = await rootBundle.loadString('assets/mobile_controls.xml');
+    final controlsXml = await rootBundle.loadString(
+      'assets/mobile_controls.xml',
+    );
     mobileControlsAtlas = XmlSpriteSheet.parse(controlsXml);
 
     // Preload planet parts
@@ -160,20 +184,19 @@ class SpaceShooterGame extends FlameGame
     if (activePlanets.length < 2) {
       final needed = 2 - activePlanets.length;
       for (int i = 0; i < needed; i++) {
-        add(BackgroundPlanet(
-          position: Vector2(
-            _random.nextDouble() * size.x,
-            _random.nextDouble() * size.y,
+        add(
+          BackgroundPlanet(
+            position: Vector2(
+              _random.nextDouble() * size.x,
+              _random.nextDouble() * size.y,
+            ),
           ),
-        ));
+        );
       }
     }
 
     // Add Player Ship
-    playerShip = PlayerShip(
-      shipType: selectedShipType,
-      position: size / 2,
-    );
+    playerShip = PlayerShip(shipType: selectedShipType, position: size / 2);
     add(playerShip!);
 
     // Add Virtual Joysticks
@@ -190,21 +213,28 @@ class SpaceShooterGame extends FlameGame
   }
 
   void _setupJoysticks() {
-    // We add joysticks to assist mobile play, but we can also use WASD + mouse on desktop.
-    // They are always added but can be hidden/shown via CSS or media queries in HUD,
-    // or just rendered in Flame. Rendering in Flame is standard. Let's make them transparent-ish
-    // so they fit the sci-fi theme beautifully.
-    
+    if (!showMobileControls) return;
+
     joystickLeft = JoystickComponent(
       knob: SpriteComponent(
         sprite: mobileControlsAtlas.getSprite('joystick_circle_nub_a', mobileControlsImage),
         size: Vector2.all(40),
-        paint: Paint()..color = const Color(0xAAFFFFFF),
+        paint: Paint()
+          ..color = const Color(0x77FFFFFF) // Translucent base
+          ..colorFilter = const ColorFilter.mode(
+            Color(0xFF00E5FF), // Pure Cyan tint
+            BlendMode.srcATop,
+          ),
       ),
       background: SpriteComponent(
         sprite: mobileControlsAtlas.getSprite('joystick_circle_pad_a', mobileControlsImage),
         size: Vector2.all(100),
-        paint: Paint()..color = const Color(0x66FFFFFF),
+        paint: Paint()
+          ..color = const Color(0x22FFFFFF) // Highly translucent base
+          ..colorFilter = const ColorFilter.mode(
+            Color(0xFF00E5FF), // Pure Cyan tint
+            BlendMode.srcATop,
+          ),
       ),
       margin: const EdgeInsets.only(left: 30, bottom: 40),
     );
@@ -213,35 +243,82 @@ class SpaceShooterGame extends FlameGame
       knob: SpriteComponent(
         sprite: mobileControlsAtlas.getSprite('joystick_circle_nub_c', mobileControlsImage),
         size: Vector2.all(40),
-        paint: Paint()..color = const Color(0xAAFFFFFF),
+        paint: Paint()
+          ..color = const Color(0x77FFFFFF) // Translucent base
+          ..colorFilter = const ColorFilter.mode(
+            Color(0xFFFFB300), // Pure Amber tint
+            BlendMode.srcATop,
+          ),
       ),
       background: SpriteComponent(
         sprite: mobileControlsAtlas.getSprite('joystick_circle_pad_c', mobileControlsImage),
         size: Vector2.all(100),
-        paint: Paint()..color = const Color(0x66FFFFFF),
+        paint: Paint()
+          ..color = const Color(0x22FFFFFF) // Highly translucent base
+          ..colorFilter = const ColorFilter.mode(
+            Color(0xFFFFB300), // Pure Amber tint
+            BlendMode.srcATop,
+          ),
       ),
       margin: const EdgeInsets.only(right: 30, bottom: 40),
     );
 
-    add(joystickLeft!);
-    add(joystickRight!);
+    fireButton = HudButtonComponent(
+      button: SpriteComponent(
+        sprite: mobileControlsAtlas.getSprite('button_circle', mobileControlsImage),
+        size: Vector2.all(80),
+        paint: Paint()
+          ..color = const Color(0x33FFFFFF) // Highly translucent base
+          ..colorFilter = const ColorFilter.mode(
+            Color(0xFFFF3D00), // Pure Red-Orange tint
+            BlendMode.srcATop,
+          ),
+      ),
+      buttonDown: SpriteComponent(
+        sprite: mobileControlsAtlas.getSprite('button_circle', mobileControlsImage),
+        size: Vector2.all(80),
+        paint: Paint()
+          ..color = const Color(0x88FFFFFF) // Translucent base when pressed
+          ..colorFilter = const ColorFilter.mode(
+            Color(0xFFFF3D00), // Pure Red-Orange tint
+            BlendMode.srcATop,
+          ),
+      ),
+      margin: const EdgeInsets.only(right: 150, bottom: 50),
+      onPressed: () {
+        isFiringButtonDown = true;
+      },
+      onReleased: () {
+        isFiringButtonDown = false;
+      },
+    );
+
+    camera.viewport.add(joystickLeft!);
+    camera.viewport.add(joystickRight!);
+    camera.viewport.add(fireButton!);
   }
 
   void _clearPlayableComponents() {
-    // Remove player, joysticks, and all gameplay components
+    // Remove player, enemies, bullets, meteors, and powerups in the world
     for (final component in children) {
       if (component is PlayerShip ||
           component is EnemyShip ||
           component is Bullet ||
           component is Meteor ||
-          component is PowerUp ||
-          component is JoystickComponent) {
+          component is PowerUp) {
         component.removeFromParent();
       }
     }
+    // Remove HUD controls from the camera viewport
+    joystickLeft?.removeFromParent();
+    joystickRight?.removeFromParent();
+    fireButton?.removeFromParent();
+
     playerShip = null;
     joystickLeft = null;
     joystickRight = null;
+    fireButton = null;
+    isFiringButtonDown = false;
   }
 
   void _startWave() {
@@ -289,7 +366,8 @@ class SpaceShooterGame extends FlameGame
 
     // Check if wave is completed (all enemies spawned and no enemies remaining)
     final activeEnemies = children.whereType<EnemyShip>();
-    if (_enemiesSpawnedThisWave >= _enemiesToKillThisWave && activeEnemies.isEmpty) {
+    if (_enemiesSpawnedThisWave >= _enemiesToKillThisWave &&
+        activeEnemies.isEmpty) {
       _triggerNextWaveTransition();
       return;
     }
@@ -314,7 +392,9 @@ class SpaceShooterGame extends FlameGame
     if (playerShip != null) {
       final reward = PowerUp(
         position: Vector2(size.x / 2, size.y / 3),
-        type: _random.nextBool() ? PowerUpType.shield : PowerUpType.weaponUpgrade,
+        type: _random.nextBool()
+            ? PowerUpType.shield
+            : PowerUpType.weaponUpgrade,
       );
       add(reward);
     }
@@ -327,7 +407,9 @@ class SpaceShooterGame extends FlameGame
       _random.nextDouble() * size.x,
       _random.nextDouble() * size.y,
     );
-    Vector2 velocity = (targetPos - spawnPos).normalized() * (50.0 + _random.nextDouble() * 70.0);
+    Vector2 velocity =
+        (targetPos - spawnPos).normalized() *
+        (50.0 + _random.nextDouble() * 70.0);
 
     final meteor = Meteor(
       position: spawnPos,
@@ -338,15 +420,19 @@ class SpaceShooterGame extends FlameGame
   }
 
   void _spawnEnemy() {
-    Vector2 spawnPos = Vector2(_random.nextDouble() * size.x, -50); // Spawns from top
-    
+    Vector2 spawnPos = Vector2(
+      _random.nextDouble() * size.x,
+      -50,
+    ); // Spawns from top
+
     // Choose enemy type based on current wave
     EnemyType type = EnemyType.scout;
-    
+
     // Boss spawns every 5 waves at the start of the wave!
     if (wave % 5 == 0 && _enemiesSpawnedThisWave == 0) {
       type = EnemyType.boss;
-      _enemiesSpawnedThisWave = _enemiesToKillThisWave; // Boss is the only enemy of this wave!
+      _enemiesSpawnedThisWave =
+          _enemiesToKillThisWave; // Boss is the only enemy of this wave!
       spawnPos = Vector2(size.x / 2, -120);
     } else {
       double randVal = _random.nextDouble();
@@ -410,14 +496,14 @@ class SpaceShooterGame extends FlameGame
     } else {
       // Game Over
       state = GameState.gameOver;
-      
+
       if (score > highScore) {
         highScore = score;
       }
-      
+
       // Remove joysticks and play components
       _clearPlayableComponents();
-      
+
       overlays.remove('hud');
       overlays.add('gameOverMenu');
     }
@@ -464,26 +550,29 @@ class SpaceShooterGame extends FlameGame
 
   void _spawnInitialPlanets() {
     // Spawn 2 planets at random positions on screen
-    add(BackgroundPlanet(
-      position: Vector2(
-        _random.nextDouble() * size.x,
-        _random.nextDouble() * (size.y * 0.4) + (size.y * 0.1),
+    add(
+      BackgroundPlanet(
+        position: Vector2(
+          _random.nextDouble() * size.x,
+          _random.nextDouble() * (size.y * 0.4) + (size.y * 0.1),
+        ),
       ),
-    ));
-    add(BackgroundPlanet(
-      position: Vector2(
-        _random.nextDouble() * size.x,
-        _random.nextDouble() * (size.y * 0.4) + (size.y * 0.5),
+    );
+    add(
+      BackgroundPlanet(
+        position: Vector2(
+          _random.nextDouble() * size.x,
+          _random.nextDouble() * (size.y * 0.4) + (size.y * 0.5),
+        ),
       ),
-    ));
+    );
   }
 
   void _spawnBackgroundPlanet() {
-    add(BackgroundPlanet(
-      position: Vector2(
-        _random.nextDouble() * size.x,
-        -130.0,
+    add(
+      BackgroundPlanet(
+        position: Vector2(_random.nextDouble() * size.x, -130.0),
       ),
-    ));
+    );
   }
 }

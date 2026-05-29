@@ -43,7 +43,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
     final double maxHealth = player?.maxHealth ?? 100;
     final double shield = player?.shield ?? 0;
     final double maxShield = player?.maxShield ?? 50;
-    
+
     final double healthPercent = (health / maxHealth).clamp(0.0, 1.0);
     final double shieldPercent = (shield / maxShield).clamp(0.0, 1.0);
 
@@ -51,6 +51,8 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
     final int highScore = game.highScore;
     final int wave = game.wave;
     final int lives = game.lives;
+
+    final isMobile = game.showMobileControls;
 
     return Positioned.fill(
       child: Stack(
@@ -67,7 +69,10 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                 // Left Side: Health & Shield Bars
                 _buildGlassmorphicContainer(
                   width: 240,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -97,7 +102,10 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
 
                 // Center: Wave indicator
                 _buildGlassmorphicContainer(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -133,7 +141,10 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildGlassmorphicContainer(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
@@ -179,29 +190,33 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
             ),
           ),
 
-          // 2. Desktop Keyboard Guide
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildGlassmorphicContainer(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    'CONTROLS: WASD to Move  |  Mouse Pointer to Aim + Hold Click to Shoot  |  Arrow Keys for Twin-Stick Shooting',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1.0,
+          // 2. Desktop Keyboard Guide (only show on desktop/web non-mobile)
+          if (!isMobile)
+            Positioned(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildGlassmorphicContainer(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Text(
+                      'CONTROLS: WASD to Move  |  Mouse Pointer to Aim + Hold Click to Shoot  |  Arrow Keys for Twin-Stick Shooting',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1.0,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -215,7 +230,9 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: const Color(0xFF0F1123).withValues(alpha: 0.7), // Sleek translucent dark
+        color: const Color(
+          0xFF0F1123,
+        ).withValues(alpha: 0.7), // Sleek translucent dark
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.12),
