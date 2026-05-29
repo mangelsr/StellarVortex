@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
+import '../game/game_localizations.dart';
 
 class PauseMenu extends StatelessWidget {
   final SpaceShooterGame game;
@@ -10,99 +11,115 @@ class PauseMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: 0.55), // Dim the canvas
-      body: Stack(
-        children: [
-          // Blurred background
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
+    return ValueListenableBuilder<GameLanguage>(
+      valueListenable: game.languageNotifier,
+      builder: (context, language, _) {
+        final loc = game.loc;
 
-          // Central modal dialog
-          Center(
-            child: Container(
-              width: 320,
-              padding: const EdgeInsets.all(28),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0F1123).withValues(alpha: 0.85),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  width: 1.5,
+        return Scaffold(
+          backgroundColor: Colors.black.withValues(alpha: 0.55), // Dim the canvas
+          body: Stack(
+            children: [
+              // Blurred background
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                  child: Container(color: Colors.transparent),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Title
-                  const Text(
-                    'TRANSMISSION\nPAUSED',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF00E5FF),
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 3.0,
-                      height: 1.2,
+
+              // Central modal dialog
+              Center(
+                child: Container(
+                  width: 320,
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F1123).withValues(alpha: 0.85),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      width: 1.5,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'TACTICAL ANALYSIS IN PROGRESS',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      fontSize: 9,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  const Divider(color: Colors.white24, height: 32),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Title
+                      Text(
+                        loc.transmissionPaused,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF00E5FF),
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 3.0,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        loc.tacticalAnalysisInProgress,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      const Divider(color: Colors.white24, height: 32),
 
-                  // Resume Button
-                  _buildPauseButton(
-                    text: 'RESUME FLIGHT',
-                    icon: Icons.play_arrow,
-                    primaryColor: const Color(0xFF00E5FF),
-                    onTap: game.togglePause,
-                  ),
-                  const SizedBox(height: 14),
+                      // Resume Button
+                      _buildPauseButton(
+                        text: loc.resumeFlight,
+                        icon: Icons.play_arrow,
+                        primaryColor: const Color(0xFF00E5FF),
+                        onTap: game.togglePause,
+                      ),
+                      const SizedBox(height: 14),
 
-                  // Restart Button
-                  _buildPauseButton(
-                    text: 'RESTART MISSION',
-                    icon: Icons.refresh,
-                    primaryColor: Colors.white,
-                    onTap: () {
-                      game.startGame(game.selectedShipType);
-                      // StartGame automatically resets stats and resumes engine
-                    },
-                  ),
-                  const SizedBox(height: 14),
+                      // Restart Button
+                      _buildPauseButton(
+                        text: loc.restartMission,
+                        icon: Icons.refresh,
+                        primaryColor: Colors.white,
+                        onTap: () {
+                          game.startGame(game.selectedShipType);
+                          // StartGame automatically resets stats and resumes engine
+                        },
+                      ),
+                      const SizedBox(height: 14),
 
-                  // Quit Button
-                  _buildPauseButton(
-                    text: 'ABORT MISSION',
-                    icon: Icons.exit_to_app,
-                    primaryColor: const Color(0xFFE53935), // Red
-                    onTap: game.quitToMenu,
+                      // Settings Button
+                      _buildPauseButton(
+                        text: loc.settings,
+                        icon: Icons.settings,
+                        primaryColor: Colors.white,
+                        onTap: game.openSettings,
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Quit Button
+                      _buildPauseButton(
+                        text: loc.abortMission,
+                        icon: Icons.exit_to_app,
+                        primaryColor: const Color(0xFFE53935), // Red
+                        onTap: game.quitToMenu,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

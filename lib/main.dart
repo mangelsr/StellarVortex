@@ -10,6 +10,7 @@ import 'ui/start_menu.dart';
 import 'ui/ship_selection.dart';
 import 'ui/pause_menu.dart';
 import 'ui/game_over_menu.dart';
+import 'ui/settings_menu.dart';
 
 void main() async {
   // Ensure Flutter engine bindings are loaded
@@ -80,6 +81,7 @@ class GameWrapper extends StatelessWidget {
                   'hud': (context, game) => GameHud(game: game),
                   'pauseMenu': (context, game) => PauseMenu(game: game),
                   'gameOverMenu': (context, game) => GameOverMenu(game: game),
+                  'settingsMenu': (context, game) => SettingsMenu(game: game),
                 },
               ),
             ),

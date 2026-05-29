@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart' show EdgeInsets;
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
+    show defaultTargetPlatform, TargetPlatform, ValueNotifier;
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -18,6 +18,7 @@ import 'components/meteor.dart';
 import 'components/power_up.dart';
 import 'components/bullet.dart';
 import 'components/background_planet.dart';
+import 'game_localizations.dart';
 
 enum GameState { menu, shipSelection, playing, paused, gameOver }
 
@@ -80,6 +81,8 @@ class SpaceShooterGame extends FlameGame
   late Image mobileControlsImage;
 
   GameState state = GameState.menu;
+  final ValueNotifier<GameLanguage> languageNotifier = ValueNotifier(GameLanguage.en);
+  GameLocalizations get loc => GameLocalizations(languageNotifier.value);
   PlayerShipType selectedShipType = PlayerShipType.vanguard;
 
   PlayerShip? playerShip;
@@ -546,6 +549,14 @@ class SpaceShooterGame extends FlameGame
     state = GameState.menu;
     overlays.remove('shipSelectionMenu');
     overlays.add('startMenu');
+  }
+
+  void openSettings() {
+    overlays.add('settingsMenu');
+  }
+
+  void closeSettings() {
+    overlays.remove('settingsMenu');
   }
 
   void _spawnInitialPlanets() {
