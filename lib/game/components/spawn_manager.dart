@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flame/components.dart';
+
 import '../space_shooter_game.dart';
+import '../game_constants.dart';
 import 'components.dart';
 
 class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
@@ -8,7 +10,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
   double _meteorSpawnTimer = 0;
   double _enemySpawnTimer = 0;
   double _planetSpawnTimer = 0;
-  double _nextPlanetSpawnInterval = 10.0;
+  double _nextPlanetSpawnInterval = SpawnConstants.planetSpawnIntervalInitial;
   final _random = Random();
 
   // Wave state
@@ -25,7 +27,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
     _planetSpawnTimer += dt;
     if (_planetSpawnTimer >= _nextPlanetSpawnInterval) {
       _planetSpawnTimer = 0;
-      _nextPlanetSpawnInterval = 20.0 + _random.nextDouble() * 25.0;
+      _nextPlanetSpawnInterval = SpawnConstants.planetSpawnIntervalBase + _random.nextDouble() * SpawnConstants.planetSpawnIntervalRange;
       _spawnBackgroundPlanet();
     }
 
@@ -34,7 +36,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
     // 1. Spawning Meteors
     _meteorSpawnTimer += dt;
     // Spawns a meteor every 4-7 seconds depending on wave density
-    double meteorInterval = max(3.0, 7.0 - (game.wave * 0.2));
+    double meteorInterval = max(SpawnConstants.meteorSpawnIntervalMin, SpawnConstants.meteorSpawnIntervalBase - (game.wave * SpawnConstants.meteorSpawnIntervalWaveFactor));
     if (_meteorSpawnTimer >= meteorInterval) {
       _meteorSpawnTimer = 0;
       _spawnMeteor();
@@ -61,7 +63,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
     if (_enemiesSpawnedThisWave < _enemiesToKillThisWave) {
       _enemySpawnTimer += dt;
       // Spawns an enemy every 1.5 - 3 seconds
-      double spawnInterval = max(1.0, 3.5 - (game.wave * 0.15));
+      double spawnInterval = max(SpawnConstants.enemySpawnIntervalMin, SpawnConstants.enemySpawnIntervalBase - (game.wave * SpawnConstants.enemySpawnIntervalWaveFactor));
       if (_enemySpawnTimer >= spawnInterval) {
         _enemySpawnTimer = 0;
         _spawnEnemy();
@@ -75,7 +77,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
 
   void _startWave() {
     _enemiesSpawnedThisWave = 0;
-    _enemiesToKillThisWave = 5 + (game.wave * 3); // Wave scales up enemies
+    _enemiesToKillThisWave = SpawnConstants.enemiesToKillBase + (game.wave * SpawnConstants.enemiesToKillWaveFactor); // Wave scales up enemies
     _isWaveTransition = false;
     _enemySpawnTimer = 0;
     _meteorSpawnTimer = 0;
@@ -83,7 +85,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
 
   void _triggerNextWaveTransition() {
     _isWaveTransition = true;
-    _waveTransitionTimer = 3.0; // 3 seconds of calm before next wave
+    _waveTransitionTimer = SpawnConstants.waveTransitionDuration; // 3 seconds of calm before next wave
     game.wave++;
     // Spawn shield/health drop as a reward at the end of the wave!
     if (game.playerShip != null) {
@@ -106,7 +108,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
     );
     Vector2 velocity =
         (targetPos - spawnPos).normalized() *
-        (50.0 + _random.nextDouble() * 70.0);
+        (SpawnConstants.meteorVelocityMin + _random.nextDouble() * SpawnConstants.meteorVelocityRange);
 
     final meteor = Meteor(
       position: spawnPos,
@@ -133,9 +135,9 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
       spawnPos = Vector2(game.size.x / 2, -120);
     } else {
       double randVal = _random.nextDouble();
-      if (game.wave >= 4 && randVal < 0.25) {
+      if (game.wave >= SpawnConstants.eliteWaveThreshold && randVal < SpawnConstants.eliteSpawnProbabilityThreshold) {
         type = EnemyType.elite;
-      } else if (game.wave >= 2 && randVal < 0.5) {
+      } else if (game.wave >= SpawnConstants.kamikazeWaveThreshold && randVal < SpawnConstants.kamikazeSpawnProbabilityThreshold) {
         type = EnemyType.kamikaze;
       }
       _enemiesSpawnedThisWave++;

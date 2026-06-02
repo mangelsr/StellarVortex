@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
 import '../space_shooter_game.dart';
+import '../game_constants.dart';
 import 'components.dart';
 
 enum EnemyType { scout, kamikaze, elite, boss }
@@ -46,31 +47,31 @@ class EnemyShip extends PositionComponent
     switch (type) {
       case EnemyType.scout:
         spriteName = 'spaceShips_007.png'; // Orange ship
-        size = Vector2.all(42);
-        maxHealth = 30.0;
-        speed = 130.0;
-        scoreValue = 50;
+        size = EnemyConstants.scoutSize;
+        maxHealth = EnemyConstants.scoutMaxHealth;
+        speed = EnemyConstants.scoutSpeed;
+        scoreValue = EnemyConstants.scoutScoreValue;
         break;
       case EnemyType.kamikaze:
         spriteName = 'spaceShips_003.png'; // Red Batwing ship
-        size = Vector2.all(38);
-        maxHealth = 20.0;
-        speed = 250.0;
-        scoreValue = 100;
+        size = EnemyConstants.kamikazeSize;
+        maxHealth = EnemyConstants.kamikazeMaxHealth;
+        speed = EnemyConstants.kamikazeSpeed;
+        scoreValue = EnemyConstants.kamikazeScoreValue;
         break;
       case EnemyType.elite:
         spriteName = 'spaceShips_004.png'; // Green/black ship
-        size = Vector2.all(60);
-        maxHealth = 120.0;
-        speed = 80.0;
-        scoreValue = 250;
+        size = EnemyConstants.eliteSize;
+        maxHealth = EnemyConstants.eliteMaxHealth;
+        speed = EnemyConstants.eliteSpeed;
+        scoreValue = EnemyConstants.eliteScoreValue;
         break;
       case EnemyType.boss:
         spriteName = 'spaceShips_005.png'; // Huge ship
-        size = Vector2.all(120);
-        maxHealth = 600.0 + (game.wave * 150.0); // Health scales with wave
-        speed = 40.0;
-        scoreValue = 1500;
+        size = EnemyConstants.bossSize;
+        maxHealth = EnemyConstants.bossBaseMaxHealth + (game.wave * EnemyConstants.bossHealthScalePerWave); // Health scales with wave
+        speed = EnemyConstants.bossSpeed;
+        scoreValue = EnemyConstants.bossScoreValue;
         break;
     }
 
@@ -132,7 +133,7 @@ class EnemyShip extends PositionComponent
       case EnemyType.scout:
         // Move downwards weaving left and right in a sine wave
         position.y += speed * dt;
-        position.x += sin(_time * 4) * 80.0 * dt;
+        position.x += sin(_time * EnemyConstants.scoutWeaveFrequency) * EnemyConstants.scoutWeaveAmplitude * dt;
         break;
         
       case EnemyType.kamikaze:
@@ -149,7 +150,7 @@ class EnemyShip extends PositionComponent
         if (position.y < game.size.y * 0.25) {
           position.y += speed * dt;
         } else {
-          position.y += (speed * 0.15) * dt; // slow drift
+          position.y += (speed * EnemyConstants.eliteDriftSpeedMultiplier) * dt; // slow drift
           position.x += speed * _horizontalDirection * dt;
           
           // Reverse direction at screen bounds
@@ -189,7 +190,7 @@ class EnemyShip extends PositionComponent
     switch (type) {
       case EnemyType.scout:
         // Fires straight down every 2.2 seconds
-        if (_fireTimer >= 2.2) {
+        if (_fireTimer >= EnemyConstants.scoutFireInterval) {
           _fireTimer = 0;
           _fireBullet(Vector2(0, 1));
         }
@@ -201,7 +202,7 @@ class EnemyShip extends PositionComponent
         
       case EnemyType.elite:
         // Fires a double laser targeting player every 1.8 seconds
-        if (_fireTimer >= 1.8) {
+        if (_fireTimer >= EnemyConstants.eliteFireInterval) {
           _fireTimer = 0;
           final dir = (player.position - position).normalized();
           _fireBullet(dir, isDouble: true);
@@ -210,14 +211,14 @@ class EnemyShip extends PositionComponent
         
       case EnemyType.boss:
         // 1. Regular targeted double laser (every 1.2s)
-        if (_fireTimer >= 1.2) {
+        if (_fireTimer >= EnemyConstants.bossFireInterval) {
           _fireTimer = 0;
           final dir = (player.position - position).normalized();
-          _fireBullet(dir, isDouble: true, dmg: 30.0);
+          _fireBullet(dir, isDouble: true, dmg: EnemyConstants.bossDoubleLaserDamage);
         }
         
         // 2. Special Attack: Radial burst (every 3.8s)
-        if (_specialAttackTimer >= 3.8) {
+        if (_specialAttackTimer >= EnemyConstants.bossSpecialAttackInterval) {
           _specialAttackTimer = 0;
           _fireRadialBurst();
         }
@@ -225,8 +226,8 @@ class EnemyShip extends PositionComponent
     }
   }
 
-  void _fireBullet(Vector2 dir, {bool isDouble = false, double dmg = 20.0}) {
-    final bulletSpeed = 350.0;
+  void _fireBullet(Vector2 dir, {bool isDouble = false, double dmg = EnemyConstants.defaultBulletDamage}) {
+    final bulletSpeed = BulletConstants.enemySpeed;
     
     if (isDouble) {
       // Offset left and right
@@ -258,8 +259,8 @@ class EnemyShip extends PositionComponent
   }
 
   void _fireRadialBurst() {
-    final bulletSpeed = 250.0;
-    final int bulletCount = 12; // 12 bullets forming a circle
+    final bulletSpeed = BulletConstants.enemyRadialSpeed;
+    final int bulletCount = EnemyConstants.bossRadialBulletCount;
     
     for (int i = 0; i < bulletCount; i++) {
       final angle = (2 * pi / bulletCount) * i;
@@ -269,7 +270,7 @@ class EnemyShip extends PositionComponent
         position: position,
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
-        damage: 25.0,
+        damage: EnemyConstants.bossRadialBulletDamage,
       ));
     }
   }
@@ -313,18 +314,21 @@ class EnemyShip extends PositionComponent
     // 2. Add score to game
     game.addScore(scoreValue);
 
-    // 3. Drop power-up on chance (15% for scouts, 30% for elites, 100% for boss)
-    double dropChance = 0.15;
-    if (type == EnemyType.elite) dropChance = 0.35;
-    if (type == EnemyType.boss) dropChance = 1.0;
+    // 3. Drop power-up on chance (15% for scouts, 35% for elites, 100% for boss)
+    double dropChance = EnemyConstants.scoutDropChance;
+    if (type == EnemyType.elite) dropChance = EnemyConstants.eliteDropChance;
+    if (type == EnemyType.boss) dropChance = EnemyConstants.bossDropChance;
 
     if (_random.nextDouble() < dropChance) {
       PowerUpType powerType = PowerUpType.shield;
       double randVal = _random.nextDouble();
       
-      if (randVal < 0.4) {
+      final shieldWeight = EnemyConstants.shieldDropWeight;
+      final weaponWeight = shieldWeight + EnemyConstants.weaponUpgradeDropWeight;
+
+      if (randVal < shieldWeight) {
         powerType = PowerUpType.shield;
-      } else if (randVal < 0.8) {
+      } else if (randVal < weaponWeight) {
         powerType = PowerUpType.weaponUpgrade;
       } else {
         powerType = PowerUpType.fireRate;
@@ -345,10 +349,10 @@ class EnemyShip extends PositionComponent
 
     if (collidedComponent is PlayerShip) {
       // Damage player
-      double collisionDmg = 20.0;
-      if (type == EnemyType.kamikaze) collisionDmg = 35.0;
-      if (type == EnemyType.elite) collisionDmg = 40.0;
-      if (type == EnemyType.boss) collisionDmg = 60.0;
+      double collisionDmg = EnemyConstants.scoutCollisionDamage;
+      if (type == EnemyType.kamikaze) collisionDmg = EnemyConstants.kamikazeCollisionDamage;
+      if (type == EnemyType.elite) collisionDmg = EnemyConstants.eliteCollisionDamage;
+      if (type == EnemyType.boss) collisionDmg = EnemyConstants.bossCollisionDamage;
       
       game.playerHit(collisionDmg);
 

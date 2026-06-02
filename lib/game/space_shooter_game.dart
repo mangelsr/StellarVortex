@@ -8,6 +8,7 @@ import 'game_controls_manager.dart';
 import 'game_session_manager.dart';
 import 'game_state.dart';
 import 'player_ship_type.dart';
+import 'game_constants.dart';
 import 'components/components.dart';
 
 export 'game_state.dart';
@@ -60,8 +61,8 @@ class SpaceShooterGame extends FlameGame
 
     // Reset stats
     score = 0;
-    wave = 1;
-    lives = 3;
+    wave = PlayerConstants.initialWave.toInt();
+    lives = PlayerConstants.initialLives;
     gameTime = 0;
 
     // Clear existing game components (bullets, enemies, meteors, powerups, joysticks, players)
@@ -143,14 +144,14 @@ class SpaceShooterGame extends FlameGame
       playerShip?.removeFromParent();
       playerShip = null;
 
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(Duration(milliseconds: (PlayerConstants.respawnDuration * 1000).toInt()), () {
         if (state == GameState.playing) {
           playerShip = PlayerShip(
             shipType: selectedShipType,
             position: size / 2,
           );
           // Give respawn invulnerability
-          playerShip!.triggerInvulnerability(3.0);
+          playerShip!.triggerInvulnerability(PlayerConstants.respawnInvulnerabilityDuration);
           add(playerShip!);
         }
       });

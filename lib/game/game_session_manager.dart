@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'game_state.dart';
 import 'player_ship_type.dart';
 import 'game_localizations.dart';
+import 'game_constants.dart';
 
 mixin GameSessionManager on FlameGame {
   GameState state = GameState.menu;
@@ -16,8 +17,8 @@ mixin GameSessionManager on FlameGame {
   SharedPreferences? prefs;
   int score = 0;
   int highScore = 0;
-  int wave = 1;
-  int lives = 3;
+  int wave = PlayerConstants.initialWave.toInt();
+  int lives = PlayerConstants.initialLives;
   double gameTime = 0;
 
   Future<void> initSession() async {

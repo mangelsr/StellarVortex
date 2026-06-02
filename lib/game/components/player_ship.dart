@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
 import '../space_shooter_game.dart';
+import '../game_constants.dart';
 import 'components.dart';
 
 class PlayerShip extends PositionComponent
@@ -14,8 +15,8 @@ class PlayerShip extends PositionComponent
   // Health and Shield stats
   late double health;
   late double maxHealth;
-  double shield = 50.0;
-  final double maxShield = 50.0;
+  double shield = PlayerConstants.maxShield;
+  final double maxShield = PlayerConstants.maxShield;
   
   // Timers
   double _fireTimer = 0;
@@ -66,7 +67,7 @@ class PlayerShip extends PositionComponent
     // 3. Shield Bubble Sprite Component
     _shieldSprite = SpriteComponent(
       sprite: game.spaceShooterAtlas.getSprite('spaceEffects_014.png', game.spaceShooterImage),
-      size: size * 1.4,
+      size: size * PlayerConstants.shieldSpriteScale,
       anchor: Anchor.center,
       position: size / 2,
     );
@@ -75,7 +76,7 @@ class PlayerShip extends PositionComponent
 
     // 4. Hitbox for Collision Detection
     // Using a circle hitbox matching the ship body diameter
-    add(CircleHitbox(radius: size.x * 0.4, anchor: Anchor.center, position: size / 2));
+    add(CircleHitbox(radius: size.x * PlayerConstants.hitboxRadiusFactor, anchor: Anchor.center, position: size / 2));
 
     // Initialize health
     maxHealth = shipType.maxHealth;
@@ -93,7 +94,7 @@ class PlayerShip extends PositionComponent
     if (weaponLevel < 3) {
       weaponLevel++;
     }
-    weaponUpgradeTimer = 15.0; // 15 seconds of upgraded firepower
+    weaponUpgradeTimer = PlayerConstants.weaponUpgradeDuration;
   }
 
   /// Restore shield
@@ -135,7 +136,7 @@ class PlayerShip extends PositionComponent
     // Shield flash timer
     if (_shieldFlashTimer > 0) {
       _shieldFlashTimer -= dt;
-      _shieldSprite.opacity = max(0.0, _shieldFlashTimer * 1.5);
+      _shieldSprite.opacity = max(0.0, _shieldFlashTimer / PlayerConstants.shieldFlashDuration);
     } else if (shield > 0 && isInvulnerable) {
       // Keep shield visible during invulnerability if shields are up
       _shieldSprite.opacity = 0.5;
@@ -143,9 +144,9 @@ class PlayerShip extends PositionComponent
       _shieldSprite.opacity = 0;
     }
 
-    // Shield Regeneration (if out of danger for 4+ seconds)
-    if (_timeSinceLastDamage > 4.0 && shield < maxShield) {
-      shield = min(maxShield, shield + 6.0 * dt);
+    // Shield Regeneration (if out of danger for specified duration)
+    if (_timeSinceLastDamage > PlayerConstants.shieldRegenDelay && shield < maxShield) {
+      shield = min(maxShield, shield + PlayerConstants.shieldRegenRate * dt);
     }
 
     // Handle ship controls
@@ -215,21 +216,6 @@ class PlayerShip extends PositionComponent
     if (aimDir == null) {
       // Read mouse position and fire state set by UI wrapper MouseRegion
       // Check if mousePosition is set in game class
-      // In FlameGame, we can define custom parameters on the instance.
-      // (We will make sure space_shooter_game.dart defines mousePosition and isMouseFiring)
-      
-      // Since Dart doesn't allow calling undefined fields, let's cast or dynamically read
-      // But we already declared them or will declare them.
-      // Let's check space_shooter_game.dart: wait, did we declare mousePosition and isMouseFiring?
-      // Ah! We didn't declare mousePosition and isMouseFiring in space_shooter_game.dart yet.
-      // Let's add them to space_shooter_game.dart or declare them as dynamic properties.
-      // Wait, let's declare them in space_shooter_game.dart by editing it, or we can just access them
-      // after editing it.
-      // Let's assume we will add mousePosition and isMouseFiring to SpaceShooterGame.
-      // Actually, we can define:
-      // final mousePosition = Vector2.zero();
-      // bool isMouseFiring = false;
-      // Let's check space_shooter_game.dart - we didn't add them yet, but we will!
     }
 
     // Dynamic mouse control access:
@@ -271,7 +257,7 @@ class PlayerShip extends PositionComponent
 
   void _fireLaser(Vector2 direction) {
     final bulletDir = direction.normalized();
-    final bulletSpeed = 650.0;
+    final bulletSpeed = PlayerConstants.fireSpeed;
 
     // Spawn bullets based on weapon level
     switch (weaponLevel) {
@@ -282,27 +268,27 @@ class PlayerShip extends PositionComponent
           velocity: bulletDir * bulletSpeed,
           isPlayerBullet: true,
         ));
-        // Left bullet (rotated -15 degrees / -0.26 rad)
-        final leftDir = Vector2(bulletDir.x, bulletDir.y)..rotate(-0.26);
+        // Left bullet (rotated spread angle)
+        final leftDir = Vector2(bulletDir.x, bulletDir.y)..rotate(-PlayerConstants.spreadLaserAngle);
         game.add(Bullet(
           position: position + leftDir * (size.y * 0.4),
           velocity: leftDir * bulletSpeed,
           isPlayerBullet: true,
         ));
-        // Right bullet (rotated +15 degrees / +0.26 rad)
-        final rightDir = Vector2(bulletDir.x, bulletDir.y)..rotate(0.26);
+        // Right bullet (rotated spread angle)
+        final rightDir = Vector2(bulletDir.x, bulletDir.y)..rotate(PlayerConstants.spreadLaserAngle);
         game.add(Bullet(
           position: position + rightDir * (size.y * 0.4),
           velocity: rightDir * bulletSpeed,
           isPlayerBullet: true,
         ));
         break;
-
+ 
       case 2: // Double Parallel Laser
         // Fire two parallel lasers offset left and right
         final perp = Vector2(-bulletDir.y, bulletDir.x)..normalize();
-        final offsetLeft = perp * 13;
-        final offsetRight = -perp * 13;
+        final offsetLeft = perp * PlayerConstants.doubleLaserOffset;
+        final offsetRight = -perp * PlayerConstants.doubleLaserOffset;
 
         game.add(Bullet(
           position: position + bulletDir * (size.y * 0.3) + offsetLeft,
@@ -327,14 +313,12 @@ class PlayerShip extends PositionComponent
     }
   }
 
-
-
   /// Take damage from impact
   void takeDamage(double amount) {
     if (isInvulnerable) return;
 
     _timeSinceLastDamage = 0;
-    _shieldFlashTimer = 0.6; // Trigger shield visual flash
+    _shieldFlashTimer = PlayerConstants.shieldFlashDuration; // Trigger shield visual flash
 
     final hadShield = shield > 0;
 
@@ -369,8 +353,8 @@ class PlayerShip extends PositionComponent
         ));
       }
 
-      // Invulnerability frames on taking hit (1.2 seconds)
-      triggerInvulnerability(1.2);
+      // Invulnerability frames on taking hit
+      triggerInvulnerability(PlayerConstants.hitInvulnerabilityDuration);
     }
   }
 

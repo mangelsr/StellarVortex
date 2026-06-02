@@ -1,9 +1,9 @@
 import 'dart:math';
-import 'package:flutter/material.dart' show Color;
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
 import '../space_shooter_game.dart';
+import '../game_constants.dart';
 import 'components.dart';
 
 enum PowerUpType { shield, weaponUpgrade, fireRate }
@@ -12,14 +12,14 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
   final PowerUpType type;
   
   double _time = 0;
-  final double driftSpeed = 70.0;
+  final double driftSpeed = PowerUpConstants.driftSpeed;
 
   PowerUp({
     required super.position,
     required this.type,
   }) : super(
           anchor: Anchor.center,
-          size: Vector2.all(32),
+          size: PowerUpConstants.size,
         );
 
   @override
@@ -40,7 +40,7 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
     sprite = game.spaceShooterAtlas.getSprite(spriteName, game.spaceShooterImage);
 
     // Add hitbox
-    add(CircleHitbox(radius: size.x * 0.45, anchor: Anchor.center, position: size / 2));
+    add(CircleHitbox(radius: size.x * PowerUpConstants.hitboxRadiusFactor, anchor: Anchor.center, position: size / 2));
   }
 
   @override
@@ -50,10 +50,10 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
 
     // Drifts down and sways side-to-side
     position.y += driftSpeed * dt;
-    position.x += sin(_time * 3.5) * 25.0 * dt;
+    position.x += sin(_time * PowerUpConstants.swayFrequency) * PowerUpConstants.swayAmplitude * dt;
 
     // Remove if off bottom of screen
-    if (position.y > game.size.y + 50) {
+    if (position.y > game.size.y + PowerUpConstants.offscreenBoundary) {
       removeFromParent();
     }
   }
@@ -68,22 +68,13 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
       // Apply Power-up effects
       switch (type) {
         case PowerUpType.shield:
-          collidedComponent.restoreShield(25.0);
+          collidedComponent.restoreShield(PowerUpConstants.shieldRestoreAmount);
           break;
         case PowerUpType.weaponUpgrade:
           collidedComponent.upgradeWeapon();
           break;
         case PowerUpType.fireRate:
           // We can grant double fire rate on the player ship
-          // By reducing the fireInterval locally on the player ship for a limited time!
-          // Let's implement that on the player ship class dynamically
-          // Or just decrease the fire interval. Let's do that!
-          // Actually, we can trigger double fire rate by adding a multiplier to player ship
-          // Let's make player fire interval double speed by adjusting it.
-          // Wait, let's see. In PlayerShip update: we can decrease the fireInterval.
-          // Let's make it easy: let's declare a fireRateMultiplier in PlayerShip!
-          // We can call a method on other to apply fire rate boost:
-          // other.applyFireRateBoost(10.0);
           break;
       }
 
@@ -92,11 +83,11 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
         position: position,
         size: size * 1.5,
         isSparkOnly: true,
-        tintColor: const Color(0xFFFFD700), // Golden sparkle
+        tintColor: PowerUpConstants.collectionSparkColor,
       ));
 
       // Plus points for picking up!
-      game.addScore(150);
+      game.addScore(PowerUpConstants.pickupScore);
 
       removeFromParent();
     }

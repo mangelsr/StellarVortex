@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flame/components.dart';
+
 import '../space_shooter_game.dart';
+import '../game_constants.dart';
 
 class Star {
   double x;
@@ -22,7 +24,7 @@ class Star {
 class StarfieldBackground extends Component with HasGameReference<SpaceShooterGame> {
   final List<Star> _stars = [];
   final Random _random = Random();
-  final int _starCount = 120;
+  final int _starCount = BackgroundConstants.starCount;
 
   @override
   Future<void> onLoad() async {
@@ -41,21 +43,21 @@ class StarfieldBackground extends Component with HasGameReference<SpaceShooterGa
     double speed;
     Color color;
 
-    if (layerRand < 0.65) {
+    if (layerRand < BackgroundConstants.layer1Ratio) {
       // 1. Slow, small background stars (deep space)
-      size = 0.5 + _random.nextDouble() * 0.8;
-      speed = 12.0 + _random.nextDouble() * 10.0;
-      color = Color.fromRGBO(255, 255, 255, 0.3 + _random.nextDouble() * 0.2);
-    } else if (layerRand < 0.90) {
+      size = BackgroundConstants.layer1SizeMin + _random.nextDouble() * BackgroundConstants.layer1SizeRange;
+      speed = BackgroundConstants.layer1SpeedMin + _random.nextDouble() * BackgroundConstants.layer1SpeedRange;
+      color = Color.fromRGBO(255, 255, 255, BackgroundConstants.layer1OpacityMin + _random.nextDouble() * BackgroundConstants.layer1OpacityRange);
+    } else if (layerRand < BackgroundConstants.layer2Ratio) {
       // 2. Medium speed, medium size midground stars
-      size = 1.3 + _random.nextDouble() * 1.0;
-      speed = 28.0 + _random.nextDouble() * 15.0;
-      color = Color.fromRGBO(210, 230, 255, 0.55 + _random.nextDouble() * 0.25);
+      size = BackgroundConstants.layer2SizeMin + _random.nextDouble() * BackgroundConstants.layer2SizeRange;
+      speed = BackgroundConstants.layer2SpeedMin + _random.nextDouble() * BackgroundConstants.layer2SpeedRange;
+      color = Color.fromRGBO(210, 230, 255, BackgroundConstants.layer2OpacityMin + _random.nextDouble() * BackgroundConstants.layer2OpacityRange);
     } else {
       // 3. Fast, larger foreground stars (closer celestial dust)
-      size = 2.4 + _random.nextDouble() * 1.2;
-      speed = 55.0 + _random.nextDouble() * 30.0;
-      color = Color.fromRGBO(160, 210, 255, 0.8 + _random.nextDouble() * 0.2);
+      size = BackgroundConstants.layer3SizeMin + _random.nextDouble() * BackgroundConstants.layer3SizeRange;
+      speed = BackgroundConstants.layer3SpeedMin + _random.nextDouble() * BackgroundConstants.layer3SpeedRange;
+      color = Color.fromRGBO(160, 210, 255, BackgroundConstants.layer3OpacityMin + _random.nextDouble() * BackgroundConstants.layer3OpacityRange);
     }
 
     return Star(
@@ -84,8 +86,8 @@ class StarfieldBackground extends Component with HasGameReference<SpaceShooterGa
 
     for (final star in _stars) {
       // Standard downward drift plus reactive movement opposite to player ship velocity
-      star.y += (star.speed - playerVy * 0.15) * dt;
-      star.x -= (playerVx * 0.12) * dt;
+      star.y += (star.speed - playerVy * BackgroundConstants.playerParallaxFactorY) * dt;
+      star.x -= (playerVx * BackgroundConstants.playerParallaxFactorX) * dt;
 
       // Wrap around vertically
       if (star.y > screenHeight) {

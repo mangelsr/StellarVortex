@@ -2,7 +2,9 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart' show HSLColor, Colors;
 import 'package:flame/components.dart';
+
 import '../space_shooter_game.dart';
+import '../game_constants.dart';
 
 class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShooterGame> {
   late final Image sphereImage;
@@ -47,7 +49,7 @@ class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShoo
     sphereColor = hsl.toColor();
 
     // 6. Select a random noise overlay configuration
-    final noiseOpacity = 0.2 + random.nextDouble() * 0.35; // 0.2 to 0.55 opacity
+    final noiseOpacity = BackgroundConstants.planetNoiseOpacityMin + random.nextDouble() * BackgroundConstants.planetNoiseOpacityRange; // 0.2 to 0.55 opacity
     if (random.nextBool()) {
       // Dark details (continents, oceans, craters)
       noiseColorFilterColor = Colors.black.withValues(alpha: noiseOpacity);
@@ -59,13 +61,13 @@ class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShoo
     }
 
     // 7. Parallax drifting speed (4.0 to 15.0 px/s)
-    driftSpeed = 4.0 + random.nextDouble() * 11.0;
+    driftSpeed = BackgroundConstants.planetDriftSpeedMin + random.nextDouble() * BackgroundConstants.planetDriftSpeedRange;
 
     // 8. Planet texture rotation speed (0.02 to 0.10 rad/s)
-    rotationSpeed = (0.02 + random.nextDouble() * 0.08) * (random.nextBool() ? 1.0 : -1.0);
+    rotationSpeed = (BackgroundConstants.planetRotationSpeedMin + random.nextDouble() * BackgroundConstants.planetRotationSpeedRange) * (random.nextBool() ? 1.0 : -1.0);
 
     // 9. Set size: radius between 35 and 110 pixels (diameter 70 to 220 pixels)
-    final radius = 35.0 + random.nextDouble() * 75.0;
+    final radius = BackgroundConstants.planetRadiusMin + random.nextDouble() * BackgroundConstants.planetRadiusRange;
     size = Vector2.all(radius * 2);
   }
 
@@ -82,8 +84,8 @@ class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShoo
     }
 
     // Move downwards + apply subtle parallax offset based on player movement
-    position.y += (driftSpeed - playerVy * 0.05) * dt;
-    position.x -= (playerVx * 0.05) * dt;
+    position.y += (driftSpeed - playerVy * BackgroundConstants.planetPlayerParallaxY) * dt;
+    position.x -= (playerVx * BackgroundConstants.planetPlayerParallaxX) * dt;
 
     // Slowly rotate clouds/textures
     _rotationAngle += rotationSpeed * dt;

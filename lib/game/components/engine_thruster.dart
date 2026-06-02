@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 
+import '../game_constants.dart';
+
 class EngineThruster extends PositionComponent {
   final bool Function() isMoving;
   final Random _random = Random();
@@ -14,7 +16,7 @@ class EngineThruster extends PositionComponent {
     required this.isMoving,
   }) : super(
           anchor: Anchor.topCenter,
-          size: Vector2(20, 40),
+          size: ThrusterConstants.size,
         );
 
   @override
@@ -31,34 +33,34 @@ class EngineThruster extends PositionComponent {
     _spawnTimer += dt;
     final moving = isMoving();
     // Spawn rate: higher when moving
-    final spawnInterval = moving ? 0.015 : 0.04;
+    final spawnInterval = moving ? ThrusterConstants.spawnIntervalMoving : ThrusterConstants.spawnIntervalIdle;
     
     if (_spawnTimer >= spawnInterval) {
       _spawnTimer = 0;
       
       // Spawn 1 to 2 particles at a time
-      final count = moving ? 2 : 1;
+      final count = moving ? ThrusterConstants.spawnCountMoving : ThrusterConstants.spawnCountIdle;
       for (int i = 0; i < count; i++) {
         // Eject particles downwards (positive Y direction in local coordinates)
-        final angleOffset = (_random.nextDouble() - 0.5) * 0.3; // sway angle
+        final angleOffset = (_random.nextDouble() - 0.5) * ThrusterConstants.swayAngleLimit; // sway angle
         final speed = moving 
-            ? 120.0 + _random.nextDouble() * 80.0 
-            : 40.0 + _random.nextDouble() * 40.0;
+            ? ThrusterConstants.speedMovingBase + _random.nextDouble() * ThrusterConstants.speedMovingRange 
+            : ThrusterConstants.speedIdleBase + _random.nextDouble() * ThrusterConstants.speedIdleRange;
         
         final velocity = Vector2(sin(angleOffset) * speed, cos(angleOffset) * speed);
         
         // Spawn slightly offset horizontally at the nozzle center (size.x / 2)
-        final startX = size.x / 2 + (_random.nextDouble() - 0.5) * 6.0;
+        final startX = size.x / 2 + (_random.nextDouble() - 0.5) * ThrusterConstants.nozzleOffsetRange;
         
         _particles.add(_EngineParticle(
           position: Vector2(startX, 0),
           velocity: velocity,
           maxLifetime: moving 
-              ? 0.22 + _random.nextDouble() * 0.12 
-              : 0.15 + _random.nextDouble() * 0.08,
+              ? ThrusterConstants.lifetimeMovingBase + _random.nextDouble() * ThrusterConstants.lifetimeMovingRange 
+              : ThrusterConstants.lifetimeIdleBase + _random.nextDouble() * ThrusterConstants.lifetimeIdleRange,
           startSize: moving 
-              ? 6.0 + _random.nextDouble() * 4.0 
-              : 4.0 + _random.nextDouble() * 3.0,
+              ? ThrusterConstants.startSizeMovingBase + _random.nextDouble() * ThrusterConstants.startSizeMovingRange 
+              : ThrusterConstants.startSizeIdleBase + _random.nextDouble() * ThrusterConstants.startSizeIdleRange,
         ));
       }
     }

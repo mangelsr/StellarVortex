@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
 import '../space_shooter_game.dart';
+import '../game_constants.dart';
 import 'components.dart';
 
 enum MeteorSize { large, medium, small }
@@ -36,29 +37,29 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
     // 2. Set stats based on size
     switch (sizeType) {
       case MeteorSize.large:
-        size = Vector2.all(60);
-        maxHealth = 70.0;
-        scoreValue = 40;
+        size = MeteorConstants.largeSize;
+        maxHealth = MeteorConstants.largeMaxHealth;
+        scoreValue = MeteorConstants.largeScoreValue;
         break;
       case MeteorSize.medium:
-        size = Vector2.all(34);
-        maxHealth = 30.0;
-        scoreValue = 20;
+        size = MeteorConstants.mediumSize;
+        maxHealth = MeteorConstants.mediumMaxHealth;
+        scoreValue = MeteorConstants.mediumScoreValue;
         break;
       case MeteorSize.small:
-        size = Vector2.all(17);
-        maxHealth = 10.0;
-        scoreValue = 10;
+        size = MeteorConstants.smallSize;
+        maxHealth = MeteorConstants.smallMaxHealth;
+        scoreValue = MeteorConstants.smallScoreValue;
         break;
     }
     
     health = maxHealth;
     
     // Random spin direction and speed
-    rotationSpeed = (0.5 + _random.nextDouble() * 1.5) * (_random.nextBool() ? 1.0 : -1.0);
+    rotationSpeed = (MeteorConstants.minRotationSpeed + _random.nextDouble() * MeteorConstants.rotationSpeedRange) * (_random.nextBool() ? 1.0 : -1.0);
 
     // 3. Add circular hitbox
-    add(CircleHitbox(radius: size.x * 0.46, anchor: Anchor.center, position: size / 2));
+    add(CircleHitbox(radius: size.x * MeteorConstants.hitboxRadiusFactor, anchor: Anchor.center, position: size / 2));
   }
 
   @override
@@ -69,10 +70,11 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
     angle += rotationSpeed * dt;
 
     // Cleanup when off-screen
-    if (position.y < -120 ||
-        position.y > game.size.y + 120 ||
-        position.x < -120 ||
-        position.x > game.size.x + 120) {
+    final boundary = MeteorConstants.offscreenBoundary;
+    if (position.y < -boundary ||
+        position.y > game.size.y + boundary ||
+        position.x < -boundary ||
+        position.x > game.size.x + boundary) {
       removeFromParent();
     }
   }
@@ -114,10 +116,10 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
 
   void _spawnSplitMeteors(MeteorSize newSize) {
     // Spawn two smaller meteors drifting outwards at 30 degree angles from parent
-    final speed = velocity.length * 1.35; // speed up smaller pieces
+    final speed = velocity.length * MeteorConstants.splitSpeedMultiplier; // speed up smaller pieces
     
-    final dir1 = velocity.normalized()..rotate(0.5); // rotate roughly 30 deg
-    final dir2 = velocity.normalized()..rotate(-0.5);
+    final dir1 = velocity.normalized()..rotate(MeteorConstants.splitAngleRotation);
+    final dir2 = velocity.normalized()..rotate(-MeteorConstants.splitAngleRotation);
 
     game.add(Meteor(
       position: position.clone(),
@@ -140,9 +142,9 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
 
     if (collidedComponent is PlayerShip) {
       // Damage player
-      double collisionDmg = 15.0;
-      if (sizeType == MeteorSize.medium) collisionDmg = 25.0;
-      if (sizeType == MeteorSize.large) collisionDmg = 45.0;
+      double collisionDmg = MeteorConstants.smallCollisionDamage;
+      if (sizeType == MeteorSize.medium) collisionDmg = MeteorConstants.mediumCollisionDamage;
+      if (sizeType == MeteorSize.large) collisionDmg = MeteorConstants.largeCollisionDamage;
 
       game.playerHit(collisionDmg);
 
