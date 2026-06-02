@@ -1,4 +1,4 @@
-import 'player_ship_type.dart';
+import '../models/player_ship_type.dart';
 
 enum GameLanguage {
   en,

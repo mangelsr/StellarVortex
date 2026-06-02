@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 
-import '../space_shooter_game.dart';
+import '../../space_shooter_game.dart';
 
 class ExplosionParticle extends PositionComponent with HasGameReference<SpaceShooterGame> {
   final bool isSparkOnly;

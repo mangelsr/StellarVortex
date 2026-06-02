@@ -2,8 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flame/components.dart';
 
-import '../space_shooter_game.dart';
-import '../game_constants.dart';
+import '../../space_shooter_game.dart';
+import '../../game_constants.dart';
 
 class Star {
   double x;

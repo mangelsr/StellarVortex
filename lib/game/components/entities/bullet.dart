@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
-import '../space_shooter_game.dart';
-import '../game_constants.dart';
-import 'components.dart';
+import '../../space_shooter_game.dart';
+import '../../game_constants.dart';
+import '../components.dart';
 
 class Bullet extends PositionComponent with CollisionCallbacks, HasGameReference<SpaceShooterGame> {
   final Vector2 velocity;

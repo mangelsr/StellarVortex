@@ -3,7 +3,7 @@ import 'dart:math' show min;
 import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
-import '../game/game_localizations.dart';
+import '../game/utils/game_localizations.dart';
 
 class SettingsMenu extends StatelessWidget {
   final SpaceShooterGame game;

@@ -2,9 +2,9 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
-import '../space_shooter_game.dart';
-import '../game_constants.dart';
-import 'components.dart';
+import '../../space_shooter_game.dart';
+import '../../game_constants.dart';
+import '../components.dart';
 
 enum PowerUpType { shield, weaponUpgrade, fireRate }
 

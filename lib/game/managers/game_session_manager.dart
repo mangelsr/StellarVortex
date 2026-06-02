@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart' show ValueNotifier, debugPrint;
 import 'package:flame/game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'game_state.dart';
-import 'player_ship_type.dart';
-import 'game_localizations.dart';
-import 'game_constants.dart';
+import '../models/game_state.dart';
+import '../models/player_ship_type.dart';
+import '../utils/game_localizations.dart';
+import '../game_constants.dart';
 
 mixin GameSessionManager on FlameGame {
   GameState state = GameState.menu;

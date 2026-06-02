@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' show EdgeInsets;
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart' show HudButtonComponent;
-import 'xml_spritesheet_parser.dart';
+import '../utils/xml_spritesheet_parser.dart';
 
 mixin GameControlsManager on FlameGame {
   JoystickComponent? joystickLeft;

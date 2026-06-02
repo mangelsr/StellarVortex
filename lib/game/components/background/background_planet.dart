@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart' show HSLColor, Colors;
 import 'package:flame/components.dart';
 
-import '../space_shooter_game.dart';
-import '../game_constants.dart';
+import '../../space_shooter_game.dart';
+import '../../game_constants.dart';
 
 class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShooterGame> {
   late final Image sphereImage;

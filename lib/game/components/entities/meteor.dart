@@ -3,9 +3,9 @@ import 'package:flutter/material.dart' show Color;
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
-import '../space_shooter_game.dart';
-import '../game_constants.dart';
-import 'components.dart';
+import '../../space_shooter_game.dart';
+import '../../game_constants.dart';
+import '../components.dart';
 
 enum MeteorSize { large, medium, small }
 

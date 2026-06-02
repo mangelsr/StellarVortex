@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 
-import '../game_constants.dart';
+import '../../game_constants.dart';
 
 class EngineThruster extends PositionComponent {
   final bool Function() isMoving;

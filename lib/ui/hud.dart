@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../game/space_shooter_game.dart';
-import '../game/game_localizations.dart';
+import '../game/utils/game_localizations.dart';
 
 class GameHud extends StatefulWidget {
   final SpaceShooterGame game;

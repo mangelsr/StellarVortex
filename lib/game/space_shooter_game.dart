@@ -3,16 +3,16 @@ import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 
-import 'game_asset_loader.dart';
-import 'game_controls_manager.dart';
-import 'game_session_manager.dart';
-import 'game_state.dart';
-import 'player_ship_type.dart';
+import 'utils/game_asset_loader.dart';
+import 'managers/game_controls_manager.dart';
+import 'managers/game_session_manager.dart';
+import 'models/game_state.dart';
+import 'models/player_ship_type.dart';
 import 'game_constants.dart';
 import 'components/components.dart';
 
-export 'game_state.dart';
-export 'player_ship_type.dart';
+export 'models/game_state.dart';
+export 'models/player_ship_type.dart';
 
 class SpaceShooterGame extends FlameGame
     with

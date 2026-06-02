@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 
-import '../space_shooter_game.dart';
-import '../game_constants.dart';
-import 'components.dart';
+import '../../space_shooter_game.dart';
+import '../../game_constants.dart';
+import '../components.dart';
 
 class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
   // Timers for spawning
