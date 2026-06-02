@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/material.dart' show Color;
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
@@ -91,6 +92,7 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
       position: position,
       size: size * 1.2,
       isMeteorExplosion: true,
+      tintColor: const Color(0xFF8D6E63), // Brownish dust/rock color
     ));
 
     // 2. Reward score

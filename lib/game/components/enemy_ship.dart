@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/material.dart' show Color;
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
@@ -285,10 +286,28 @@ class EnemyShip extends PositionComponent
   }
 
   void _explode() {
+    // Determine color based on enemy type
+    Color explosionColor;
+    switch (type) {
+      case EnemyType.scout:
+        explosionColor = const Color(0xFFFF9100); // Orange
+        break;
+      case EnemyType.kamikaze:
+        explosionColor = const Color(0xFFFF1744); // Red
+        break;
+      case EnemyType.elite:
+        explosionColor = const Color(0xFF00E676); // Lime Green
+        break;
+      case EnemyType.boss:
+        explosionColor = const Color(0xFFD500F9); // Magenta/Purple
+        break;
+    }
+
     // 1. Particle Explosion
     game.add(ExplosionParticle(
       position: position,
       size: size * 1.3,
+      tintColor: explosionColor,
     ));
 
     // 2. Add score to game
@@ -335,10 +354,16 @@ class EnemyShip extends PositionComponent
 
       // Colliding with player destroys scouts and kamikazes instantly
       if (type == EnemyType.scout || type == EnemyType.kamikaze) {
+        // Determine color
+        final Color explosionColor = type == EnemyType.kamikaze
+            ? const Color(0xFFFF1744)
+            : const Color(0xFFFF9100);
+
         // Explode and remove, but don't add score (since it crashed)
         game.add(ExplosionParticle(
           position: position,
           size: size * 1.2,
+          tintColor: explosionColor,
         ));
         removeFromParent();
       }

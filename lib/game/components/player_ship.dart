@@ -357,6 +357,8 @@ class PlayerShip extends PositionComponent
     _timeSinceLastDamage = 0;
     _shieldFlashTimer = 0.6; // Trigger shield visual flash
 
+    final hadShield = shield > 0;
+
     if (shield > 0) {
       shield -= amount;
       if (shield < 0) {
@@ -373,6 +375,21 @@ class PlayerShip extends PositionComponent
       _explode();
       game.playerDestroyed();
     } else {
+      // Spawn hit explosion depending on whether shields absorbed the hit
+      if (hadShield) {
+        game.add(ExplosionParticle(
+          position: position.clone(),
+          size: size * 1.2,
+          isShieldHit: true,
+        ));
+      } else {
+        game.add(ExplosionParticle(
+          position: position.clone(),
+          size: size * 1.2,
+          isHullHit: true,
+        ));
+      }
+
       // Invulnerability frames on taking hit (1.2 seconds)
       triggerInvulnerability(1.2);
     }
@@ -383,6 +400,7 @@ class PlayerShip extends PositionComponent
     game.add(ExplosionParticle(
       position: position,
       size: size * 1.5,
+      tintColor: const Color(0xFF00E5FF), // Cyan/Blue futuristic tech explosion
     ));
   }
 }

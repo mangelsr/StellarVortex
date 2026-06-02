@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/material.dart' show Color;
 import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 
@@ -91,6 +92,7 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
         position: position,
         size: size * 1.5,
         isSparkOnly: true,
+        tintColor: const Color(0xFFFFD700), // Golden sparkle
       ));
 
       // Plus points for picking up!

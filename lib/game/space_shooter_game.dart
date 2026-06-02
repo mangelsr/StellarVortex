@@ -1,17 +1,11 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/material.dart' show EdgeInsets;
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform, ValueNotifier;
 import 'package:flame/game.dart';
-import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/input.dart' show HudButtonComponent;
-import 'dart:ui' show Image, Paint, Color, ColorFilter, BlendMode;
 
-import 'xml_spritesheet_parser.dart';
-import 'game_localizations.dart';
+import 'game_asset_loader.dart';
+import 'game_controls_manager.dart';
+import 'game_session_manager.dart';
 import 'game_state.dart';
 import 'player_ship_type.dart';
 import 'components/components.dart';
@@ -24,82 +18,26 @@ class SpaceShooterGame extends FlameGame
         HasCollisionDetection,
         HasKeyboardHandlerComponents,
         DragCallbacks,
-        TapCallbacks {
-  late XmlSpriteSheet spaceShooterAtlas;
-  late XmlSpriteSheet mobileControlsAtlas;
-
-  late Image spaceShooterImage;
-  late Image mobileControlsImage;
-
-  GameState state = GameState.menu;
-  final ValueNotifier<GameLanguage> languageNotifier = ValueNotifier(
-    GameLanguage.en,
-  );
-  GameLocalizations get loc => GameLocalizations(languageNotifier.value);
-  PlayerShipType selectedShipType = PlayerShipType.vanguard;
+        TapCallbacks,
+        GameAssetLoader,
+        GameControlsManager,
+        GameSessionManager {
 
   PlayerShip? playerShip;
   late StarfieldBackground starfield;
   late SpawnManager spawnManager;
 
-  JoystickComponent? joystickLeft;
-  JoystickComponent? joystickRight;
-  HudButtonComponent? fireButton;
-
-  bool isFiringButtonDown = false;
-
-  bool forceMobileControls =
-      false; // Set to true to test mobile controls on touchscreen laptops
-
-  bool get showMobileControls =>
-      forceMobileControls ||
-      defaultTargetPlatform == TargetPlatform.android ||
-      defaultTargetPlatform == TargetPlatform.iOS;
-
-  Vector2? mousePosition;
-  bool isMouseFiring = false;
-
-  int score = 0;
-  int highScore = 0;
-  int wave = 1;
-  int lives = 3;
-  double gameTime = 0;
-
   final _random = Random();
 
   @override
   Future<void> onLoad() async {
-    // 1. Setup asset prefix
-    images.prefix = 'assets/';
+    // 0. Initialize session and load settings
+    await initSession();
 
-    // 2. Load spritesheet images
-    spaceShooterImage = await images.load('spaceShooter_spritesheet.png');
-    mobileControlsImage = await images.load('mobile_controls.png');
+    // 1. Load game assets
+    await loadGameAssets();
 
-    // 3. Load XML data
-    final spaceXml = await rootBundle.loadString(
-      'assets/spaceShooter_spritesheet.xml',
-    );
-    spaceShooterAtlas = XmlSpriteSheet.parse(spaceXml);
-
-    final controlsXml = await rootBundle.loadString(
-      'assets/mobile_controls.xml',
-    );
-    mobileControlsAtlas = XmlSpriteSheet.parse(controlsXml);
-
-    // Preload planet parts
-    for (int i = 0; i < 3; i++) {
-      await images.load('planet_parts/sphere$i.png');
-    }
-    for (int i = 0; i < 28; i++) {
-      final numStr = i.toString().padLeft(2, '0');
-      await images.load('planet_parts/noise$numStr.png');
-    }
-    for (int i = 0; i < 11; i++) {
-      await images.load('planet_parts/light$i.png');
-    }
-
-    // 4. Add parallax background (always present, even in menus)
+    // 2. Add parallax background (always present, even in menus)
     starfield = StarfieldBackground();
     await add(starfield);
 
@@ -110,7 +48,7 @@ class SpaceShooterGame extends FlameGame
     // Spawn initial planets on load
     spawnManager.spawnInitialPlanets();
 
-    // 5. Open Main Menu Overlay
+    // 3. Open Main Menu Overlay
     overlays.add('startMenu');
   }
 
@@ -118,6 +56,7 @@ class SpaceShooterGame extends FlameGame
   void startGame(PlayerShipType shipType) {
     selectedShipType = shipType;
     state = GameState.playing;
+    resumeEngine(); // Ensure game loop is active
 
     // Reset stats
     score = 0;
@@ -149,7 +88,7 @@ class SpaceShooterGame extends FlameGame
     add(playerShip!);
 
     // Add Virtual Joysticks
-    _setupJoysticks();
+    setupJoysticks(mobileControlsAtlas, mobileControlsImage);
 
     // Prepare first wave
     spawnManager.startWave();
@@ -158,117 +97,9 @@ class SpaceShooterGame extends FlameGame
     overlays.remove('startMenu');
     overlays.remove('shipSelectionMenu');
     overlays.remove('gameOverMenu');
+    overlays.remove('pauseMenu');
+    overlays.remove('settingsMenu');
     overlays.add('hud');
-  }
-
-  void _setupJoysticks() {
-    if (!showMobileControls) return;
-
-    joystickLeft = JoystickComponent(
-      knob: SpriteComponent(
-        sprite: mobileControlsAtlas.getSprite(
-          'joystick_circle_nub_a',
-          mobileControlsImage,
-        ),
-        size: Vector2.all(40),
-        paint: Paint()
-          ..color =
-              const Color(0x77FFFFFF) // Translucent base
-          ..colorFilter = const ColorFilter.mode(
-            Color(0xFF00E5FF), // Pure Cyan tint
-            BlendMode.srcATop,
-          ),
-      ),
-      background: SpriteComponent(
-        sprite: mobileControlsAtlas.getSprite(
-          'joystick_circle_pad_a',
-          mobileControlsImage,
-        ),
-        size: Vector2.all(100),
-        paint: Paint()
-          ..color =
-              const Color(0x22FFFFFF) // Highly translucent base
-          ..colorFilter = const ColorFilter.mode(
-            Color(0xFF00E5FF), // Pure Cyan tint
-            BlendMode.srcATop,
-          ),
-      ),
-      margin: const EdgeInsets.only(left: 30, bottom: 40),
-    );
-
-    joystickRight = JoystickComponent(
-      knob: SpriteComponent(
-        sprite: mobileControlsAtlas.getSprite(
-          'joystick_circle_nub_c',
-          mobileControlsImage,
-        ),
-        size: Vector2.all(40),
-        paint: Paint()
-          ..color =
-              const Color(0x77FFFFFF) // Translucent base
-          ..colorFilter = const ColorFilter.mode(
-            Color(0xFFFFB300), // Pure Amber tint
-            BlendMode.srcATop,
-          ),
-      ),
-      background: SpriteComponent(
-        sprite: mobileControlsAtlas.getSprite(
-          'joystick_circle_pad_c',
-          mobileControlsImage,
-        ),
-        size: Vector2.all(100),
-        paint: Paint()
-          ..color =
-              const Color(0x22FFFFFF) // Highly translucent base
-          ..colorFilter = const ColorFilter.mode(
-            Color(0xFFFFB300), // Pure Amber tint
-            BlendMode.srcATop,
-          ),
-      ),
-      margin: const EdgeInsets.only(right: 30, bottom: 40),
-    );
-
-    fireButton = HudButtonComponent(
-      button: SpriteComponent(
-        sprite: mobileControlsAtlas.getSprite(
-          'button_circle',
-          mobileControlsImage,
-        ),
-        size: Vector2.all(80),
-        paint: Paint()
-          ..color =
-              const Color(0x33FFFFFF) // Highly translucent base
-          ..colorFilter = const ColorFilter.mode(
-            Color(0xFFFF3D00), // Pure Red-Orange tint
-            BlendMode.srcATop,
-          ),
-      ),
-      buttonDown: SpriteComponent(
-        sprite: mobileControlsAtlas.getSprite(
-          'button_circle',
-          mobileControlsImage,
-        ),
-        size: Vector2.all(80),
-        paint: Paint()
-          ..color =
-              const Color(0x88FFFFFF) // Translucent base when pressed
-          ..colorFilter = const ColorFilter.mode(
-            Color(0xFFFF3D00), // Pure Red-Orange tint
-            BlendMode.srcATop,
-          ),
-      ),
-      margin: const EdgeInsets.only(right: 150, bottom: 50),
-      onPressed: () {
-        isFiringButtonDown = true;
-      },
-      onReleased: () {
-        isFiringButtonDown = false;
-      },
-    );
-
-    camera.viewport.add(joystickLeft!);
-    camera.viewport.add(joystickRight!);
-    camera.viewport.add(fireButton!);
   }
 
   void _clearPlayableComponents() {
@@ -283,15 +114,9 @@ class SpaceShooterGame extends FlameGame
       }
     }
     // Remove HUD controls from the camera viewport
-    joystickLeft?.removeFromParent();
-    joystickRight?.removeFromParent();
-    fireButton?.removeFromParent();
+    clearJoysticks();
 
     playerShip = null;
-    joystickLeft = null;
-    joystickRight = null;
-    fireButton = null;
-    isFiringButtonDown = false;
   }
 
   @override
@@ -335,6 +160,7 @@ class SpaceShooterGame extends FlameGame
 
       if (score > highScore) {
         highScore = score;
+        saveHighScore();
       }
 
       // Remove joysticks and play components
@@ -342,13 +168,6 @@ class SpaceShooterGame extends FlameGame
 
       overlays.remove('hud');
       overlays.add('gameOverMenu');
-    }
-  }
-
-  void addScore(int points) {
-    score += points;
-    if (score > highScore) {
-      highScore = score;
     }
   }
 
