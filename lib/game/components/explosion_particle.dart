@@ -442,5 +442,11 @@ class _ExplosionShockwave {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0 * (1.0 - progress) + 0.5;
     canvas.drawCircle(Offset.zero, radius, ringPaint);
+    
+    // Inner Glow
+    final glowPaint = Paint()
+      ..color = color.withAlpha((opacity * 0.15 * 255).toInt())
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset.zero, radius, glowPaint);
   }
 }

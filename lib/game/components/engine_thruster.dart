@@ -1,0 +1,130 @@
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flame/components.dart';
+
+class EngineThruster extends PositionComponent {
+  final bool Function() isMoving;
+  final Random _random = Random();
+  final List<_EngineParticle> _particles = [];
+  
+  double _spawnTimer = 0;
+
+  EngineThruster({
+    required super.position,
+    required this.isMoving,
+  }) : super(
+          anchor: Anchor.topCenter,
+          size: Vector2(20, 40),
+        );
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    // 1. Update existing particles
+    _particles.removeWhere((p) {
+      p.update(dt);
+      return p.lifetime >= p.maxLifetime;
+    });
+
+    // 2. Spawn new particles
+    _spawnTimer += dt;
+    final moving = isMoving();
+    // Spawn rate: higher when moving
+    final spawnInterval = moving ? 0.015 : 0.04;
+    
+    if (_spawnTimer >= spawnInterval) {
+      _spawnTimer = 0;
+      
+      // Spawn 1 to 2 particles at a time
+      final count = moving ? 2 : 1;
+      for (int i = 0; i < count; i++) {
+        // Eject particles downwards (positive Y direction in local coordinates)
+        final angleOffset = (_random.nextDouble() - 0.5) * 0.3; // sway angle
+        final speed = moving 
+            ? 120.0 + _random.nextDouble() * 80.0 
+            : 40.0 + _random.nextDouble() * 40.0;
+        
+        final velocity = Vector2(sin(angleOffset) * speed, cos(angleOffset) * speed);
+        
+        // Spawn slightly offset horizontally at the nozzle center (size.x / 2)
+        final startX = size.x / 2 + (_random.nextDouble() - 0.5) * 6.0;
+        
+        _particles.add(_EngineParticle(
+          position: Vector2(startX, 0),
+          velocity: velocity,
+          maxLifetime: moving 
+              ? 0.22 + _random.nextDouble() * 0.12 
+              : 0.15 + _random.nextDouble() * 0.08,
+          startSize: moving 
+              ? 6.0 + _random.nextDouble() * 4.0 
+              : 4.0 + _random.nextDouble() * 3.0,
+        ));
+      }
+    }
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+
+    // Render particles
+    for (final p in _particles) {
+      p.render(canvas);
+    }
+  }
+}
+
+class _EngineParticle {
+  Vector2 position;
+  Vector2 velocity;
+  final double maxLifetime;
+  final double startSize;
+  
+  double lifetime = 0;
+
+  _EngineParticle({
+    required this.position,
+    required this.velocity,
+    required this.maxLifetime,
+    required this.startSize,
+  });
+
+  void update(double dt) {
+    position += velocity * dt;
+    lifetime += dt;
+  }
+
+  void render(Canvas canvas) {
+    final progress = (lifetime / maxLifetime).clamp(0.0, 1.0);
+    final size = startSize * (1.0 - progress);
+    final opacity = 1.0 - progress;
+
+    // Color transition: nozzle core is white, transitioning to bright cyan, then deep blue, then fading
+    Color particleColor;
+    if (progress < 0.2) {
+      particleColor = Colors.white;
+    } else if (progress < 0.55) {
+      // Glow cyan
+      particleColor = Color.lerp(Colors.white, const Color(0xFF00E5FF), (progress - 0.2) / 0.35)!;
+    } else {
+      // Fade to deep blue
+      particleColor = Color.lerp(const Color(0xFF00E5FF), const Color(0xFF2979FF), (progress - 0.55) / 0.45)!;
+    }
+
+    final paint = Paint()
+      ..color = particleColor.withAlpha((opacity * 0.85 * 255).toInt())
+      ..style = PaintingStyle.fill;
+    
+    // Draw glowing circle
+    canvas.drawCircle(Offset(position.x, position.y), size / 2, paint);
+
+    // Draw a smaller bright core for larger particles to make them pop!
+    if (size > 4.0 && progress > 0.1) {
+      final corePaint = Paint()
+        ..color = Colors.white.withAlpha((opacity * 0.9 * 255).toInt())
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(position.x, position.y), size * 0.25, corePaint);
+    }
+  }
+}

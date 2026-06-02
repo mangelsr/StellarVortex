@@ -34,11 +34,10 @@ class PlayerShip extends PositionComponent
 
   // Subcomponents
   late SpriteComponent _shipSprite;
-  late SpriteComponent _thrusterSprite;
+  late EngineThruster _thrusterEffect;
   late SpriteComponent _shieldSprite;
 
   final Set<LogicalKeyboardKey> _pressedKeys = {};
-  final Random _random = Random();
 
   PlayerShip({
     required this.shipType,
@@ -57,15 +56,12 @@ class PlayerShip extends PositionComponent
     );
     add(_shipSprite);
 
-    // 2. Thruster Flame Sprite Component
-    _thrusterSprite = SpriteComponent(
-      sprite: game.spaceShooterAtlas.getSprite('spaceEffects_009.png', game.spaceShooterImage),
-      size: Vector2(size.x * 0.4, size.y * 0.4),
-      anchor: Anchor.topCenter,
-      // Positioned at the bottom back end of the ship
+    // 2. Dynamic Engine Thruster Effect
+    _thrusterEffect = EngineThruster(
       position: Vector2(size.x / 2, size.y * 0.95),
+      isMoving: () => velocity.length > 0,
     );
-    add(_thrusterSprite);
+    add(_thrusterEffect);
 
     // 3. Shield Bubble Sprite Component
     _shieldSprite = SpriteComponent(
@@ -155,7 +151,6 @@ class PlayerShip extends PositionComponent
     // Handle ship controls
     _handleMovement(dt);
     _handleAimAndShoot(dt);
-    _animateThruster(dt);
   }
 
   void _handleMovement(double dt) {
@@ -332,23 +327,7 @@ class PlayerShip extends PositionComponent
     }
   }
 
-  void _animateThruster(double dt) {
-    // Flicker thruster flame by scaling and opacity changes
-    if (velocity.length > 0) {
-      _thrusterSprite.opacity = 0.7 + _random.nextDouble() * 0.3;
-      _thrusterSprite.scale = Vector2(
-        1.0,
-        0.8 + _random.nextDouble() * 0.5,
-      );
-    } else {
-      // Idle flame
-      _thrusterSprite.opacity = 0.3 + _random.nextDouble() * 0.2;
-      _thrusterSprite.scale = Vector2(
-        0.9,
-        0.6 + _random.nextDouble() * 0.3,
-      );
-    }
-  }
+
 
   /// Take damage from impact
   void takeDamage(double amount) {

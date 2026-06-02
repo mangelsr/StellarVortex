@@ -7,3 +7,4 @@ export 'player_ship.dart';
 export 'power_up.dart';
 export 'starfield_background.dart';
 export 'spawn_manager.dart';
+export 'engine_thruster.dart';
