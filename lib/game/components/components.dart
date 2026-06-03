@@ -7,4 +7,5 @@ export 'entities/meteor.dart';
 export 'entities/power_up.dart';
 export 'fx/engine_thruster.dart';
 export 'fx/explosion_particle.dart';
+export 'fx/shield_vfx.dart';
 export 'managers/spawn_manager.dart';

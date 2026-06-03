@@ -1,5 +1,5 @@
 import 'dart:ui' as ui;
-import 'dart:math' show min;
+import 'dart:math' show min, pi;
 import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
@@ -13,13 +13,17 @@ class SpritePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final destRect = Rect.fromLTWH(0, 0, size.width, size.height);
+    canvas.save();
+    canvas.translate(size.width / 2, size.height / 2);
+    canvas.rotate(pi);
+    final destRect = Rect.fromLTWH(-size.width / 2, -size.height / 2, size.width, size.height);
     canvas.drawImageRect(
       image,
       srcRect,
       destRect,
       Paint()..filterQuality = FilterQuality.medium,
     );
+    canvas.restore();
   }
 
   @override

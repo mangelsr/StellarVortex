@@ -77,16 +77,13 @@ class EnemyShip extends PositionComponent
 
     health = maxHealth;
 
-    // 1. Add Sprite Component (pointing DOWN by default, so we rotate 180 deg / pi rad)
+    // 1. Add Sprite Component (pointing DOWN natively, so no rotation is needed)
     final shipSprite = SpriteComponent(
       sprite: game.spaceShooterAtlas.getSprite(spriteName, game.spaceShooterImage),
       size: size,
+      anchor: Anchor.center,
+      position: size / 2,
     );
-    // Kenney enemy ships face UP by default, so to make them face DOWN (towards player), 
-    // we rotate them by 180 degrees.
-    shipSprite.angle = pi;
-    shipSprite.anchor = Anchor.center;
-    shipSprite.position = size / 2;
     add(shipSprite);
 
     // 2. Add Hitbox

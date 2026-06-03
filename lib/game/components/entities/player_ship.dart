@@ -8,8 +8,10 @@ import '../../game_constants.dart';
 import '../components.dart';
 
 class PlayerShip extends PositionComponent
-    with CollisionCallbacks, HasGameReference<SpaceShooterGame>, KeyboardHandler {
-  
+    with
+        CollisionCallbacks,
+        HasGameReference<SpaceShooterGame>,
+        KeyboardHandler {
   final PlayerShipType shipType;
 
   // Health and Shield stats
@@ -17,7 +19,7 @@ class PlayerShip extends PositionComponent
   late double maxHealth;
   double shield = PlayerConstants.maxShield;
   final double maxShield = PlayerConstants.maxShield;
-  
+
   // Timers
   double _fireTimer = 0;
   double _invulnerableTimer = 0;
@@ -25,10 +27,11 @@ class PlayerShip extends PositionComponent
   double _shieldFlashTimer = 0;
 
   bool get isInvulnerable => _invulnerableTimer > 0;
-  
+  double get shieldFlashTimer => _shieldFlashTimer;
+
   // Movement velocity
   Vector2 velocity = Vector2.zero();
-  
+
   // Weapon level: 1 = Single, 2 = Double, 3 = Spread
   int weaponLevel = 1;
   double weaponUpgradeTimer = 0; // Temporary duration for upgrades
@@ -36,24 +39,25 @@ class PlayerShip extends PositionComponent
   // Subcomponents
   late SpriteComponent _shipSprite;
   late EngineThruster _thrusterEffect;
-  late SpriteComponent _shieldSprite;
+  late ShieldVfx _shieldVfx;
 
   final Set<LogicalKeyboardKey> _pressedKeys = {};
 
-  PlayerShip({
-    required this.shipType,
-    required super.position,
-  }) : super(
-          size: Vector2.all(50),
-          anchor: Anchor.center,
-        );
+  PlayerShip({required this.shipType, required super.position})
+    : super(size: Vector2.all(50), anchor: Anchor.center);
 
   @override
   Future<void> onLoad() async {
     // 1. Ship Sprite Component
     _shipSprite = SpriteComponent(
-      sprite: game.spaceShooterAtlas.getSprite(shipType.spriteName, game.spaceShooterImage),
+      sprite: game.spaceShooterAtlas.getSprite(
+        shipType.spriteName,
+        game.spaceShooterImage,
+      ),
       size: size,
+      anchor: Anchor.center,
+      position: size / 2,
+      angle: pi, // Rotate 180 degrees since the sprite natively points DOWN
     );
     add(_shipSprite);
 
@@ -64,19 +68,19 @@ class PlayerShip extends PositionComponent
     );
     add(_thrusterEffect);
 
-    // 3. Shield Bubble Sprite Component
-    _shieldSprite = SpriteComponent(
-      sprite: game.spaceShooterAtlas.getSprite('spaceEffects_014.png', game.spaceShooterImage),
-      size: size * PlayerConstants.shieldSpriteScale,
-      anchor: Anchor.center,
-      position: size / 2,
-    );
-    _shieldSprite.opacity = 0; // Hidden by default
-    add(_shieldSprite);
+    // 3. Dynamic Shield VFX Component
+    _shieldVfx = ShieldVfx(ship: this, size: size);
+    add(_shieldVfx);
 
     // 4. Hitbox for Collision Detection
     // Using a circle hitbox matching the ship body diameter
-    add(CircleHitbox(radius: size.x * PlayerConstants.hitboxRadiusFactor, anchor: Anchor.center, position: size / 2));
+    add(
+      CircleHitbox(
+        radius: size.x * PlayerConstants.hitboxRadiusFactor,
+        anchor: Anchor.center,
+        position: size / 2,
+      ),
+    );
 
     // Initialize health
     maxHealth = shipType.maxHealth;
@@ -136,16 +140,11 @@ class PlayerShip extends PositionComponent
     // Shield flash timer
     if (_shieldFlashTimer > 0) {
       _shieldFlashTimer -= dt;
-      _shieldSprite.opacity = max(0.0, _shieldFlashTimer / PlayerConstants.shieldFlashDuration);
-    } else if (shield > 0 && isInvulnerable) {
-      // Keep shield visible during invulnerability if shields are up
-      _shieldSprite.opacity = 0.5;
-    } else {
-      _shieldSprite.opacity = 0;
     }
 
     // Shield Regeneration (if out of danger for specified duration)
-    if (_timeSinceLastDamage > PlayerConstants.shieldRegenDelay && shield < maxShield) {
+    if (_timeSinceLastDamage > PlayerConstants.shieldRegenDelay &&
+        shield < maxShield) {
       shield = min(maxShield, shield + PlayerConstants.shieldRegenRate * dt);
     }
 
@@ -263,52 +262,66 @@ class PlayerShip extends PositionComponent
     switch (weaponLevel) {
       case 3: // Triple Spread Shot
         // Center bullet
-        game.add(Bullet(
-          position: position + bulletDir * (size.y * 0.4),
-          velocity: bulletDir * bulletSpeed,
-          isPlayerBullet: true,
-        ));
+        game.add(
+          Bullet(
+            position: position + bulletDir * (size.y * 0.4),
+            velocity: bulletDir * bulletSpeed,
+            isPlayerBullet: true,
+          ),
+        );
         // Left bullet (rotated spread angle)
-        final leftDir = Vector2(bulletDir.x, bulletDir.y)..rotate(-PlayerConstants.spreadLaserAngle);
-        game.add(Bullet(
-          position: position + leftDir * (size.y * 0.4),
-          velocity: leftDir * bulletSpeed,
-          isPlayerBullet: true,
-        ));
+        final leftDir = Vector2(bulletDir.x, bulletDir.y)
+          ..rotate(-PlayerConstants.spreadLaserAngle);
+        game.add(
+          Bullet(
+            position: position + leftDir * (size.y * 0.4),
+            velocity: leftDir * bulletSpeed,
+            isPlayerBullet: true,
+          ),
+        );
         // Right bullet (rotated spread angle)
-        final rightDir = Vector2(bulletDir.x, bulletDir.y)..rotate(PlayerConstants.spreadLaserAngle);
-        game.add(Bullet(
-          position: position + rightDir * (size.y * 0.4),
-          velocity: rightDir * bulletSpeed,
-          isPlayerBullet: true,
-        ));
+        final rightDir = Vector2(bulletDir.x, bulletDir.y)
+          ..rotate(PlayerConstants.spreadLaserAngle);
+        game.add(
+          Bullet(
+            position: position + rightDir * (size.y * 0.4),
+            velocity: rightDir * bulletSpeed,
+            isPlayerBullet: true,
+          ),
+        );
         break;
- 
+
       case 2: // Double Parallel Laser
         // Fire two parallel lasers offset left and right
         final perp = Vector2(-bulletDir.y, bulletDir.x)..normalize();
         final offsetLeft = perp * PlayerConstants.doubleLaserOffset;
         final offsetRight = -perp * PlayerConstants.doubleLaserOffset;
 
-        game.add(Bullet(
-          position: position + bulletDir * (size.y * 0.3) + offsetLeft,
-          velocity: bulletDir * bulletSpeed,
-          isPlayerBullet: true,
-        ));
-        game.add(Bullet(
-          position: position + bulletDir * (size.y * 0.3) + offsetRight,
-          velocity: bulletDir * bulletSpeed,
-          isPlayerBullet: true,
-        ));
+        game.add(
+          Bullet(
+            position: position + bulletDir * (size.y * 0.3) + offsetLeft,
+            velocity: bulletDir * bulletSpeed,
+            isPlayerBullet: true,
+          ),
+        );
+        game.add(
+          Bullet(
+            position: position + bulletDir * (size.y * 0.3) + offsetRight,
+            velocity: bulletDir * bulletSpeed,
+            isPlayerBullet: true,
+          ),
+        );
         break;
 
       case 1: // Single Central Laser
       default:
-        game.add(Bullet(
-          position: position + bulletDir * (size.y * 0.45),
-          velocity: bulletDir * bulletSpeed,
-          isPlayerBullet: true,
-        ));
+        game.add(
+          Bullet(
+            position: position + bulletDir * (size.y * 0.45),
+            velocity: bulletDir * bulletSpeed,
+            isPlayerBullet: true,
+          ),
+        );
         break;
     }
   }
@@ -318,7 +331,8 @@ class PlayerShip extends PositionComponent
     if (isInvulnerable) return;
 
     _timeSinceLastDamage = 0;
-    _shieldFlashTimer = PlayerConstants.shieldFlashDuration; // Trigger shield visual flash
+    _shieldFlashTimer =
+        PlayerConstants.shieldFlashDuration; // Trigger shield visual flash
 
     final hadShield = shield > 0;
 
@@ -340,17 +354,22 @@ class PlayerShip extends PositionComponent
     } else {
       // Spawn hit explosion depending on whether shields absorbed the hit
       if (hadShield) {
-        game.add(ExplosionParticle(
-          position: position.clone(),
-          size: size * 1.2,
-          isShieldHit: true,
-        ));
+        _shieldVfx.triggerHit();
+        game.add(
+          ExplosionParticle(
+            position: position.clone(),
+            size: size * 1.2,
+            isShieldHit: true,
+          ),
+        );
       } else {
-        game.add(ExplosionParticle(
-          position: position.clone(),
-          size: size * 1.2,
-          isHullHit: true,
-        ));
+        game.add(
+          ExplosionParticle(
+            position: position.clone(),
+            size: size * 1.2,
+            isHullHit: true,
+          ),
+        );
       }
 
       // Invulnerability frames on taking hit
@@ -360,10 +379,14 @@ class PlayerShip extends PositionComponent
 
   void _explode() {
     // Add particle explosion
-    game.add(ExplosionParticle(
-      position: position,
-      size: size * 1.5,
-      tintColor: const Color(0xFF00E5FF), // Cyan/Blue futuristic tech explosion
-    ));
+    game.add(
+      ExplosionParticle(
+        position: position,
+        size: size * 1.5,
+        tintColor: const Color(
+          0xFF00E5FF,
+        ), // Cyan/Blue futuristic tech explosion
+      ),
+    );
   }
 }
