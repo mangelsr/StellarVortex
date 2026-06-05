@@ -11,7 +11,6 @@ mixin GameSessionManager on FlameGame {
   final ValueNotifier<GameLanguage> languageNotifier = ValueNotifier(
     GameLanguage.en,
   );
-  GameLocalizations get loc => GameLocalizations(languageNotifier.value);
   PlayerShipType selectedShipType = PlayerShipType.vanguard;
 
   SharedPreferences? prefs;

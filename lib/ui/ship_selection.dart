@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
 import '../game/utils/game_localizations.dart';
+import 'package:stellar_vortex/l10n/app_localizations.dart';
 
 class SpritePainter extends CustomPainter {
   final ui.Image image;
@@ -62,7 +63,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
     return ValueListenableBuilder<GameLanguage>(
       valueListenable: widget.game.languageNotifier,
       builder: (context, language, _) {
-        final loc = widget.game.loc;
+        final loc = AppLocalizations.of(context)!;
         final currentShip = _ships[_currentIndex];
         
         // Get sprite coordinates from atlas

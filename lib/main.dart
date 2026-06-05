@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:stellar_vortex/l10n/app_localizations.dart';
 
 import 'game/space_shooter_game.dart';
+import 'game/utils/game_localizations.dart';
 import 'ui/hud.dart';
 import 'ui/start_menu.dart';
 import 'ui/ship_selection.dart';
@@ -24,14 +27,27 @@ void main() async {
   final game = SpaceShooterGame();
 
   runApp(
-    MaterialApp(
-      title: 'Stellar Vortex',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        fontFamily: 'Courier New', // Sci-fi default typography
-      ),
-      home: GameWrapper(game: game),
+    ValueListenableBuilder<GameLanguage>(
+      valueListenable: game.languageNotifier,
+      builder: (context, currentLanguage, _) {
+        return MaterialApp(
+          title: 'Stellar Vortex',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            brightness: Brightness.dark,
+            fontFamily: 'Courier New', // Sci-fi default typography
+          ),
+          locale: Locale(currentLanguage.name),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: GameWrapper(game: game),
+        );
+      },
     ),
   );
 }

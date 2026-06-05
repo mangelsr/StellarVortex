@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
 import '../game/utils/game_localizations.dart';
+import 'package:stellar_vortex/l10n/app_localizations.dart';
 
 class PauseMenu extends StatelessWidget {
   final SpaceShooterGame game;
@@ -20,7 +21,7 @@ class PauseMenu extends StatelessWidget {
     return ValueListenableBuilder<GameLanguage>(
       valueListenable: game.languageNotifier,
       builder: (context, language, _) {
-        final loc = game.loc;
+        final loc = AppLocalizations.of(context)!;
 
         return Scaffold(
           backgroundColor: Colors.black.withValues(alpha: 0.55), // Dim the canvas

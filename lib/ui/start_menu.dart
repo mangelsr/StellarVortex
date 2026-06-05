@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
 import '../game/utils/game_localizations.dart';
+import 'package:stellar_vortex/l10n/app_localizations.dart';
 
 class StartMenu extends StatefulWidget {
   final SpaceShooterGame game;
@@ -28,7 +29,7 @@ class _StartMenuState extends State<StartMenu> {
     return ValueListenableBuilder<GameLanguage>(
       valueListenable: widget.game.languageNotifier,
       builder: (context, language, _) {
-        final loc = widget.game.loc;
+        final loc = AppLocalizations.of(context)!;
 
         return Scaffold(
           backgroundColor: Colors.transparent, // Transparent so the Flame starfield shows through!

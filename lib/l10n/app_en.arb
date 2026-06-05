@@ -1,0 +1,75 @@
+{
+  "gameTitle": "STELLAR\nVORTEX",
+  "gameSubtitle": "A DUAL-STICK SCI-FI SHOOTER",
+  "launchMission": "LAUNCH MISSION",
+  "tacticalGuide": "TACTICAL GUIDE",
+  "credits": "CREDITS",
+  "settings": "SETTINGS",
+  "tacticalProtocol": "TACTICAL PROTOCOL",
+  "steerShipTitle": "STEER SHIP",
+  "steerShipBody": "Use left screen joystick or keyboard [W, A, S, D] keys.",
+  "weaponSystemsTitle": "WEAPON SYSTEMS",
+  "weaponSystemsBody": "Drag right screen joystick to rotate and auto-shoot. Alternatively, point with mouse cursor and hold left-click, or use [Arrow Keys].",
+  "fieldCoresTitle": "FIELD CORES",
+  "fieldCoresBody": "Destroy meteors and elite ships to harvest upgrades:\n• Shield Packs (Batteries) restores hull shields.\n• Power Cores upgrades laser layout (up to Spread Shot).\n• Fire Rate Cores (Cogs) increases thrusters & laser speeds.",
+  "understood": "UNDERSTOOD",
+  "transmissionCredits": "TRANSMISSION: CREDITS",
+  "assetCreatorTitle": "ASSET CREATOR",
+  "assetCreatorBody": "All graphical game assets (spaceships, lasers, meteors, tilesets, & UI assets) and audio effects are created by Kenney.",
+  "kenneyAssetsTitle": "KENNEY ASSETS",
+  "kenneyAssetsBody": "Kenney creates thousands of completely free, high-quality game assets (CC0 / Public Domain) to support the game development community. Discover more at www.kenney.nl.",
+  "transmissionTerminated": "TRANSMISSION TERMINATED",
+  "settingsTitle": "SETTINGS",
+  "settingsSubtitle": "SYSTEM SPECIFICATIONS & CONFIGURATION",
+  "languageSelect": "GAME LANGUAGE",
+  "languageEnglish": "ENGLISH",
+  "languageSpanish": "SPANISH",
+  "saveAndClose": "SAVE & CLOSE",
+  "back": "BACK",
+  "shipSelectionTitle": "SHIP SELECTION",
+  "engageHyperdrive": "ENGAGE HYPERDRIVE",
+  "velocity": "VELOCITY",
+  "armorHull": "ARMOR HULL",
+  "firePower": "FIRE POWER",
+  "shd": "SHD",
+  "hull": "HULL",
+  "sector": "SECTOR",
+  "lives": "LIVES",
+  "score": "SCORE",
+  "high": "HIGH",
+  "keyboardControlsGuide": "CONTROLS: WASD to Move  |  Mouse Pointer to Aim + Hold Click to Shoot  |  Arrow Keys for Twin-Stick Shooting",
+  "transmissionPaused": "TRANSMISSION\nPAUSED",
+  "tacticalAnalysisInProgress": "TACTICAL ANALYSIS IN PROGRESS",
+  "resumeFlight": "RESUME FLIGHT",
+  "restartMission": "RESTART MISSION",
+  "abortMission": "ABORT MISSION",
+  "shipDestroyed": "SHIP DESTROYED",
+  "telemetrySynchronizationTerminated": "TELEMETRY SYNCHRONIZATION TERMINATED",
+  "finalScore": "FINAL SCORE",
+  "sectorsCleared": "SECTORS CLEARED: {count}",
+  "@sectorsCleared": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newSectorRecord": "NEW SECTOR RECORD!",
+  "recordHolder": "RECORD HOLDER: {highScoreStr}",
+  "@recordHolder": {
+    "placeholders": {
+      "highScoreStr": {
+        "type": "String"
+      }
+    }
+  },
+  "redeployShip": "REDEPLOY SHIP",
+  "returnToHangar": "RETURN TO HANGAR",
+  "exitToStation": "EXIT TO STATION",
+  "vanguardName": "Vanguard",
+  "reaperName": "Reaper",
+  "leviathanName": "Leviathan",
+  "vanguardDescription": "Balanced interstellar fighter. Equipped with standard high-velocity plasma lasers.",
+  "reaperDescription": "Fast interceptor. Rapid fire rate but lower structural integrity. Dual pulse canons.",
+  "leviathanDescription": "Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles."
+}

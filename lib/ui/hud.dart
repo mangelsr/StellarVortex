@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 
 import '../game/space_shooter_game.dart';
 import '../game/utils/game_localizations.dart';
+import 'package:stellar_vortex/l10n/app_localizations.dart';
 
 class GameHud extends StatefulWidget {
   final SpaceShooterGame game;
@@ -47,7 +48,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
       valueListenable: widget.game.languageNotifier,
       builder: (context, language, _) {
         final game = widget.game;
-        final loc = game.loc;
+        final loc = AppLocalizations.of(context)!;
         final player = game.playerShip;
 
         final double health = player?.health ?? 0;

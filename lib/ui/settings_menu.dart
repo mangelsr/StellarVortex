@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../game/space_shooter_game.dart';
 import '../game/utils/game_localizations.dart';
+import 'package:stellar_vortex/l10n/app_localizations.dart';
 
 class SettingsMenu extends StatelessWidget {
   final SpaceShooterGame game;
@@ -34,7 +35,7 @@ class SettingsMenu extends StatelessWidget {
             child: ValueListenableBuilder<GameLanguage>(
               valueListenable: game.languageNotifier,
               builder: (context, currentLanguage, _) {
-                final loc = game.loc;
+                final loc = AppLocalizations.of(context)!;
 
                 return Container(
                   width: min(380, screenWidth - 32),
