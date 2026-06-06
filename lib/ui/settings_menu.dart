@@ -336,6 +336,15 @@ class _SettingsMenuState extends State<SettingsMenu> {
               });
             },
           ),
+          _buildCustomSlider(
+            label: loc.enemyFireRate,
+            value: widget.game.enemyFireRateMultiplier,
+            onChanged: (val) {
+              setState(() {
+                widget.game.enemyFireRateMultiplier = val;
+              });
+            },
+          ),
 
           const SizedBox(height: 10),
 
@@ -364,6 +373,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                   widget.game.enemySpeedMultiplier = 1.0;
                   widget.game.enemySpawnRateMultiplier = 1.0;
                   widget.game.meteorSpawnRateMultiplier = 1.0;
+                  widget.game.enemyFireRateMultiplier = 1.0;
                 });
               },
             ),

@@ -67,5 +67,6 @@
   "enemySpeed": "Velocidad de Flota Enemiga",
   "enemySpawnRate": "Densidad de Aparición de Enemigos",
   "meteorSpawnRate": "Densidad de Aparición de Meteoros",
+  "enemyFireRate": "Cadencia de Fuego Enemigo",
   "resetToDefault": "REESTABLECER VALORES HANGAR"
 }

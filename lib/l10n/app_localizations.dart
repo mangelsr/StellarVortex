@@ -506,6 +506,12 @@ abstract class AppLocalizations {
   /// **'Meteor Spawn Density'**
   String get meteorSpawnRate;
 
+  /// No description provided for @enemyFireRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enemy Weapon Fire Rate'**
+  String get enemyFireRate;
+
   /// No description provided for @resetToDefault.
   ///
   /// In en, this message translates to:

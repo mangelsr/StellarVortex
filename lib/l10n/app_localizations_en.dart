@@ -228,5 +228,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get meteorSpawnRate => 'Meteor Spawn Density';
 
   @override
+  String get enemyFireRate => 'Enemy Weapon Fire Rate';
+
+  @override
   String get resetToDefault => 'RESET ALL TO DEFAULT';
 }

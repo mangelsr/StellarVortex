@@ -187,7 +187,7 @@ class EnemyShip extends PositionComponent
     switch (type) {
       case EnemyType.scout:
         // Fires straight down every 2.2 seconds
-        if (_fireTimer >= EnemyConstants.scoutFireInterval) {
+        if (_fireTimer >= EnemyConstants.scoutFireInterval / game.enemyFireRateMultiplier) {
           _fireTimer = 0;
           _fireBullet(Vector2(0, 1));
         }
@@ -199,7 +199,7 @@ class EnemyShip extends PositionComponent
         
       case EnemyType.elite:
         // Fires a double laser targeting player every 1.8 seconds
-        if (_fireTimer >= EnemyConstants.eliteFireInterval) {
+        if (_fireTimer >= EnemyConstants.eliteFireInterval / game.enemyFireRateMultiplier) {
           _fireTimer = 0;
           final dir = (player.position - position).normalized();
           _fireBullet(dir, isDouble: true);
@@ -208,14 +208,14 @@ class EnemyShip extends PositionComponent
         
       case EnemyType.boss:
         // 1. Regular targeted double laser (every 1.2s)
-        if (_fireTimer >= EnemyConstants.bossFireInterval) {
+        if (_fireTimer >= EnemyConstants.bossFireInterval / game.enemyFireRateMultiplier) {
           _fireTimer = 0;
           final dir = (player.position - position).normalized();
           _fireBullet(dir, isDouble: true, dmg: EnemyConstants.bossDoubleLaserDamage);
         }
         
         // 2. Special Attack: Radial burst (every 3.8s)
-        if (_specialAttackTimer >= EnemyConstants.bossSpecialAttackInterval) {
+        if (_specialAttackTimer >= EnemyConstants.bossSpecialAttackInterval / game.enemyFireRateMultiplier) {
           _specialAttackTimer = 0;
           _fireRadialBurst();
         }

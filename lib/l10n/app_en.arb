@@ -81,5 +81,6 @@
   "enemySpeed": "Enemy Fleet Speed",
   "enemySpawnRate": "Enemy Spawn Density",
   "meteorSpawnRate": "Meteor Spawn Density",
+  "enemyFireRate": "Enemy Weapon Fire Rate",
   "resetToDefault": "RESET ALL TO DEFAULT"
 }
