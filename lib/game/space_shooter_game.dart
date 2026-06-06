@@ -6,6 +6,7 @@ import 'package:flame/events.dart';
 import 'utils/game_asset_loader.dart';
 import 'managers/game_controls_manager.dart';
 import 'managers/game_session_manager.dart';
+import 'managers/audio_manager.dart';
 import 'models/game_state.dart';
 import 'models/player_ship_type.dart';
 import 'game_constants.dart';
@@ -22,7 +23,8 @@ class SpaceShooterGame extends FlameGame
         TapCallbacks,
         GameAssetLoader,
         GameControlsManager,
-        GameSessionManager {
+        GameSessionManager,
+        AudioManager {
 
   PlayerShip? playerShip;
   late StarfieldBackground starfield;
@@ -37,6 +39,7 @@ class SpaceShooterGame extends FlameGame
 
     // 1. Load game assets
     await loadGameAssets();
+    await preloadAudio();
 
     // 2. Add parallax background (always present, even in menus)
     starfield = StarfieldBackground();
@@ -55,6 +58,7 @@ class SpaceShooterGame extends FlameGame
 
   /// Start the game with the selected ship
   void startGame(PlayerShipType shipType) {
+    clearAudio();
     selectedShipType = shipType;
     state = GameState.playing;
     resumeEngine(); // Ensure game loop is active
@@ -120,6 +124,8 @@ class SpaceShooterGame extends FlameGame
     playerShip = null;
   }
 
+  double _spaceEngineTimer = 0;
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -127,6 +133,18 @@ class SpaceShooterGame extends FlameGame
     if (state != GameState.playing) return;
 
     gameTime += dt;
+
+    // Periodically play space engine ambient sound if enemies are on screen
+    _spaceEngineTimer -= dt;
+    if (_spaceEngineTimer <= 0) {
+      final hasEnemies = children.whereType<EnemyShip>().isNotEmpty;
+      if (hasEnemies) {
+        playSpaceEngine();
+        _spaceEngineTimer = 5.0 + _random.nextDouble() * 4.0;
+      } else {
+        _spaceEngineTimer = 1.0;
+      }
+    }
   }
 
   /// Handles player taking damage
@@ -158,6 +176,7 @@ class SpaceShooterGame extends FlameGame
     } else {
       // Game Over
       state = GameState.gameOver;
+      clearAudio();
 
       if (score > highScore) {
         highScore = score;
@@ -176,6 +195,7 @@ class SpaceShooterGame extends FlameGame
     if (state == GameState.playing) {
       state = GameState.paused;
       pauseEngine();
+      stopThruster();
       overlays.add('pauseMenu');
     } else if (state == GameState.paused) {
       state = GameState.playing;
@@ -187,6 +207,7 @@ class SpaceShooterGame extends FlameGame
   void quitToMenu() {
     state = GameState.menu;
     resumeEngine(); // Ensure engine is running
+    clearAudio();
     _clearPlayableComponents();
     overlays.clear();
     overlays.add('startMenu');

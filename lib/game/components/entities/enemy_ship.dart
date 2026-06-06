@@ -224,6 +224,7 @@ class EnemyShip extends PositionComponent
   }
 
   void _fireBullet(Vector2 dir, {bool isDouble = false, double dmg = EnemyConstants.defaultBulletDamage}) {
+    game.playEnemyLaser();
     final bulletSpeed = BulletConstants.enemySpeed;
     
     if (isDouble) {
@@ -256,6 +257,7 @@ class EnemyShip extends PositionComponent
   }
 
   void _fireRadialBurst() {
+    game.playEnemyLaser();
     final bulletSpeed = BulletConstants.enemyRadialSpeed;
     final int bulletCount = EnemyConstants.bossRadialBulletCount;
     
@@ -284,6 +286,7 @@ class EnemyShip extends PositionComponent
   }
 
   void _explode() {
+    game.playExplosion();
     // Determine color based on enemy type
     Color explosionColor;
     switch (type) {
@@ -355,6 +358,7 @@ class EnemyShip extends PositionComponent
 
       // Colliding with player destroys scouts and kamikazes instantly
       if (type == EnemyType.scout || type == EnemyType.kamikaze) {
+        game.playExplosion();
         // Determine color
         final Color explosionColor = type == EnemyType.kamikaze
             ? const Color(0xFFFF1744)

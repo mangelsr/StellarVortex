@@ -28,6 +28,7 @@ mixin GameSessionManager on FlameGame {
   double enemySpawnRateMultiplier = 1.0;
   double meteorSpawnRateMultiplier = 1.0;
   double enemyFireRateMultiplier = 1.0;
+  double sfxVolume = 1.0;
 
   Future<void> initSession() async {
     try {
@@ -48,6 +49,7 @@ mixin GameSessionManager on FlameGame {
       enemySpawnRateMultiplier = prefs?.getDouble('enemy_spawn_rate_multiplier') ?? 1.0;
       meteorSpawnRateMultiplier = prefs?.getDouble('meteor_spawn_rate_multiplier') ?? 1.0;
       enemyFireRateMultiplier = prefs?.getDouble('enemy_fire_rate_multiplier') ?? 1.0;
+      sfxVolume = prefs?.getDouble('sfx_volume') ?? 1.0;
     } catch (e) {
       debugPrint('Failed to initialize SharedPreferences: $e');
     }
@@ -67,6 +69,7 @@ mixin GameSessionManager on FlameGame {
       prefs?.setDouble('enemy_spawn_rate_multiplier', enemySpawnRateMultiplier);
       prefs?.setDouble('meteor_spawn_rate_multiplier', meteorSpawnRateMultiplier);
       prefs?.setDouble('enemy_fire_rate_multiplier', enemyFireRateMultiplier);
+      prefs?.setDouble('sfx_volume', sfxVolume);
     } catch (e) {
       debugPrint('Failed to save custom settings: $e');
     }

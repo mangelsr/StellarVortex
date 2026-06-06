@@ -151,6 +151,19 @@ class PlayerShip extends PositionComponent
     // Handle ship controls
     _handleMovement(dt);
     _handleAimAndShoot(dt);
+
+    // Toggle thruster sound based on ship movement velocity
+    if (velocity.length > 0 && game.state == GameState.playing) {
+      game.startThruster();
+    } else {
+      game.stopThruster();
+    }
+  }
+
+  @override
+  void onRemove() {
+    game.stopThruster();
+    super.onRemove();
   }
 
   void _handleMovement(double dt) {
@@ -255,6 +268,7 @@ class PlayerShip extends PositionComponent
   }
 
   void _fireLaser(Vector2 direction) {
+    game.playPlayerLaser();
     final bulletDir = direction.normalized();
     final bulletSpeed = PlayerConstants.fireSpeed * game.playerFireSpeedMultiplier;
 
@@ -354,6 +368,7 @@ class PlayerShip extends PositionComponent
     } else {
       // Spawn hit explosion depending on whether shields absorbed the hit
       if (hadShield) {
+        game.playShieldHit();
         _shieldVfx.triggerHit();
         game.add(
           ExplosionParticle(
@@ -363,6 +378,7 @@ class PlayerShip extends PositionComponent
           ),
         );
       } else {
+        game.playHullHit();
         game.add(
           ExplosionParticle(
             position: position.clone(),
@@ -378,6 +394,7 @@ class PlayerShip extends PositionComponent
   }
 
   void _explode() {
+    game.playExplosion();
     // Add particle explosion
     game.add(
       ExplosionParticle(

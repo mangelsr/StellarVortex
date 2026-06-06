@@ -89,6 +89,7 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
   }
 
   void _explodeAndSplit({required bool withScore}) {
+    game.playExplosion();
     // 1. Add explosion effect
     game.add(ExplosionParticle(
       position: position,
