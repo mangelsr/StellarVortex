@@ -48,29 +48,29 @@ class EnemyShip extends PositionComponent
       case EnemyType.scout:
         spriteName = 'spaceShips_007.png'; // Orange ship
         size = EnemyConstants.scoutSize;
-        maxHealth = EnemyConstants.scoutMaxHealth;
-        speed = EnemyConstants.scoutSpeed;
+        maxHealth = EnemyConstants.scoutMaxHealth * game.enemyHealthMultiplier;
+        speed = EnemyConstants.scoutSpeed * game.enemySpeedMultiplier;
         scoreValue = EnemyConstants.scoutScoreValue;
         break;
       case EnemyType.kamikaze:
         spriteName = 'spaceShips_003.png'; // Red Batwing ship
         size = EnemyConstants.kamikazeSize;
-        maxHealth = EnemyConstants.kamikazeMaxHealth;
-        speed = EnemyConstants.kamikazeSpeed;
+        maxHealth = EnemyConstants.kamikazeMaxHealth * game.enemyHealthMultiplier;
+        speed = EnemyConstants.kamikazeSpeed * game.enemySpeedMultiplier;
         scoreValue = EnemyConstants.kamikazeScoreValue;
         break;
       case EnemyType.elite:
         spriteName = 'spaceShips_004.png'; // Green/black ship
         size = EnemyConstants.eliteSize;
-        maxHealth = EnemyConstants.eliteMaxHealth;
-        speed = EnemyConstants.eliteSpeed;
+        maxHealth = EnemyConstants.eliteMaxHealth * game.enemyHealthMultiplier;
+        speed = EnemyConstants.eliteSpeed * game.enemySpeedMultiplier;
         scoreValue = EnemyConstants.eliteScoreValue;
         break;
       case EnemyType.boss:
         spriteName = 'spaceShips_005.png'; // Huge ship
         size = EnemyConstants.bossSize;
-        maxHealth = EnemyConstants.bossBaseMaxHealth + (game.wave * EnemyConstants.bossHealthScalePerWave); // Health scales with wave
-        speed = EnemyConstants.bossSpeed;
+        maxHealth = (EnemyConstants.bossBaseMaxHealth + (game.wave * EnemyConstants.bossHealthScalePerWave)) * game.enemyHealthMultiplier; // Health scales with wave
+        speed = EnemyConstants.bossSpeed * game.enemySpeedMultiplier;
         scoreValue = EnemyConstants.bossScoreValue;
         break;
     }

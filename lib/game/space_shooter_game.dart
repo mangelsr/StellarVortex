@@ -209,6 +209,7 @@ class SpaceShooterGame extends FlameGame
   }
 
   void closeSettings() {
+    saveCustomSettings();
     overlays.remove('settingsMenu');
   }
 }

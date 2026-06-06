@@ -36,7 +36,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
     // 1. Spawning Meteors
     _meteorSpawnTimer += dt;
     // Spawns a meteor every 4-7 seconds depending on wave density
-    double meteorInterval = max(SpawnConstants.meteorSpawnIntervalMin, SpawnConstants.meteorSpawnIntervalBase - (game.wave * SpawnConstants.meteorSpawnIntervalWaveFactor));
+    double meteorInterval = max(SpawnConstants.meteorSpawnIntervalMin, SpawnConstants.meteorSpawnIntervalBase - (game.wave * SpawnConstants.meteorSpawnIntervalWaveFactor)) / game.meteorSpawnRateMultiplier;
     if (_meteorSpawnTimer >= meteorInterval) {
       _meteorSpawnTimer = 0;
       _spawnMeteor();
@@ -63,7 +63,7 @@ class SpawnManager extends Component with HasGameReference<SpaceShooterGame> {
     if (_enemiesSpawnedThisWave < _enemiesToKillThisWave) {
       _enemySpawnTimer += dt;
       // Spawns an enemy every 1.5 - 3 seconds
-      double spawnInterval = max(SpawnConstants.enemySpawnIntervalMin, SpawnConstants.enemySpawnIntervalBase - (game.wave * SpawnConstants.enemySpawnIntervalWaveFactor));
+      double spawnInterval = max(SpawnConstants.enemySpawnIntervalMin, SpawnConstants.enemySpawnIntervalBase - (game.wave * SpawnConstants.enemySpawnIntervalWaveFactor)) / game.enemySpawnRateMultiplier;
       if (_enemySpawnTimer >= spawnInterval) {
         _enemySpawnTimer = 0;
         _spawnEnemy();

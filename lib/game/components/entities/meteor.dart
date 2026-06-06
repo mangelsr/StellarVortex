@@ -38,17 +38,17 @@ class Meteor extends SpriteComponent with CollisionCallbacks, HasGameReference<S
     switch (sizeType) {
       case MeteorSize.large:
         size = MeteorConstants.largeSize;
-        maxHealth = MeteorConstants.largeMaxHealth;
+        maxHealth = MeteorConstants.largeMaxHealth * game.enemyHealthMultiplier;
         scoreValue = MeteorConstants.largeScoreValue;
         break;
       case MeteorSize.medium:
         size = MeteorConstants.mediumSize;
-        maxHealth = MeteorConstants.mediumMaxHealth;
+        maxHealth = MeteorConstants.mediumMaxHealth * game.enemyHealthMultiplier;
         scoreValue = MeteorConstants.mediumScoreValue;
         break;
       case MeteorSize.small:
         size = MeteorConstants.smallSize;
-        maxHealth = MeteorConstants.smallMaxHealth;
+        maxHealth = MeteorConstants.smallMaxHealth * game.enemyHealthMultiplier;
         scoreValue = MeteorConstants.smallScoreValue;
         break;
     }

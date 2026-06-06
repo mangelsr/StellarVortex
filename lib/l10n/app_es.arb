@@ -57,5 +57,15 @@
   "leviathanName": "Leviatán",
   "vanguardDescription": "Caza interestelar equilibrado. Equipado con láseres de plasma estándar de alta velocidad.",
   "reaperDescription": "Interceptor veloz. Alta cadencia de fuego pero menor integridad estructural. Cañones de pulso duales.",
-  "leviathanDescription": "Cañonera pesada. Extremadamente resistente, dispara proyectiles pesados de gran dispersión y daño."
+  "leviathanDescription": "Cañonera pesada. Extremadamente resistente, dispara proyectiles pesados de gran dispersión y daño.",
+  "customGameConfig": "CONFIGURACIÓN PERSONALIZADA",
+  "customGameConfigSubtitle": "AJUSTA LOS SISTEMAS Y NIVELES DE AMENAZA",
+  "customConfigButton": "AJUSTES DE JUEGO PERSONALIZADOS",
+  "playerDamage": "Daño del Arma del Jugador",
+  "playerFireSpeed": "Velocidad de Láser del Jugador",
+  "enemyHealth": "Resistencia de Enemigos y Meteoros",
+  "enemySpeed": "Velocidad de Flota Enemiga",
+  "enemySpawnRate": "Densidad de Aparición de Enemigos",
+  "meteorSpawnRate": "Densidad de Aparición de Meteoros",
+  "resetToDefault": "REESTABLECER VALORES HANGAR"
 }

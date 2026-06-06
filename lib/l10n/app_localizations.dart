@@ -451,6 +451,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles.'**
   String get leviathanDescription;
+
+  /// No description provided for @customGameConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'CUSTOM CONFIGURATION'**
+  String get customGameConfig;
+
+  /// No description provided for @customGameConfigSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FINE-TUNE SHIP SYSTEMS & THREAT LEVELS'**
+  String get customGameConfigSubtitle;
+
+  /// No description provided for @customConfigButton.
+  ///
+  /// In en, this message translates to:
+  /// **'CUSTOM GAME SETTINGS'**
+  String get customConfigButton;
+
+  /// No description provided for @playerDamage.
+  ///
+  /// In en, this message translates to:
+  /// **'Player Weapon Damage'**
+  String get playerDamage;
+
+  /// No description provided for @playerFireSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Player Laser Speed'**
+  String get playerFireSpeed;
+
+  /// No description provided for @enemyHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Enemy & Meteor Durability'**
+  String get enemyHealth;
+
+  /// No description provided for @enemySpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Enemy Fleet Speed'**
+  String get enemySpeed;
+
+  /// No description provided for @enemySpawnRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enemy Spawn Density'**
+  String get enemySpawnRate;
+
+  /// No description provided for @meteorSpawnRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Meteor Spawn Density'**
+  String get meteorSpawnRate;
+
+  /// No description provided for @resetToDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'RESET ALL TO DEFAULT'**
+  String get resetToDefault;
 }
 
 class _AppLocalizationsDelegate

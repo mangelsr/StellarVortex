@@ -256,7 +256,7 @@ class PlayerShip extends PositionComponent
 
   void _fireLaser(Vector2 direction) {
     final bulletDir = direction.normalized();
-    final bulletSpeed = PlayerConstants.fireSpeed;
+    final bulletSpeed = PlayerConstants.fireSpeed * game.playerFireSpeedMultiplier;
 
     // Spawn bullets based on weapon level
     switch (weaponLevel) {

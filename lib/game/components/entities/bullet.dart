@@ -10,7 +10,7 @@ import '../components.dart';
 class Bullet extends PositionComponent with CollisionCallbacks, HasGameReference<SpaceShooterGame> {
   final Vector2 velocity;
   final bool isPlayerBullet;
-  final double damage;
+  double damage;
 
   Bullet({
     required super.position,
@@ -25,6 +25,11 @@ class Bullet extends PositionComponent with CollisionCallbacks, HasGameReference
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+
+    // Apply player bullet damage multiplier
+    if (isPlayerBullet) {
+      damage *= game.playerDamageMultiplier;
+    }
 
     // 1. Rotate bullet to point in direction of velocity
     // Bullet sprite/shape points UP natively, so we add pi/2.

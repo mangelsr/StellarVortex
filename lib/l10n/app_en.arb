@@ -71,5 +71,15 @@
   "leviathanName": "Leviathan",
   "vanguardDescription": "Balanced interstellar fighter. Equipped with standard high-velocity plasma lasers.",
   "reaperDescription": "Fast interceptor. Rapid fire rate but lower structural integrity. Dual pulse canons.",
-  "leviathanDescription": "Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles."
+  "leviathanDescription": "Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles.",
+  "customGameConfig": "CUSTOM CONFIGURATION",
+  "customGameConfigSubtitle": "FINE-TUNE SHIP SYSTEMS & THREAT LEVELS",
+  "customConfigButton": "CUSTOM GAME SETTINGS",
+  "playerDamage": "Player Weapon Damage",
+  "playerFireSpeed": "Player Laser Speed",
+  "enemyHealth": "Enemy & Meteor Durability",
+  "enemySpeed": "Enemy Fleet Speed",
+  "enemySpawnRate": "Enemy Spawn Density",
+  "meteorSpawnRate": "Meteor Spawn Density",
+  "resetToDefault": "RESET ALL TO DEFAULT"
 }

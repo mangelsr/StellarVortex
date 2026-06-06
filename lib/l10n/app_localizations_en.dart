@@ -198,4 +198,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get leviathanDescription =>
       'Heavy gunship. Extremely durable, fires high-damage heavy spread projectiles.';
+
+  @override
+  String get customGameConfig => 'CUSTOM CONFIGURATION';
+
+  @override
+  String get customGameConfigSubtitle =>
+      'FINE-TUNE SHIP SYSTEMS & THREAT LEVELS';
+
+  @override
+  String get customConfigButton => 'CUSTOM GAME SETTINGS';
+
+  @override
+  String get playerDamage => 'Player Weapon Damage';
+
+  @override
+  String get playerFireSpeed => 'Player Laser Speed';
+
+  @override
+  String get enemyHealth => 'Enemy & Meteor Durability';
+
+  @override
+  String get enemySpeed => 'Enemy Fleet Speed';
+
+  @override
+  String get enemySpawnRate => 'Enemy Spawn Density';
+
+  @override
+  String get meteorSpawnRate => 'Meteor Spawn Density';
+
+  @override
+  String get resetToDefault => 'RESET ALL TO DEFAULT';
 }

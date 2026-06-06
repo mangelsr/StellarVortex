@@ -199,4 +199,35 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get leviathanDescription =>
       'Cañonera pesada. Extremadamente resistente, dispara proyectiles pesados de gran dispersión y daño.';
+
+  @override
+  String get customGameConfig => 'CONFIGURACIÓN PERSONALIZADA';
+
+  @override
+  String get customGameConfigSubtitle =>
+      'AJUSTA LOS SISTEMAS Y NIVELES DE AMENAZA';
+
+  @override
+  String get customConfigButton => 'AJUSTES DE JUEGO PERSONALIZADOS';
+
+  @override
+  String get playerDamage => 'Daño del Arma del Jugador';
+
+  @override
+  String get playerFireSpeed => 'Velocidad de Láser del Jugador';
+
+  @override
+  String get enemyHealth => 'Resistencia de Enemigos y Meteoros';
+
+  @override
+  String get enemySpeed => 'Velocidad de Flota Enemiga';
+
+  @override
+  String get enemySpawnRate => 'Densidad de Aparición de Enemigos';
+
+  @override
+  String get meteorSpawnRate => 'Densidad de Aparición de Meteoros';
+
+  @override
+  String get resetToDefault => 'REESTABLECER VALORES HANGAR';
 }
