@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -249,9 +248,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: const Color(
-          0xFF0F1123,
-        ).withValues(alpha: 0.7), // Sleek translucent dark
+        color: const Color(0xFF0F1123).withValues(alpha: 0.85), // Translucent dark
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.12),
@@ -266,13 +263,7 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
         ],
       ),
       padding: padding,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: child,
-        ),
-      ),
+      child: child,
     );
   }
 
