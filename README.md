@@ -62,9 +62,10 @@ Engage dynamic threats whose patterns and spawn frequencies scale as you advance
 * **Engine**: [Flame Engine 1.37.0](https://flame-engine.org/)
 * **Data Persistence**: Uses `shared_preferences` to persist high scores, language preferences, and audio/sound settings across game sessions.
 * **Localization**: Bilingual interface supporting English and Spanish text via a customized localization manager.
-* **Graphics & UI Components**:
+* **Graphics, UI & Audio Components**:
   * Art Assets: Kenney's Space Shooter Redux (Creative Commons Zero)
   * Virtual Controls: Kenney's Mobile Elements (Creative Commons Zero)
+  * Audio Effects: Kenney's Space Audio (Creative Commons Zero)
   * Custom Sprite Atlas XML Parser: Reads native XML spreadsheets for efficient rendering.
 * **Platform Features**: Native fullscreen toggle, locked landscape orientation, and keyboard/mouse pointer event interception.
 
@@ -146,11 +147,12 @@ Make sure you have the [Flutter SDK](https://docs.flutter.dev/get-started/instal
 
 ## 🏆 Credits
 
-All graphics and UI design assets are courtesy of **Kenney** (<https://kenney.nl>):
+All graphics and audio assets are courtesy of **Kenney** (<https://kenney.nl>):
 
 * Space Shooter Sprites: *Space Shooter Redux* pack.
 * Virtual Controls & Icons: *Mobile Elements* pack.
 * Planet Parts: *Planet Parts* pack.
+* Audio Effects: *Space Audio* pack.
 
 ---
 
