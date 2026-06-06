@@ -65,6 +65,7 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
     final collidedComponent = other is ShapeHitbox ? other.parent : other;
 
     if (collidedComponent is PlayerShip) {
+      game.playPowerUp();
       // Apply Power-up effects
       switch (type) {
         case PowerUpType.shield:

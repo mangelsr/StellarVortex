@@ -41,6 +41,8 @@ mixin AudioManager on FlameGame {
       ..._enemyLaserFiles,
       ..._spaceEngineFiles,
       'thrusterFire.ogg',
+      'powerUp.ogg',
+      'ui/tone.ogg',
     ];
     await FlameAudio.audioCache.loadAll(allAudioFiles);
   }
@@ -70,6 +72,14 @@ mixin AudioManager on FlameGame {
   void playSpaceEngine() {
     final file = _spaceEngineFiles[_audioRandom.nextInt(_spaceEngineFiles.length)];
     FlameAudio.play(file, volume: sfxVolume * 0.7);
+  }
+
+  void playPowerUp() {
+    FlameAudio.play('powerUp.ogg', volume: sfxVolume);
+  }
+
+  void playButtonTone() {
+    FlameAudio.play('ui/tone.ogg', volume: sfxVolume);
   }
 
   void startThruster() async {

@@ -182,7 +182,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                               0xFF00E5FF,
                             ).withValues(alpha: 0.3),
                           ),
-                          onPressed: widget.game.closeSettings,
+                          onPressed: () {
+                            widget.game.playButtonTone();
+                            widget.game.closeSettings();
+                          },
                           child: Text(
                             loc.saveAndClose,
                             style: const TextStyle(
@@ -218,6 +221,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: () {
+            widget.game.playButtonTone();
             setState(() {
               _activeTabIndex = index;
             });
@@ -310,6 +314,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                     isSelected: currentLanguage == GameLanguage.en,
                     isShort: isShortScreen,
                     onTap: () {
+                      widget.game.playButtonTone();
                       widget.game.languageNotifier.value = GameLanguage.en;
                     },
                   ),
@@ -322,6 +327,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                     isSelected: currentLanguage == GameLanguage.es,
                     isShort: isShortScreen,
                     onTap: () {
+                      widget.game.playButtonTone();
                       widget.game.languageNotifier.value = GameLanguage.es;
                     },
                   ),
@@ -496,6 +502,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
               ),
             ),
             onPressed: () {
+              widget.game.playButtonTone();
               setState(() {
                 widget.game.playerDamageMultiplier = 1.0;
                 widget.game.playerFireSpeedMultiplier = 1.0;

@@ -151,7 +151,10 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
-                                  onTap: widget.game.closeShipSelection,
+                                  onTap: () {
+                                    widget.game.playButtonTone();
+                                    widget.game.closeShipSelection();
+                                  },
                                   child: Row(
                                     children: [
                                       const Icon(Icons.arrow_back_ios, color: Colors.white60, size: 14),
@@ -268,6 +271,7 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
                                     ),
                                   ),
                                   onPressed: () {
+                                    widget.game.playButtonTone();
                                     widget.game.startGame(currentShip);
                                   },
                                   child: Text(
@@ -299,7 +303,10 @@ class _ShipSelectionMenuState extends State<ShipSelectionMenu> {
     required VoidCallback onTap,
   }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        widget.game.playButtonTone();
+        onTap();
+      },
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

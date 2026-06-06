@@ -188,7 +188,10 @@ class _GameHudState extends State<GameHud> with SingleTickerProviderStateMixin {
                         SizedBox(width: isNarrowScreen ? 6 : 10),
                         // Pause Button
                         GestureDetector(
-                          onTap: game.togglePause,
+                          onTap: () {
+                            game.playButtonTone();
+                            game.togglePause();
+                          },
                           child: _buildGlassmorphicContainer(
                             padding: EdgeInsets.all(isShortScreen ? 8 : 12),
                             child: Icon(

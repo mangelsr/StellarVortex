@@ -190,6 +190,7 @@ class _StartMenuState extends State<StartMenu> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
+                                      widget.game.playButtonTone();
                                       setState(() {
                                         _showInstructions = false;
                                       });
@@ -253,6 +254,7 @@ class _StartMenuState extends State<StartMenu> {
                                     ),
                                   ),
                                   onPressed: () {
+                                    widget.game.playButtonTone();
                                     setState(() {
                                       _showInstructions = false;
                                     });
@@ -322,6 +324,7 @@ class _StartMenuState extends State<StartMenu> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
+                                      widget.game.playButtonTone();
                                       setState(() {
                                         _showCredits = false;
                                       });
@@ -374,6 +377,7 @@ class _StartMenuState extends State<StartMenu> {
                                     ),
                                   ),
                                   onPressed: () {
+                                    widget.game.playButtonTone();
                                     setState(() {
                                       _showCredits = false;
                                     });
@@ -411,7 +415,10 @@ class _StartMenuState extends State<StartMenu> {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () {
+          widget.game.playButtonTone();
+          onTap();
+        },
         child: Container(
           width: isShort ? 220 : 250,
           padding: EdgeInsets.symmetric(vertical: isShort ? 8 : 14, horizontal: 20),

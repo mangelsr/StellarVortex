@@ -267,7 +267,10 @@ class GameOverMenu extends StatelessWidget {
             ),
           ),
         ),
-        onPressed: onTap,
+        onPressed: () {
+          game.playButtonTone();
+          onTap();
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
