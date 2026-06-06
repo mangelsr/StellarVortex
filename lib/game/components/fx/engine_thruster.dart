@@ -4,8 +4,11 @@ import 'package:flame/components.dart';
 
 import '../../game_constants.dart';
 
+enum ThrusterMode { normal, weaponUpgrade, fireRate }
+
 class EngineThruster extends PositionComponent {
   final bool Function() isMoving;
+  final ThrusterMode Function()? getMode;
   final Random _random = Random();
   final List<_EngineParticle> _particles = [];
   
@@ -14,6 +17,7 @@ class EngineThruster extends PositionComponent {
   EngineThruster({
     required super.position,
     required this.isMoving,
+    this.getMode,
   }) : super(
           anchor: Anchor.topCenter,
           size: ThrusterConstants.size,
@@ -52,6 +56,8 @@ class EngineThruster extends PositionComponent {
         // Spawn slightly offset horizontally at the nozzle center (size.x / 2)
         final startX = size.x / 2 + (_random.nextDouble() - 0.5) * ThrusterConstants.nozzleOffsetRange;
         
+        final mode = getMode != null ? getMode!() : ThrusterMode.normal;
+
         _particles.add(_EngineParticle(
           position: Vector2(startX, 0),
           velocity: velocity,
@@ -61,6 +67,7 @@ class EngineThruster extends PositionComponent {
           startSize: moving 
               ? ThrusterConstants.startSizeMovingBase + _random.nextDouble() * ThrusterConstants.startSizeMovingRange 
               : ThrusterConstants.startSizeIdleBase + _random.nextDouble() * ThrusterConstants.startSizeIdleRange,
+          mode: mode,
         ));
       }
     }
@@ -82,6 +89,7 @@ class _EngineParticle {
   Vector2 velocity;
   final double maxLifetime;
   final double startSize;
+  final ThrusterMode mode;
   
   double lifetime = 0;
 
@@ -90,6 +98,7 @@ class _EngineParticle {
     required this.velocity,
     required this.maxLifetime,
     required this.startSize,
+    required this.mode,
   });
 
   void update(double dt) {
@@ -102,16 +111,32 @@ class _EngineParticle {
     final size = startSize * (1.0 - progress);
     final opacity = 1.0 - progress;
 
-    // Color transition: nozzle core is white, transitioning to bright cyan, then deep blue, then fading
+    Color primaryGlow;
+    Color secondaryGlow;
+
+    switch (mode) {
+      case ThrusterMode.weaponUpgrade:
+        primaryGlow = const Color(0xFFFFD700); // Gold
+        secondaryGlow = const Color(0xFFFF5722); // Orange/Red
+        break;
+      case ThrusterMode.fireRate:
+        primaryGlow = const Color(0xFFFF1744); // Magenta/Red
+        secondaryGlow = const Color(0xFFD500F9); // Purple
+        break;
+      case ThrusterMode.normal:
+      default:
+        primaryGlow = const Color(0xFF00E5FF); // Cyan
+        secondaryGlow = const Color(0xFF2979FF); // Blue
+        break;
+    }
+
     Color particleColor;
     if (progress < 0.2) {
       particleColor = Colors.white;
     } else if (progress < 0.55) {
-      // Glow cyan
-      particleColor = Color.lerp(Colors.white, const Color(0xFF00E5FF), (progress - 0.2) / 0.35)!;
+      particleColor = Color.lerp(Colors.white, primaryGlow, (progress - 0.2) / 0.35)!;
     } else {
-      // Fade to deep blue
-      particleColor = Color.lerp(const Color(0xFF00E5FF), const Color(0xFF2979FF), (progress - 0.55) / 0.45)!;
+      particleColor = Color.lerp(primaryGlow, secondaryGlow, (progress - 0.55) / 0.45)!;
     }
 
     final paint = Paint()

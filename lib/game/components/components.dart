@@ -8,4 +8,6 @@ export 'entities/power_up.dart';
 export 'fx/engine_thruster.dart';
 export 'fx/explosion_particle.dart';
 export 'fx/shield_vfx.dart';
+export 'fx/floating_text.dart';
+export 'fx/power_up_trail_particle.dart';
 export 'managers/spawn_manager.dart';

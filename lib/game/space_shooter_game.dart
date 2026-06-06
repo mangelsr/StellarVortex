@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui' as ui;
+import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 
@@ -31,6 +33,11 @@ class SpaceShooterGame extends FlameGame
   late SpawnManager spawnManager;
 
   final _random = Random();
+
+  // Full-screen postprocessing color shift state
+  Color _postProcessColor = const Color(0x00000000);
+  double _postProcessTimer = 0;
+  double _postProcessDuration = 0.55;
 
   @override
   Future<void> onLoad() async {
@@ -129,6 +136,14 @@ class SpaceShooterGame extends FlameGame
   @override
   void update(double dt) {
     super.update(dt);
+
+    // Update post-processing timer
+    if (_postProcessTimer > 0) {
+      _postProcessTimer -= dt;
+      if (_postProcessTimer < 0) {
+        _postProcessTimer = 0;
+      }
+    }
 
     if (state != GameState.playing) return;
 
@@ -232,5 +247,46 @@ class SpaceShooterGame extends FlameGame
   void closeSettings() {
     saveCustomSettings();
     overlays.remove('settingsMenu');
+  }
+
+  /// Triggers a fullscreen color grade flash and vignette.
+  void triggerPostProcessing(Color color, {double duration = 0.55}) {
+    _postProcessColor = color;
+    _postProcessTimer = duration;
+    _postProcessDuration = duration;
+  }
+
+  @override
+  void render(Canvas canvas) {
+    if (_postProcessTimer > 0 && _postProcessColor.alpha > 0) {
+      final progress = _postProcessTimer / _postProcessDuration;
+      // 1. Fullscreen color grade filter using saveLayer
+      final paint = Paint()
+        ..colorFilter = ColorFilter.mode(
+          _postProcessColor.withValues(alpha: progress * 0.18),
+          BlendMode.color,
+        );
+
+      canvas.saveLayer(null, paint);
+      super.render(canvas);
+      canvas.restore();
+
+      // 2. Fullscreen vignette overlay
+      final rect = Offset.zero & size.toSize();
+      final vignettePaint = Paint()
+        ..shader = ui.Gradient.radial(
+          size.toOffset() / 2,
+          size.length / 2,
+          [
+            _postProcessColor.withValues(alpha: 0.0),
+            _postProcessColor.withValues(alpha: progress * 0.38),
+          ],
+          [0.0, 1.0],
+        )
+        ..blendMode = BlendMode.srcOver;
+      canvas.drawRect(rect, vignettePaint);
+    } else {
+      super.render(canvas);
+    }
   }
 }

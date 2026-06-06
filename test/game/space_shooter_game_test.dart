@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flame/game.dart';
 import 'package:flame_test/flame_test.dart';
@@ -7,12 +8,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stellar_vortex/game/space_shooter_game.dart';
 import 'package:stellar_vortex/game/utils/xml_spritesheet_parser.dart';
 import 'package:stellar_vortex/game/components/components.dart';
+import 'package:stellar_vortex/game/game_constants.dart';
 
 class MockImage implements ui.Image {
   @override
   int get width => 1;
   @override
   int get height => 1;
+
+  @override
+  bool get debugDisposed => false;
 
   @override
   void dispose() {}
@@ -58,6 +63,9 @@ class TestSpaceShooterGame extends SpaceShooterGame {
       'spaceEffects_015.png': rect,
       'spaceEffects_016.png': rect,
       'spaceEffects_017.png': rect,
+      'spaceParts_067.png': rect,
+      'spaceParts_069.png': rect,
+      'spaceParts_070.png': rect,
     };
     spaceShooterAtlas = XmlSpriteSheet(subTextures: dummyMap);
 
@@ -72,6 +80,11 @@ class TestSpaceShooterGame extends SpaceShooterGame {
 
     spaceShooterImage = mockImage;
     mobileControlsImage = mockImage;
+  }
+
+  @override
+  void render(ui.Canvas canvas) {
+    // No-op in test environment to bypass canvas drawing logic
   }
 
   @override
@@ -157,6 +170,63 @@ void main() {
 
         game.playerHit(20.0);
         expect(game.playerShip?.health, initialHealth - 20.0);
+      },
+    );
+
+    tester.testGameWidget(
+      'picking up a shield power-up restores shield',
+      setUp: (game, tester) async {
+        game.startGame(PlayerShipType.vanguard);
+        final ship = game.playerShip!;
+        ship.shield = 10.0;
+
+        final powerUp = PowerUp(
+          position: ship.position.clone(),
+          type: PowerUpType.shield,
+        );
+        game.add(powerUp);
+        await game.ready();
+
+        powerUp.onCollisionStart({ship.position}, ship);
+        expect(ship.shield, 10.0 + PowerUpConstants.shieldRestoreAmount);
+      },
+    );
+
+    tester.testGameWidget(
+      'picking up a weapon upgrade power-up upgrades weapon level',
+      setUp: (game, tester) async {
+        game.startGame(PlayerShipType.vanguard);
+        final ship = game.playerShip!;
+        expect(ship.weaponLevel, 1);
+
+        final powerUp = PowerUp(
+          position: ship.position.clone(),
+          type: PowerUpType.weaponUpgrade,
+        );
+        game.add(powerUp);
+        await game.ready();
+
+        powerUp.onCollisionStart({ship.position}, ship);
+        expect(ship.weaponLevel, 2);
+      },
+    );
+
+    tester.testGameWidget(
+      'picking up a fire rate power-up upgrades fire rate timer',
+      setUp: (game, tester) async {
+        game.startGame(PlayerShipType.vanguard);
+        final ship = game.playerShip!;
+        expect(ship.fireRateUpgradeTimer, 0.0);
+
+        final powerUp = PowerUp(
+          position: ship.position.clone(),
+          type: PowerUpType.fireRate,
+        );
+        game.add(powerUp);
+        await game.ready();
+
+        powerUp.onCollisionStart({ship.position}, ship);
+        expect(ship.fireRateUpgradeTimer, PlayerConstants.weaponUpgradeDuration);
       },
     );
   });

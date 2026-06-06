@@ -35,6 +35,7 @@ class PlayerShip extends PositionComponent
   // Weapon level: 1 = Single, 2 = Double, 3 = Spread
   int weaponLevel = 1;
   double weaponUpgradeTimer = 0; // Temporary duration for upgrades
+  double fireRateUpgradeTimer = 0; // Temporary duration for fire rate powerup
 
   // Subcomponents
   late SpriteComponent _shipSprite;
@@ -65,6 +66,15 @@ class PlayerShip extends PositionComponent
     _thrusterEffect = EngineThruster(
       position: Vector2(size.x / 2, size.y * 0.95),
       isMoving: () => velocity.length > 0,
+      getMode: () {
+        if (weaponUpgradeTimer > 0) {
+          return ThrusterMode.weaponUpgrade;
+        } else if (fireRateUpgradeTimer > 0) {
+          return ThrusterMode.fireRate;
+        } else {
+          return ThrusterMode.normal;
+        }
+      },
     );
     add(_thrusterEffect);
 
@@ -101,6 +111,11 @@ class PlayerShip extends PositionComponent
     weaponUpgradeTimer = PlayerConstants.weaponUpgradeDuration;
   }
 
+  /// Upgrade the fire rate temporarily
+  void upgradeFireRate() {
+    fireRateUpgradeTimer = PlayerConstants.weaponUpgradeDuration;
+  }
+
   /// Restore shield
   void restoreShield(double amount) {
     shield = min(maxShield, shield + amount);
@@ -135,6 +150,11 @@ class PlayerShip extends PositionComponent
       if (weaponUpgradeTimer <= 0) {
         weaponLevel = 1;
       }
+    }
+
+    // Fire rate upgrade timer countdown
+    if (fireRateUpgradeTimer > 0) {
+      fireRateUpgradeTimer -= dt;
     }
 
     // Shield flash timer
@@ -261,7 +281,11 @@ class PlayerShip extends PositionComponent
     }
 
     // Fire laser if firing is active
-    if (isFiring && _fireTimer >= shipType.fireInterval) {
+    double activeFireInterval = shipType.fireInterval;
+    if (fireRateUpgradeTimer > 0) {
+      activeFireInterval *= 0.5; // Double fire rate (half interval)
+    }
+    if (isFiring && _fireTimer >= activeFireInterval) {
       _fireTimer = 0;
       _fireLaser(aimDir ?? Vector2(sin(angle), -cos(angle)));
     }
