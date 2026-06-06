@@ -32,6 +32,15 @@ mixin AudioManager on FlameGame {
     'spaceEngine_003.ogg',
   ];
 
+  AudioPool? _playerLaserPool;
+  final List<AudioPool> _enemyLaserPools = [];
+  final List<AudioPool> _explosionPools = [];
+  AudioPool? _shieldHitPool;
+  AudioPool? _hullHitPool;
+  final List<AudioPool> _spaceEnginePools = [];
+  AudioPool? _powerUpPool;
+  AudioPool? _buttonTonePool;
+
   Future<void> preloadAudio() async {
     final allAudioFiles = [
       ..._explosionFiles,
@@ -45,41 +54,74 @@ mixin AudioManager on FlameGame {
       'ui/tone.ogg',
     ];
     await FlameAudio.audioCache.loadAll(allAudioFiles);
+
+    // Initialize AudioPools for high-frequency gameplay sound effects to prevent memory leaks/stutter
+    _playerLaserPool = await FlameAudio.createPool('laserLarge.ogg', minPlayers: 2, maxPlayers: 6);
+
+    _enemyLaserPools.clear();
+    for (final file in _enemyLaserFiles) {
+      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 3);
+      _enemyLaserPools.add(pool);
+    }
+
+    _explosionPools.clear();
+    for (final file in _explosionFiles) {
+      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 4);
+      _explosionPools.add(pool);
+    }
+
+    _shieldHitPool = await FlameAudio.createPool('forceField.ogg', minPlayers: 1, maxPlayers: 4);
+    _hullHitPool = await FlameAudio.createPool('impactMetal.ogg', minPlayers: 1, maxPlayers: 4);
+
+    _spaceEnginePools.clear();
+    for (final file in _spaceEngineFiles) {
+      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 2);
+      _spaceEnginePools.add(pool);
+    }
+
+    _powerUpPool = await FlameAudio.createPool('powerUp.ogg', minPlayers: 1, maxPlayers: 3);
+    _buttonTonePool = await FlameAudio.createPool('ui/tone.ogg', minPlayers: 1, maxPlayers: 3);
   }
 
   void playPlayerLaser() {
-    FlameAudio.play('laserLarge.ogg', volume: sfxVolume);
+    _playerLaserPool?.start(volume: sfxVolume);
   }
 
   void playEnemyLaser() {
-    final file = _enemyLaserFiles[_audioRandom.nextInt(_enemyLaserFiles.length)];
-    FlameAudio.play(file, volume: sfxVolume * 0.95);
+    if (_enemyLaserPools.isNotEmpty) {
+      final pool = _enemyLaserPools[_audioRandom.nextInt(_enemyLaserPools.length)];
+      pool.start(volume: sfxVolume * 0.95);
+    }
   }
 
   void playExplosion() {
-    final file = _explosionFiles[_audioRandom.nextInt(_explosionFiles.length)];
-    FlameAudio.play(file, volume: sfxVolume);
+    if (_explosionPools.isNotEmpty) {
+      final pool = _explosionPools[_audioRandom.nextInt(_explosionPools.length)];
+      pool.start(volume: sfxVolume);
+    }
   }
 
   void playShieldHit() {
-    FlameAudio.play('forceField.ogg', volume: sfxVolume);
+    _shieldHitPool?.start(volume: sfxVolume);
   }
 
   void playHullHit() {
-    FlameAudio.play('impactMetal.ogg', volume: sfxVolume);
+    _hullHitPool?.start(volume: sfxVolume);
   }
 
   void playSpaceEngine() {
-    final file = _spaceEngineFiles[_audioRandom.nextInt(_spaceEngineFiles.length)];
-    FlameAudio.play(file, volume: sfxVolume * 0.7);
+    if (_spaceEnginePools.isNotEmpty) {
+      final pool = _spaceEnginePools[_audioRandom.nextInt(_spaceEnginePools.length)];
+      pool.start(volume: sfxVolume * 0.7);
+    }
   }
 
   void playPowerUp() {
-    FlameAudio.play('powerUp.ogg', volume: sfxVolume);
+    _powerUpPool?.start(volume: sfxVolume);
   }
 
   void playButtonTone() {
-    FlameAudio.play('ui/tone.ogg', volume: sfxVolume);
+    _buttonTonePool?.start(volume: sfxVolume);
   }
 
   void startThruster() async {

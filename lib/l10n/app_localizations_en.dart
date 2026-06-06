@@ -231,5 +231,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enemyFireRate => 'Enemy Weapon Fire Rate';
 
   @override
+  String get controlsSize => 'On-Screen Controls Size';
+
+  @override
   String get resetToDefault => 'RESET ALL TO DEFAULT';
 }

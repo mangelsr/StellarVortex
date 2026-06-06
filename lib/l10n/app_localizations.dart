@@ -512,6 +512,12 @@ abstract class AppLocalizations {
   /// **'Enemy Weapon Fire Rate'**
   String get enemyFireRate;
 
+  /// No description provided for @controlsSize.
+  ///
+  /// In en, this message translates to:
+  /// **'On-Screen Controls Size'**
+  String get controlsSize;
+
   /// No description provided for @resetToDefault.
   ///
   /// In en, this message translates to:

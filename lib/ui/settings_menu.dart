@@ -483,6 +483,19 @@ class _SettingsMenuState extends State<SettingsMenu> {
             });
           },
         ),
+        _buildCustomSlider(
+          label: loc.controlsSize,
+          value: widget.game.controlsSizeMultiplier,
+          onChanged: (val) {
+            setState(() {
+              widget.game.controlsSizeMultiplier = val;
+              if (widget.game.joystickLeft != null || widget.game.fireButton != null) {
+                widget.game.clearJoysticks();
+                widget.game.setupJoysticks(widget.game.mobileControlsAtlas, widget.game.mobileControlsImage);
+              }
+            });
+          },
+        ),
         const SizedBox(height: 4),
         // Reset to default button
         SizedBox(
@@ -511,6 +524,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                 widget.game.enemySpawnRateMultiplier = 1.0;
                 widget.game.meteorSpawnRateMultiplier = 1.0;
                 widget.game.enemyFireRateMultiplier = 1.0;
+                widget.game.controlsSizeMultiplier = 1.0;
+                if (widget.game.joystickLeft != null || widget.game.fireButton != null) {
+                  widget.game.clearJoysticks();
+                  widget.game.setupJoysticks(widget.game.mobileControlsAtlas, widget.game.mobileControlsImage);
+                }
               });
             },
           ),

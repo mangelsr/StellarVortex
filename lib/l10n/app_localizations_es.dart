@@ -232,5 +232,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get enemyFireRate => 'Cadencia de Fuego Enemigo';
 
   @override
+  String get controlsSize => 'Tamaño de Controles';
+
+  @override
   String get resetToDefault => 'REESTABLECER VALORES HANGAR';
 }

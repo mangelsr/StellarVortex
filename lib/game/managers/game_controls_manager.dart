@@ -5,6 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart' show HudButtonComponent;
 import '../utils/xml_spritesheet_parser.dart';
+import 'game_session_manager.dart';
 
 mixin GameControlsManager on FlameGame {
   JoystickComponent? joystickLeft;
@@ -27,13 +28,15 @@ mixin GameControlsManager on FlameGame {
   void setupJoysticks(XmlSpriteSheet mobileControlsAtlas, Image mobileControlsImage) {
     if (!showMobileControls) return;
 
+    final controlsSizeMultiplier = (this as GameSessionManager).controlsSizeMultiplier;
+
     joystickLeft = JoystickComponent(
       knob: SpriteComponent(
         sprite: mobileControlsAtlas.getSprite(
           'joystick_circle_nub_a',
           mobileControlsImage,
         ),
-        size: Vector2.all(40),
+        size: Vector2.all(40 * controlsSizeMultiplier),
         paint: Paint()
           ..color = const Color(0x77FFFFFF) // Translucent base
           ..colorFilter = const ColorFilter.mode(
@@ -46,7 +49,7 @@ mixin GameControlsManager on FlameGame {
           'joystick_circle_pad_a',
           mobileControlsImage,
         ),
-        size: Vector2.all(100),
+        size: Vector2.all(100 * controlsSizeMultiplier),
         paint: Paint()
           ..color = const Color(0x22FFFFFF) // Highly translucent base
           ..colorFilter = const ColorFilter.mode(
@@ -54,7 +57,10 @@ mixin GameControlsManager on FlameGame {
             BlendMode.srcATop,
           ),
       ),
-      margin: const EdgeInsets.only(left: 30, bottom: 40),
+      margin: EdgeInsets.only(
+        left: 30 * controlsSizeMultiplier,
+        bottom: 40 * controlsSizeMultiplier,
+      ),
     );
 
     joystickRight = JoystickComponent(
@@ -63,7 +69,7 @@ mixin GameControlsManager on FlameGame {
           'joystick_circle_nub_c',
           mobileControlsImage,
         ),
-        size: Vector2.all(40),
+        size: Vector2.all(40 * controlsSizeMultiplier),
         paint: Paint()
           ..color = const Color(0x77FFFFFF) // Translucent base
           ..colorFilter = const ColorFilter.mode(
@@ -76,7 +82,7 @@ mixin GameControlsManager on FlameGame {
           'joystick_circle_pad_c',
           mobileControlsImage,
         ),
-        size: Vector2.all(100),
+        size: Vector2.all(100 * controlsSizeMultiplier),
         paint: Paint()
           ..color = const Color(0x22FFFFFF) // Highly translucent base
           ..colorFilter = const ColorFilter.mode(
@@ -84,7 +90,10 @@ mixin GameControlsManager on FlameGame {
             BlendMode.srcATop,
           ),
       ),
-      margin: const EdgeInsets.only(right: 30, bottom: 40),
+      margin: EdgeInsets.only(
+        right: 30 * controlsSizeMultiplier,
+        bottom: 40 * controlsSizeMultiplier,
+      ),
     );
 
     fireButton = HudButtonComponent(
@@ -93,7 +102,7 @@ mixin GameControlsManager on FlameGame {
           'button_circle',
           mobileControlsImage,
         ),
-        size: Vector2.all(80),
+        size: Vector2.all(80 * controlsSizeMultiplier),
         paint: Paint()
           ..color = const Color(0x33FFFFFF) // Highly translucent base
           ..colorFilter = const ColorFilter.mode(
@@ -106,7 +115,7 @@ mixin GameControlsManager on FlameGame {
           'button_circle',
           mobileControlsImage,
         ),
-        size: Vector2.all(80),
+        size: Vector2.all(80 * controlsSizeMultiplier),
         paint: Paint()
           ..color = const Color(0x88FFFFFF) // Translucent base when pressed
           ..colorFilter = const ColorFilter.mode(
@@ -114,7 +123,10 @@ mixin GameControlsManager on FlameGame {
             BlendMode.srcATop,
           ),
       ),
-      margin: const EdgeInsets.only(right: 150, bottom: 50),
+      margin: EdgeInsets.only(
+        right: 150 * controlsSizeMultiplier,
+        bottom: 50 * controlsSizeMultiplier,
+      ),
       onPressed: () {
         isFiringButtonDown = true;
       },

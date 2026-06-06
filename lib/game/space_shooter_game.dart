@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 
@@ -38,6 +39,7 @@ class SpaceShooterGame extends FlameGame
   Color _postProcessColor = const Color(0x00000000);
   double _postProcessTimer = 0;
   double _postProcessDuration = 0.55;
+  double _debugPrintTimer = 0;
 
   @override
   Future<void> onLoad() async {
@@ -160,6 +162,24 @@ class SpaceShooterGame extends FlameGame
         _spaceEngineTimer = 1.0;
       }
     }
+
+    // Periodic component leak check (only in debug mode)
+    if (kDebugMode) {
+      _debugPrintTimer -= dt;
+      if (_debugPrintTimer <= 0) {
+        _debugPrintTimer = 4.0; // log every 4 seconds
+        final bulletCount = children.whereType<Bullet>().length;
+        final enemyCount = children.whereType<EnemyShip>().length;
+        final meteorCount = children.whereType<Meteor>().length;
+        final particleCount = children.whereType<ExplosionParticle>().length + children.whereType<PowerUpTrailParticle>().length;
+        print('[STELLAR VORTEX DIAGNOSTICS] Active Entities: '
+            'Total=${children.length}, '
+            'Bullets=$bulletCount, '
+            'Enemies=$enemyCount, '
+            'Meteors=$meteorCount, '
+            'Particles=$particleCount');
+      }
+    }
   }
 
   /// Handles player taking damage
@@ -247,6 +267,10 @@ class SpaceShooterGame extends FlameGame
   void closeSettings() {
     saveCustomSettings();
     overlays.remove('settingsMenu');
+    if (state == GameState.playing) {
+      clearJoysticks();
+      setupJoysticks(mobileControlsAtlas, mobileControlsImage);
+    }
   }
 
   /// Triggers a fullscreen color grade flash and vignette.

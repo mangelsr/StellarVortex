@@ -82,5 +82,6 @@
   "enemySpawnRate": "Enemy Spawn Density",
   "meteorSpawnRate": "Meteor Spawn Density",
   "enemyFireRate": "Enemy Weapon Fire Rate",
+  "controlsSize": "On-Screen Controls Size",
   "resetToDefault": "RESET ALL TO DEFAULT"
 }
