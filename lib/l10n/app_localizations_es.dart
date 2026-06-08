@@ -235,5 +235,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get controlsSize => 'Tamaño de Controles';
 
   @override
+  String get fontSize => 'Tamaño de Fuente';
+
+  @override
   String get resetToDefault => 'REESTABLECER VALORES HANGAR';
 }

@@ -80,58 +80,64 @@ class GameWrapper extends StatelessWidget {
                 height: screenHeight,
                 child: FittedBox(
                   fit: BoxFit.fill,
-                  child: SizedBox(
-                    width: logicalWidth,
-                    height: targetHeight,
-                    child: MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                        size: Size(logicalWidth, targetHeight),
-                        padding: EdgeInsets.zero, // SafeArea is already applied by the root wrapper
-                        viewPadding: EdgeInsets.zero,
-                        viewInsets: EdgeInsets.zero,
-                      ),
-                      child: ClipRect(
-                        child: Listener(
-                          // Listen to raw pointer press events for mouse fire support on desktop
-                          onPointerDown: (PointerDownEvent event) {
-                            if (event.buttons == kPrimaryButton) {
-                              game.isMouseFiring = true;
-                            }
-                          },
-                          onPointerUp: (PointerUpEvent event) {
-                            // Note: buttons will be 0 on PointerUp, check using standard gesture detection
-                            game.isMouseFiring = false;
-                          },
-                          onPointerCancel: (_) {
-                            game.isMouseFiring = false;
-                          },
-                          child: MouseRegion(
-                            // Track mouse hover position to allow direct cursor aiming on desktop
-                            onHover: (PointerHoverEvent event) {
-                              game.mousePosition = Vector2(
-                                event.localPosition.dx,
-                                event.localPosition.dy,
-                              );
-                            },
-                            onExit: (_) {
-                              game.mousePosition = null;
-                              game.isMouseFiring = false;
-                            },
-                            child: GameWidget<SpaceShooterGame>(
-                              game: game,
-                              overlayBuilderMap: {
-                                'startMenu': (context, game) => StartMenu(game: game),
-                                'shipSelectionMenu': (context, game) => ShipSelectionMenu(game: game),
-                                'hud': (context, game) => GameHud(game: game),
-                                'pauseMenu': (context, game) => PauseMenu(game: game),
-                                'gameOverMenu': (context, game) => GameOverMenu(game: game),
-                                'settingsMenu': (context, game) => SettingsMenu(game: game),
+                  child: ValueListenableBuilder<double>(
+                    valueListenable: game.fontSizeNotifier,
+                    builder: (context, fontSizeMultiplier, _) {
+                      return SizedBox(
+                        width: logicalWidth,
+                        height: targetHeight,
+                        child: MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            size: Size(logicalWidth, targetHeight),
+                            textScaler: TextScaler.linear(fontSizeMultiplier),
+                            padding: EdgeInsets.zero, // SafeArea is already applied by the root wrapper
+                            viewPadding: EdgeInsets.zero,
+                            viewInsets: EdgeInsets.zero,
+                          ),
+                          child: ClipRect(
+                            child: Listener(
+                              // Listen to raw pointer press events for mouse fire support on desktop
+                              onPointerDown: (PointerDownEvent event) {
+                                if (event.buttons == kPrimaryButton) {
+                                  game.isMouseFiring = true;
+                                }
                               },
+                              onPointerUp: (PointerUpEvent event) {
+                                // Note: buttons will be 0 on PointerUp, check using standard gesture detection
+                                game.isMouseFiring = false;
+                              },
+                              onPointerCancel: (_) {
+                                game.isMouseFiring = false;
+                              },
+                              child: MouseRegion(
+                                // Track mouse hover position to allow direct cursor aiming on desktop
+                                onHover: (PointerHoverEvent event) {
+                                  game.mousePosition = Vector2(
+                                    event.localPosition.dx,
+                                    event.localPosition.dy,
+                                  );
+                                },
+                                onExit: (_) {
+                                  game.mousePosition = null;
+                                  game.isMouseFiring = false;
+                                },
+                                child: GameWidget<SpaceShooterGame>(
+                                  game: game,
+                                  overlayBuilderMap: {
+                                    'startMenu': (context, game) => StartMenu(game: game),
+                                    'shipSelectionMenu': (context, game) => ShipSelectionMenu(game: game),
+                                    'hud': (context, game) => GameHud(game: game),
+                                    'pauseMenu': (context, game) => PauseMenu(game: game),
+                                    'gameOverMenu': (context, game) => GameOverMenu(game: game),
+                                    'settingsMenu': (context, game) => SettingsMenu(game: game),
+                                  },
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
               ),

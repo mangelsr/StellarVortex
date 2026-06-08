@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 
-class FloatingText extends PositionComponent {
+import '../../space_shooter_game.dart';
+
+class FloatingText extends PositionComponent with HasGameReference<SpaceShooterGame> {
   final String text;
   final Color color;
   final double duration;
@@ -29,6 +31,7 @@ class FloatingText extends PositionComponent {
   void render(Canvas canvas) {
     final progress = _elapsed / duration;
     final opacity = (1.0 - progress).clamp(0.0, 1.0);
+    final scale = game.fontSizeNotifier.value;
     
     final textPainter = TextPainter(
       text: TextSpan(
@@ -36,7 +39,7 @@ class FloatingText extends PositionComponent {
         style: TextStyle(
           fontFamily: 'Courier New',
           fontWeight: FontWeight.bold,
-          fontSize: 16.0,
+          fontSize: 16.0 * scale,
           color: color.withValues(alpha: opacity),
           shadows: [
             Shadow(

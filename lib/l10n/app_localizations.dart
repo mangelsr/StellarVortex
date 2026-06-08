@@ -518,6 +518,12 @@ abstract class AppLocalizations {
   /// **'On-Screen Controls Size'**
   String get controlsSize;
 
+  /// No description provided for @fontSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Font Size'**
+  String get fontSize;
+
   /// No description provided for @resetToDefault.
   ///
   /// In en, this message translates to:

@@ -11,6 +11,7 @@ mixin GameSessionManager on FlameGame {
   final ValueNotifier<GameLanguage> languageNotifier = ValueNotifier(
     GameLanguage.en,
   );
+  final ValueNotifier<double> fontSizeNotifier = ValueNotifier(1.0);
   PlayerShipType selectedShipType = PlayerShipType.vanguard;
 
   SharedPreferences? prefs;
@@ -52,6 +53,11 @@ mixin GameSessionManager on FlameGame {
       enemyFireRateMultiplier = prefs?.getDouble('enemy_fire_rate_multiplier') ?? 1.0;
       controlsSizeMultiplier = prefs?.getDouble('controls_size_multiplier') ?? 1.0;
       sfxVolume = prefs?.getDouble('sfx_volume') ?? 1.0;
+      
+      final savedFontSize = prefs?.getDouble('font_size_multiplier');
+      if (savedFontSize != null) {
+        fontSizeNotifier.value = savedFontSize;
+      }
     } catch (e) {
       debugPrint('Failed to initialize SharedPreferences: $e');
     }
@@ -59,6 +65,10 @@ mixin GameSessionManager on FlameGame {
     // Automatically save language settings when they change
     languageNotifier.addListener(() {
       prefs?.setInt('language_preference', languageNotifier.value.index);
+    });
+
+    fontSizeNotifier.addListener(() {
+      prefs?.setDouble('font_size_multiplier', fontSizeNotifier.value);
     });
   }
 
@@ -73,6 +83,7 @@ mixin GameSessionManager on FlameGame {
       prefs?.setDouble('enemy_fire_rate_multiplier', enemyFireRateMultiplier);
       prefs?.setDouble('controls_size_multiplier', controlsSizeMultiplier);
       prefs?.setDouble('sfx_volume', sfxVolume);
+      prefs?.setDouble('font_size_multiplier', fontSizeNotifier.value);
     } catch (e) {
       debugPrint('Failed to save custom settings: $e');
     }

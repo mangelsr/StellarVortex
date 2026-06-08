@@ -69,5 +69,6 @@
   "meteorSpawnRate": "Densidad de Aparición de Meteoros",
   "enemyFireRate": "Cadencia de Fuego Enemigo",
   "controlsSize": "Tamaño de Controles",
+  "fontSize": "Tamaño de Fuente",
   "resetToDefault": "REESTABLECER VALORES HANGAR"
 }

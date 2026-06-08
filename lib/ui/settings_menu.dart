@@ -496,6 +496,15 @@ class _SettingsMenuState extends State<SettingsMenu> {
             });
           },
         ),
+        _buildCustomSlider(
+          label: loc.fontSize,
+          value: widget.game.fontSizeNotifier.value,
+          onChanged: (val) {
+            setState(() {
+              widget.game.fontSizeNotifier.value = val;
+            });
+          },
+        ),
         const SizedBox(height: 4),
         // Reset to default button
         SizedBox(
@@ -525,6 +534,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                 widget.game.meteorSpawnRateMultiplier = 1.0;
                 widget.game.enemyFireRateMultiplier = 1.0;
                 widget.game.controlsSizeMultiplier = 1.0;
+                widget.game.fontSizeNotifier.value = 1.0;
                 if (widget.game.joystickLeft != null || widget.game.fireButton != null) {
                   widget.game.clearJoysticks();
                   widget.game.setupJoysticks(widget.game.mobileControlsAtlas, widget.game.mobileControlsImage);
