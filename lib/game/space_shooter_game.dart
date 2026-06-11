@@ -28,7 +28,6 @@ class SpaceShooterGame extends FlameGame
         GameControlsManager,
         GameSessionManager,
         AudioManager {
-
   PlayerShip? playerShip;
   late StarfieldBackground starfield;
   late SpawnManager spawnManager;
@@ -171,13 +170,17 @@ class SpaceShooterGame extends FlameGame
         final bulletCount = children.whereType<Bullet>().length;
         final enemyCount = children.whereType<EnemyShip>().length;
         final meteorCount = children.whereType<Meteor>().length;
-        final particleCount = children.whereType<ExplosionParticle>().length + children.whereType<PowerUpTrailParticle>().length;
-        print('[STELLAR VORTEX DIAGNOSTICS] Active Entities: '
-            'Total=${children.length}, '
-            'Bullets=$bulletCount, '
-            'Enemies=$enemyCount, '
-            'Meteors=$meteorCount, '
-            'Particles=$particleCount');
+        final particleCount =
+            children.whereType<ExplosionParticle>().length +
+            children.whereType<PowerUpTrailParticle>().length;
+        print(
+          '[STELLAR VORTEX DIAGNOSTICS] Active Entities: '
+          'Total=${children.length}, '
+          'Bullets=$bulletCount, '
+          'Enemies=$enemyCount, '
+          'Meteors=$meteorCount, '
+          'Particles=$particleCount',
+        );
       }
     }
   }
@@ -197,17 +200,24 @@ class SpaceShooterGame extends FlameGame
       playerShip?.removeFromParent();
       playerShip = null;
 
-      Future.delayed(Duration(milliseconds: (PlayerConstants.respawnDuration * 1000).toInt()), () {
-        if (state == GameState.playing) {
-          playerShip = PlayerShip(
-            shipType: selectedShipType,
-            position: size / 2,
-          );
-          // Give respawn invulnerability
-          playerShip!.triggerInvulnerability(PlayerConstants.respawnInvulnerabilityDuration);
-          add(playerShip!);
-        }
-      });
+      Future.delayed(
+        Duration(
+          milliseconds: (PlayerConstants.respawnDuration * 1000).toInt(),
+        ),
+        () {
+          if (state == GameState.playing) {
+            playerShip = PlayerShip(
+              shipType: selectedShipType,
+              position: size / 2,
+            );
+            // Give respawn invulnerability
+            playerShip!.triggerInvulnerability(
+              PlayerConstants.respawnInvulnerabilityDuration,
+            );
+            add(playerShip!);
+          }
+        },
+      );
     } else {
       // Game Over
       state = GameState.gameOver;
@@ -282,7 +292,7 @@ class SpaceShooterGame extends FlameGame
 
   @override
   void render(Canvas canvas) {
-    if (_postProcessTimer > 0 && _postProcessColor.alpha > 0) {
+    if (_postProcessTimer > 0 && _postProcessColor.a > 0) {
       final progress = _postProcessTimer / _postProcessDuration;
       // 1. Fullscreen color grade filter using saveLayer
       final paint = Paint()

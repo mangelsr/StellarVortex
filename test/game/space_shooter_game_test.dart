@@ -1,7 +1,6 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flame/game.dart';
 import 'package:flame_test/flame_test.dart';
+import 'package:flame/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,28 +8,26 @@ import 'package:stellar_vortex/game/space_shooter_game.dart';
 import 'package:stellar_vortex/game/utils/xml_spritesheet_parser.dart';
 import 'package:stellar_vortex/game/components/components.dart';
 import 'package:stellar_vortex/game/game_constants.dart';
+late final ui.Image testImage;
 
-class MockImage implements ui.Image {
+class TestImages extends Images {
   @override
-  int get width => 1;
-  @override
-  int get height => 1;
-
-  @override
-  bool get debugDisposed => false;
+  void clear(String key) {}
 
   @override
-  void dispose() {}
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => null;
+  void clearCache() {}
 }
 
 // A test-friendly version of SpaceShooterGame that bypasses real asset and audio loading.
 class TestSpaceShooterGame extends SpaceShooterGame {
+  final _testImages = TestImages();
+
+  @override
+  Images get images => _testImages;
+
   TestSpaceShooterGame() {
     // Register dummy overlay builders so game can add/remove overlays without crashing
-    final dummyBuilder = (context, game) => const SizedBox.shrink();
+    SizedBox dummyBuilder(context, game) => const SizedBox.shrink();
     overlays.addEntry('startMenu', dummyBuilder);
     overlays.addEntry('shipSelectionMenu', dummyBuilder);
     overlays.addEntry('gameOverMenu', dummyBuilder);
@@ -41,7 +38,7 @@ class TestSpaceShooterGame extends SpaceShooterGame {
 
   @override
   Future<void> loadGameAssets() async {
-    final mockImage = MockImage();
+    final mockImage = testImage;
 
     // Populate Flame's images cache with mock images for planet parts
     for (int i = 0; i < 3; i++) {
@@ -83,11 +80,6 @@ class TestSpaceShooterGame extends SpaceShooterGame {
   }
 
   @override
-  void render(ui.Canvas canvas) {
-    // No-op in test environment to bypass canvas drawing logic
-  }
-
-  @override
   Future<void> preloadAudio() async {}
 
   @override
@@ -126,6 +118,10 @@ class TestSpaceShooterGame extends SpaceShooterGame {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    testImage = await createTestImage(width: 1, height: 1);
+  });
 
   group('SpaceShooterGame Flame Tests', () {
     setUp(() {
@@ -226,7 +222,10 @@ void main() {
         await game.ready();
 
         powerUp.onCollisionStart({ship.position}, ship);
-        expect(ship.fireRateUpgradeTimer, PlayerConstants.weaponUpgradeDuration);
+        expect(
+          ship.fireRateUpgradeTimer,
+          PlayerConstants.weaponUpgradeDuration,
+        );
       },
     );
   });
