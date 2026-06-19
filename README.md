@@ -2,6 +2,8 @@
 
 A premium, modern, and highly-immersive **Dual-Stick Arcade Space Shooter** game built with **Flutter** and powered by the **Flame Game Engine**. Playable on Web, Desktop, and Mobile, it blends retro arcade mechanics with a sleek sci-fi visual style.
 
+📱 **Download it on the [Google Play Store](https://play.google.com/store/apps/details?id=io.github.mangelsr.stellar_vortex&hl=es_419)**
+
 ---
 
 ## 🎮 Game Overview & Features
