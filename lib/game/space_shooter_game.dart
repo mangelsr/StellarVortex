@@ -10,6 +10,7 @@ import 'utils/game_asset_loader.dart';
 import 'managers/game_controls_manager.dart';
 import 'managers/game_session_manager.dart';
 import 'managers/audio_manager.dart';
+import 'managers/bullet_pool_manager.dart';
 import 'models/game_state.dart';
 import 'models/player_ship_type.dart';
 import 'game_constants.dart';
@@ -27,7 +28,8 @@ class SpaceShooterGame extends FlameGame
         GameAssetLoader,
         GameControlsManager,
         GameSessionManager,
-        AudioManager {
+        AudioManager,
+        BulletPoolManager {
   PlayerShip? playerShip;
   late StarfieldBackground starfield;
   late SpawnManager spawnManager;
@@ -48,6 +50,7 @@ class SpaceShooterGame extends FlameGame
     // 1. Load game assets
     await loadGameAssets();
     await preloadAudio();
+    await initBulletPool();
 
     // 2. Add parallax background (always present, even in menus)
     starfield = StarfieldBackground();
@@ -116,16 +119,19 @@ class SpaceShooterGame extends FlameGame
   }
 
   void _clearPlayableComponents() {
-    // Remove player, enemies, bullets, meteors, and powerups in the world
+    // Remove player, enemies, meteors, and powerups in the world
     for (final component in children) {
       if (component is PlayerShip ||
           component is EnemyShip ||
-          component is Bullet ||
           component is Meteor ||
           component is PowerUp) {
         component.removeFromParent();
       }
     }
+
+    // Clear pooled bullets
+    clearBulletPools();
+
     // Remove HUD controls from the camera viewport
     clearJoysticks();
 
@@ -167,7 +173,7 @@ class SpaceShooterGame extends FlameGame
       _debugPrintTimer -= dt;
       if (_debugPrintTimer <= 0) {
         _debugPrintTimer = 4.0; // log every 4 seconds
-        final bulletCount = children.whereType<Bullet>().length;
+        final bulletCount = children.whereType<Bullet>().where((b) => b.isActive).length;
         final enemyCount = children.whereType<EnemyShip>().length;
         final meteorCount = children.whereType<Meteor>().length;
         final particleCount =

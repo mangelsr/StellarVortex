@@ -25,6 +25,13 @@ class ShieldVfx extends PositionComponent with HasGameReference<SpaceShooterGame
   double _hitScaleOffset = 0.0;
   double _flickerTimer = 0.0;
 
+  // Reusable paints
+  final Paint _radialPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _ringPaint = Paint()..style = PaintingStyle.stroke..strokeWidth = 2.0;
+  final Paint _outerArcPaint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1.8;
+  final Paint _innerArcPaint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1.2;
+  final Paint _ripplePaint = Paint()..style = PaintingStyle.stroke;
+
   ShieldVfx({
     required this.ship,
     required super.size,
@@ -151,59 +158,47 @@ class ShieldVfx extends PositionComponent with HasGameReference<SpaceShooterGame
     final shieldColor = _getShieldColor();
 
     // 1. Draw glowing dome / radial gradient energy fill
-    final radialPaint = Paint()
-      ..shader = ui.Gradient.radial(
-        center,
-        currentRadius,
-        [
-          shieldColor.withValues(alpha: 0.0),
-          shieldColor.withValues(alpha: baseOpacity * 0.15),
-          shieldColor.withValues(alpha: baseOpacity * 0.65),
-        ],
-        [0.0, 0.72, 1.0],
-      )
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, currentRadius, radialPaint);
+    _radialPaint.shader = ui.Gradient.radial(
+      center,
+      currentRadius,
+      [
+        shieldColor.withValues(alpha: 0.0),
+        shieldColor.withValues(alpha: baseOpacity * 0.15),
+        shieldColor.withValues(alpha: baseOpacity * 0.65),
+      ],
+      [0.0, 0.72, 1.0],
+    );
+    canvas.drawCircle(center, currentRadius, _radialPaint);
 
     // 2. Draw outer boundary ring
-    final ringPaint = Paint()
-      ..color = shieldColor.withValues(alpha: baseOpacity * 0.8)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-    canvas.drawCircle(center, currentRadius, ringPaint);
+    _ringPaint.color = shieldColor.withValues(alpha: baseOpacity * 0.8);
+    canvas.drawCircle(center, currentRadius, _ringPaint);
 
-    // 3. Draw rotating technological arcs
+    // 3. Draw rotating technical arcs
     // Outer Arc Layer (Rotates forward)
     final outerArcRect = Rect.fromCircle(center: center, radius: currentRadius - 3.5);
-    final outerArcPaint = Paint()
-      ..color = shieldColor.withValues(alpha: baseOpacity * 0.55)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.8;
+    _outerArcPaint.color = shieldColor.withValues(alpha: baseOpacity * 0.55);
 
     for (int i = 0; i < 3; i++) {
       final startAngle = _rotationAngle1 + i * (2 * pi / 3);
-      canvas.drawArc(outerArcRect, startAngle, 65 * pi / 180, false, outerArcPaint);
+      canvas.drawArc(outerArcRect, startAngle, 65 * pi / 180, false, _outerArcPaint);
     }
 
     // Inner Arc Layer (Rotates backward, slightly smaller)
     final innerArcRect = Rect.fromCircle(center: center, radius: currentRadius - 8.0);
-    final innerArcPaint = Paint()
-      ..color = shieldColor.withValues(alpha: baseOpacity * 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
+    _innerArcPaint.color = shieldColor.withValues(alpha: baseOpacity * 0.4);
 
     for (int i = 0; i < 2; i++) {
       final startAngle = _rotationAngle2 + i * pi;
-      canvas.drawArc(innerArcRect, startAngle, 95 * pi / 180, false, innerArcPaint);
+      canvas.drawArc(innerArcRect, startAngle, 95 * pi / 180, false, _innerArcPaint);
     }
 
     // 4. Render active expanding ripples
     for (final ripple in _ripples) {
-      final ripplePaint = Paint()
+      _ripplePaint
         ..color = ripple.color.withValues(alpha: ripple.opacity * baseOpacity)
-        ..style = PaintingStyle.stroke
         ..strokeWidth = 3.0 * (1.0 - ripple.progress) + 0.5;
-      canvas.drawCircle(center, ripple.currentRadius, ripplePaint);
+      canvas.drawCircle(center, ripple.currentRadius, _ripplePaint);
     }
 
     // 5. Render active perimeter electrical arcs
@@ -248,6 +243,11 @@ class _ElectricArc {
   double _elapsed = 0.0;
   final Random _random = Random();
 
+  final Paint _paint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round;
+  final Path _path = Path();
+
   _ElectricArc({
     required this.startAngle,
     required this.sweepAngle,
@@ -264,13 +264,11 @@ class _ElectricArc {
 
   void render(Canvas canvas, Offset center, double radius) {
     final opacity = (1.0 - progress).clamp(0.0, 1.0);
-    final arcPaint = Paint()
+    _paint
       ..color = color.withValues(alpha: opacity)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2 + _random.nextDouble() * 1.5
-      ..strokeCap = StrokeCap.round;
+      ..strokeWidth = 1.2 + _random.nextDouble() * 1.5;
 
-    final path = Path();
+    _path.reset();
     const segments = 5;
 
     for (int i = 0; i <= segments; i++) {
@@ -284,12 +282,12 @@ class _ElectricArc {
       final y = center.dy + sin(angle) * currentRadius;
 
       if (i == 0) {
-        path.moveTo(x, y);
+        _path.moveTo(x, y);
       } else {
-        path.lineTo(x, y);
+        _path.lineTo(x, y);
       }
     }
 
-    canvas.drawPath(path, arcPaint);
+    canvas.drawPath(_path, _paint);
   }
 }

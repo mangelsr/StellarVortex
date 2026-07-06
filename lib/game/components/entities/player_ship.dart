@@ -300,32 +300,26 @@ class PlayerShip extends PositionComponent
     switch (weaponLevel) {
       case 3: // Triple Spread Shot
         // Center bullet
-        game.add(
-          Bullet(
-            position: position + bulletDir * (size.y * 0.4),
-            velocity: bulletDir * bulletSpeed,
-            isPlayerBullet: true,
-          ),
+        game.spawnBullet(
+          position: position + bulletDir * (size.y * 0.4),
+          velocity: bulletDir * bulletSpeed,
+          isPlayerBullet: true,
         );
         // Left bullet (rotated spread angle)
         final leftDir = Vector2(bulletDir.x, bulletDir.y)
           ..rotate(-PlayerConstants.spreadLaserAngle);
-        game.add(
-          Bullet(
-            position: position + leftDir * (size.y * 0.4),
-            velocity: leftDir * bulletSpeed,
-            isPlayerBullet: true,
-          ),
+        game.spawnBullet(
+          position: position + leftDir * (size.y * 0.4),
+          velocity: leftDir * bulletSpeed,
+          isPlayerBullet: true,
         );
         // Right bullet (rotated spread angle)
         final rightDir = Vector2(bulletDir.x, bulletDir.y)
           ..rotate(PlayerConstants.spreadLaserAngle);
-        game.add(
-          Bullet(
-            position: position + rightDir * (size.y * 0.4),
-            velocity: rightDir * bulletSpeed,
-            isPlayerBullet: true,
-          ),
+        game.spawnBullet(
+          position: position + rightDir * (size.y * 0.4),
+          velocity: rightDir * bulletSpeed,
+          isPlayerBullet: true,
         );
         break;
 
@@ -335,30 +329,24 @@ class PlayerShip extends PositionComponent
         final offsetLeft = perp * PlayerConstants.doubleLaserOffset;
         final offsetRight = -perp * PlayerConstants.doubleLaserOffset;
 
-        game.add(
-          Bullet(
-            position: position + bulletDir * (size.y * 0.3) + offsetLeft,
-            velocity: bulletDir * bulletSpeed,
-            isPlayerBullet: true,
-          ),
+        game.spawnBullet(
+          position: position + bulletDir * (size.y * 0.3) + offsetLeft,
+          velocity: bulletDir * bulletSpeed,
+          isPlayerBullet: true,
         );
-        game.add(
-          Bullet(
-            position: position + bulletDir * (size.y * 0.3) + offsetRight,
-            velocity: bulletDir * bulletSpeed,
-            isPlayerBullet: true,
-          ),
+        game.spawnBullet(
+          position: position + bulletDir * (size.y * 0.3) + offsetRight,
+          velocity: bulletDir * bulletSpeed,
+          isPlayerBullet: true,
         );
         break;
 
       case 1: // Single Central Laser
       default:
-        game.add(
-          Bullet(
-            position: position + bulletDir * (size.y * 0.45),
-            velocity: bulletDir * bulletSpeed,
-            isPlayerBullet: true,
-          ),
+        game.spawnBullet(
+          position: position + bulletDir * (size.y * 0.45),
+          velocity: bulletDir * bulletSpeed,
+          isPlayerBullet: true,
         );
         break;
     }

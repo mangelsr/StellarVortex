@@ -107,12 +107,13 @@ class StarfieldBackground extends Component with HasGameReference<SpaceShooterGa
     }
   }
 
+  final Paint _paint = Paint();
+
   @override
   void render(Canvas canvas) {
-    final paint = Paint();
     for (final star in _stars) {
-      paint.color = star.color;
-      canvas.drawCircle(Offset(star.x, star.y), star.size, paint);
+      _paint.color = star.color;
+      canvas.drawCircle(Offset(star.x, star.y), star.size, _paint);
     }
   }
 }

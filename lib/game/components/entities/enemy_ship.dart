@@ -233,26 +233,26 @@ class EnemyShip extends PositionComponent
       final offsetLeft = perp * (size.x * 0.25);
       final offsetRight = -perp * (size.x * 0.25);
       
-      game.add(Bullet(
+      game.spawnBullet(
         position: position + offsetLeft,
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
         damage: dmg,
-      ));
+      );
       
-      game.add(Bullet(
+      game.spawnBullet(
         position: position + offsetRight,
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
         damage: dmg,
-      ));
+      );
     } else {
-      game.add(Bullet(
+      game.spawnBullet(
         position: position + dir * (size.y * 0.5),
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
         damage: dmg,
-      ));
+      );
     }
   }
 
@@ -265,12 +265,12 @@ class EnemyShip extends PositionComponent
       final angle = (2 * pi / bulletCount) * i;
       final dir = Vector2(cos(angle), sin(angle));
       
-      game.add(Bullet(
+      game.spawnBullet(
         position: position,
         velocity: dir * bulletSpeed,
         isPlayerBullet: false,
         damage: EnemyConstants.bossRadialBulletDamage,
-      ));
+      );
     }
   }
 

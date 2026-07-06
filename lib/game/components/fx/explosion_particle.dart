@@ -302,6 +302,8 @@ class _ExplosionSpark {
   double lifetime = 0;
   final double size;
 
+  final Paint _paint = Paint()..strokeCap = StrokeCap.round;
+
   _ExplosionSpark({
     required this.position,
     required this.velocity,
@@ -322,27 +324,27 @@ class _ExplosionSpark {
     
     final opacity = (1.0 - progress).clamp(0.0, 1.0);
     
-    // Draw spark as a streak line
-    final paint = Paint()
-      ..color = color.withAlpha((opacity * 255).toInt())
-      ..strokeWidth = size
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-    
     if (velocity.x * velocity.x + velocity.y * velocity.y > 5.0) {
       final direction = velocity.normalized();
       final length = 4.0 + velocity.length * 0.04;
+      _paint
+        ..color = color.withAlpha((opacity * 255).toInt())
+        ..strokeWidth = size
+        ..style = PaintingStyle.stroke;
       canvas.drawLine(
         Offset(position.x - direction.x * length, position.y - direction.y * length),
         Offset(position.x, position.y),
-        paint,
+        _paint,
       );
     } else {
       // Draw small dot
+      _paint
+        ..color = color.withAlpha((opacity * 255).toInt())
+        ..style = PaintingStyle.fill;
       canvas.drawCircle(
         Offset(position.x, position.y),
         size * 0.6,
-        Paint()..color = color.withAlpha((opacity * 255).toInt()),
+        _paint,
       );
     }
   }
@@ -361,6 +363,9 @@ class _ExplosionCloud {
   double scale = 0.05;
   double lifetime = 0;
 
+  final Paint _paint = Paint();
+  late final ColorFilter _colorFilter;
+
   _ExplosionCloud({
     required this.position,
     required this.velocity,
@@ -372,6 +377,8 @@ class _ExplosionCloud {
     required double initialAngle,
   }) {
     angle = initialAngle;
+    _colorFilter = ColorFilter.mode(tintColor, BlendMode.modulate);
+    _paint.colorFilter = _colorFilter;
   }
 
   void update(double dt) {
@@ -396,17 +403,14 @@ class _ExplosionCloud {
     canvas.rotate(angle);
     canvas.scale(scale);
     
-    // Color filter to tint the sprite, combining opacity
-    final paint = Paint()
-      ..colorFilter = ColorFilter.mode(tintColor, BlendMode.modulate)
-      ..color = Colors.white.withAlpha((opacity * 255).toInt());
+    _paint.color = Colors.white.withAlpha((opacity * 255).toInt());
     
     final size = sprite.srcSize;
     sprite.render(
       canvas,
       position: Vector2(-size.x / 2, -size.y / 2),
       size: size,
-      overridePaint: paint,
+      overridePaint: _paint,
     );
     
     canvas.restore();
@@ -418,6 +422,9 @@ class _ExplosionShockwave {
   final Color color;
   final double duration;
   double elapsed = 0;
+
+  final Paint _ringPaint = Paint()..style = PaintingStyle.stroke;
+  final Paint _glowPaint = Paint()..style = PaintingStyle.fill;
 
   _ExplosionShockwave({
     required this.maxRadius,
@@ -437,16 +444,13 @@ class _ExplosionShockwave {
     final opacity = (1.0 - progress).clamp(0.0, 1.0);
     
     // Outer Ring
-    final ringPaint = Paint()
+    _ringPaint
       ..color = color.withAlpha((opacity * 0.7 * 255).toInt())
-      ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0 * (1.0 - progress) + 0.5;
-    canvas.drawCircle(Offset.zero, radius, ringPaint);
+    canvas.drawCircle(Offset.zero, radius, _ringPaint);
     
     // Inner Glow
-    final glowPaint = Paint()
-      ..color = color.withAlpha((opacity * 0.15 * 255).toInt())
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset.zero, radius, glowPaint);
+    _glowPaint.color = color.withAlpha((opacity * 0.15 * 255).toInt());
+    canvas.drawCircle(Offset.zero, radius, _glowPaint);
   }
 }

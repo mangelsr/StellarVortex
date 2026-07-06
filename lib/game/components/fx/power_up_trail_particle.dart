@@ -8,6 +8,8 @@ class PowerUpTrailParticle extends PositionComponent {
   double _lifetime = 0.0;
   final double initialSize;
 
+  final Paint _paint = Paint()..style = PaintingStyle.fill;
+
   PowerUpTrailParticle({
     required super.position,
     required this.color,
@@ -35,10 +37,8 @@ class PowerUpTrailParticle extends PositionComponent {
     final opacity = (1.0 - progress).clamp(0.0, 1.0);
     final sizeFactor = 1.0 - progress;
 
-    final paint = Paint()
-      ..color = color.withValues(alpha: opacity)
-      ..style = PaintingStyle.fill;
+    _paint.color = color.withValues(alpha: opacity);
 
-    canvas.drawCircle(Offset.zero, initialSize * sizeFactor, paint);
+    canvas.drawCircle(Offset.zero, initialSize * sizeFactor, _paint);
   }
 }

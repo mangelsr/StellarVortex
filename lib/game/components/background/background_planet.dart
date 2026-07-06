@@ -17,6 +17,16 @@ class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShoo
   late final double rotationSpeed;
   double _rotationAngle = 0.0;
 
+  // Cached rendering objects to prevent allocations in render()
+  late final Path _clipPath;
+  late final Rect _rect;
+  late final Paint _spherePaint;
+  late final Paint _noisePaint;
+  late final Paint _lightPaint;
+  late final Rect _sphereSrcRect;
+  late final Rect _noiseSrcRect;
+  late final Rect _lightSrcRect;
+
   BackgroundPlanet({super.position}) : super(anchor: Anchor.center);
 
   @override
@@ -69,6 +79,24 @@ class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShoo
     // 9. Set size: radius between 35 and 110 pixels (diameter 70 to 220 pixels)
     final radius = BackgroundConstants.planetRadiusMin + random.nextDouble() * BackgroundConstants.planetRadiusRange;
     size = Vector2.all(radius * 2);
+
+    // Cache all objects needed for render
+    _rect = Rect.fromLTWH(0, 0, size.x, size.y);
+    _clipPath = Path()..addOval(_rect);
+
+    _spherePaint = Paint()
+      ..colorFilter = ColorFilter.mode(sphereColor, BlendMode.modulate);
+
+    _noisePaint = Paint();
+    if (noiseColorFilterColor != null && noiseBlendMode != null) {
+      _noisePaint.colorFilter = ColorFilter.mode(noiseColorFilterColor!, noiseBlendMode!);
+    }
+
+    _lightPaint = Paint()..blendMode = BlendMode.multiply;
+
+    _sphereSrcRect = Rect.fromLTWH(0, 0, sphereImage.width.toDouble(), sphereImage.height.toDouble());
+    _noiseSrcRect = Rect.fromLTWH(0, 0, noiseImage.width.toDouble(), noiseImage.height.toDouble());
+    _lightSrcRect = Rect.fromLTWH(0, 0, lightImage.width.toDouble(), lightImage.height.toDouble());
   }
 
   @override
@@ -100,20 +128,16 @@ class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShoo
 
   @override
   void render(Canvas canvas) {
-    final rect = Rect.fromLTWH(0, 0, size.x, size.y);
-
     // Clip rendering to the spherical boundary of the planet
     canvas.save();
-    canvas.clipPath(Path()..addOval(rect));
+    canvas.clipPath(_clipPath);
 
     // 1. Draw base sphere tinted with selected color
-    final spherePaint = Paint()
-      ..colorFilter = ColorFilter.mode(sphereColor, BlendMode.modulate);
     canvas.drawImageRect(
       sphereImage,
-      Rect.fromLTWH(0, 0, sphereImage.width.toDouble(), sphereImage.height.toDouble()),
-      rect,
-      spherePaint,
+      _sphereSrcRect,
+      _rect,
+      _spherePaint,
     );
 
     // 2. Draw rotating noise overlay
@@ -122,25 +146,20 @@ class BackgroundPlanet extends PositionComponent with HasGameReference<SpaceShoo
     canvas.rotate(_rotationAngle);
     canvas.translate(-size.x / 2, -size.y / 2);
 
-    final noisePaint = Paint();
-    if (noiseColorFilterColor != null && noiseBlendMode != null) {
-      noisePaint.colorFilter = ColorFilter.mode(noiseColorFilterColor!, noiseBlendMode!);
-    }
     canvas.drawImageRect(
       noiseImage,
-      Rect.fromLTWH(0, 0, noiseImage.width.toDouble(), noiseImage.height.toDouble()),
-      rect,
-      noisePaint,
+      _noiseSrcRect,
+      _rect,
+      _noisePaint,
     );
     canvas.restore();
 
     // 3. Draw shadow overlay on top to create the 3D spherical shading
-    final lightPaint = Paint()..blendMode = BlendMode.multiply;
     canvas.drawImageRect(
       lightImage,
-      Rect.fromLTWH(0, 0, lightImage.width.toDouble(), lightImage.height.toDouble()),
-      rect,
-      lightPaint,
+      _lightSrcRect,
+      _rect,
+      _lightPaint,
     );
 
     canvas.restore();

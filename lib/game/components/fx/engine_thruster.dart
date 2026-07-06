@@ -113,6 +113,9 @@ class _EngineParticle {
 
   double lifetime = 0;
 
+  final Paint _paint = Paint()..style = PaintingStyle.fill;
+  final Paint _corePaint = Paint()..style = PaintingStyle.fill;
+
   _EngineParticle({
     required this.position,
     required this.velocity,
@@ -166,19 +169,15 @@ class _EngineParticle {
       )!;
     }
 
-    final paint = Paint()
-      ..color = particleColor.withAlpha((opacity * 0.85 * 255).toInt())
-      ..style = PaintingStyle.fill;
+    _paint.color = particleColor.withAlpha((opacity * 0.85 * 255).toInt());
 
     // Draw glowing circle
-    canvas.drawCircle(Offset(position.x, position.y), size / 2, paint);
+    canvas.drawCircle(Offset(position.x, position.y), size / 2, _paint);
 
     // Draw a smaller bright core for larger particles to make them pop!
     if (size > 4.0 && progress > 0.1) {
-      final corePaint = Paint()
-        ..color = Colors.white.withAlpha((opacity * 0.9 * 255).toInt())
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(Offset(position.x, position.y), size * 0.25, corePaint);
+      _corePaint.color = Colors.white.withAlpha((opacity * 0.9 * 255).toInt());
+      canvas.drawCircle(Offset(position.x, position.y), size * 0.25, _corePaint);
     }
   }
 }
