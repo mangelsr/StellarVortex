@@ -38,22 +38,20 @@ class Bullet extends PositionComponent with CollisionCallbacks, HasGameReference
         : BulletConstants.enemyColor;
 
     _glowPaint = Paint()
-      ..color = laserColor.withAlpha((0.35 * 255).toInt())
-      ..strokeWidth = size.x * 2.6
+      ..color = laserColor.withAlpha((0.15 * 255).toInt())
+      ..strokeWidth = size.x * 3.5
       ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5.0);
+      ..style = PaintingStyle.stroke;
 
     _midPaint = Paint()
-      ..color = laserColor.withAlpha((0.75 * 255).toInt())
-      ..strokeWidth = size.x * 1.5
+      ..color = laserColor.withAlpha((0.45 * 255).toInt())
+      ..strokeWidth = size.x * 2.0
       ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.0);
+      ..style = PaintingStyle.stroke;
 
     _corePaint = Paint()
       ..color = Colors.white
-      ..strokeWidth = size.x * 0.6
+      ..strokeWidth = size.x * 0.7
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 

@@ -41,6 +41,19 @@ mixin AudioManager on FlameGame {
   AudioPool? _powerUpPool;
   AudioPool? _buttonTonePool;
 
+  // Throttling tracking map to prevent platform channel spam
+  final Map<String, int> _lastPlayTimes = {};
+
+  bool _shouldThrottle(String soundKey, int throttleMs) {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final lastTime = _lastPlayTimes[soundKey] ?? 0;
+    if (now - lastTime < throttleMs) {
+      return true;
+    }
+    _lastPlayTimes[soundKey] = now;
+    return false;
+  }
+
   Future<void> preloadAudio() async {
     final allAudioFiles = [
       ..._explosionFiles,
@@ -56,62 +69,102 @@ mixin AudioManager on FlameGame {
     await FlameAudio.audioCache.loadAll(allAudioFiles);
 
     // Initialize AudioPools for high-frequency gameplay sound effects to prevent memory leaks/stutter
-    _playerLaserPool = await FlameAudio.createPool('laserLarge.ogg', minPlayers: 4, maxPlayers: 12);
+    _playerLaserPool = await FlameAudio.createPool(
+      'laserLarge.ogg',
+      minPlayers: 4,
+      maxPlayers: 12,
+    );
 
     _enemyLaserPools.clear();
     for (final file in _enemyLaserFiles) {
-      final pool = await FlameAudio.createPool(file, minPlayers: 2, maxPlayers: 6);
+      final pool = await FlameAudio.createPool(
+        file,
+        minPlayers: 2,
+        maxPlayers: 6,
+      );
       _enemyLaserPools.add(pool);
     }
 
     _explosionPools.clear();
     for (final file in _explosionFiles) {
-      final pool = await FlameAudio.createPool(file, minPlayers: 2, maxPlayers: 8);
+      final pool = await FlameAudio.createPool(
+        file,
+        minPlayers: 2,
+        maxPlayers: 8,
+      );
       _explosionPools.add(pool);
     }
 
-    _shieldHitPool = await FlameAudio.createPool('forceField.ogg', minPlayers: 2, maxPlayers: 8);
-    _hullHitPool = await FlameAudio.createPool('impactMetal.ogg', minPlayers: 2, maxPlayers: 8);
+    _shieldHitPool = await FlameAudio.createPool(
+      'forceField.ogg',
+      minPlayers: 2,
+      maxPlayers: 8,
+    );
+    _hullHitPool = await FlameAudio.createPool(
+      'impactMetal.ogg',
+      minPlayers: 2,
+      maxPlayers: 8,
+    );
 
     _spaceEnginePools.clear();
     for (final file in _spaceEngineFiles) {
-      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 3);
+      final pool = await FlameAudio.createPool(
+        file,
+        minPlayers: 1,
+        maxPlayers: 3,
+      );
       _spaceEnginePools.add(pool);
     }
 
-    _powerUpPool = await FlameAudio.createPool('powerUp.ogg', minPlayers: 2, maxPlayers: 5);
-    _buttonTonePool = await FlameAudio.createPool('ui/tone.ogg', minPlayers: 2, maxPlayers: 5);
+    _powerUpPool = await FlameAudio.createPool(
+      'powerUp.ogg',
+      minPlayers: 2,
+      maxPlayers: 5,
+    );
+    _buttonTonePool = await FlameAudio.createPool(
+      'ui/tone.ogg',
+      minPlayers: 2,
+      maxPlayers: 5,
+    );
   }
 
   void playPlayerLaser() {
+    if (_shouldThrottle('player_laser', 1000)) return;
     _playerLaserPool?.start(volume: sfxVolume);
   }
 
   void playEnemyLaser() {
+    if (_shouldThrottle('enemy_laser', 1000)) return;
     if (_enemyLaserPools.isNotEmpty) {
-      final pool = _enemyLaserPools[_audioRandom.nextInt(_enemyLaserPools.length)];
+      final pool =
+          _enemyLaserPools[_audioRandom.nextInt(_enemyLaserPools.length)];
       pool.start(volume: sfxVolume * 0.95);
     }
   }
 
   void playExplosion() {
+    if (_shouldThrottle('explosion', 1000)) return;
     if (_explosionPools.isNotEmpty) {
-      final pool = _explosionPools[_audioRandom.nextInt(_explosionPools.length)];
+      final pool =
+          _explosionPools[_audioRandom.nextInt(_explosionPools.length)];
       pool.start(volume: sfxVolume);
     }
   }
 
   void playShieldHit() {
+    if (_shouldThrottle('shield_hit', 1000)) return;
     _shieldHitPool?.start(volume: sfxVolume);
   }
 
   void playHullHit() {
+    if (_shouldThrottle('hull_hit', 1000)) return;
     _hullHitPool?.start(volume: sfxVolume);
   }
 
   void playSpaceEngine() {
     if (_spaceEnginePools.isNotEmpty) {
-      final pool = _spaceEnginePools[_audioRandom.nextInt(_spaceEnginePools.length)];
+      final pool =
+          _spaceEnginePools[_audioRandom.nextInt(_spaceEnginePools.length)];
       pool.start(volume: sfxVolume * 0.7);
     }
   }
@@ -128,7 +181,10 @@ mixin AudioManager on FlameGame {
     if (_thrusterPlaying) return;
     _thrusterPlaying = true;
     if (_thrusterPlayer == null) {
-      _thrusterPlayer = await FlameAudio.loop('thrusterFire.ogg', volume: sfxVolume);
+      _thrusterPlayer = await FlameAudio.loop(
+        'thrusterFire.ogg',
+        volume: sfxVolume,
+      );
     } else {
       await _thrusterPlayer?.setVolume(sfxVolume);
       await _thrusterPlayer?.resume();

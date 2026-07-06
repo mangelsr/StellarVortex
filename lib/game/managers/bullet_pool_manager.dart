@@ -6,8 +6,8 @@ mixin BulletPoolManager on FlameGame {
   final List<Bullet> _playerBulletPool = [];
   final List<Bullet> _enemyBulletPool = [];
 
-  static const int _playerPoolSize = 120;
-  static const int _enemyPoolSize = 250;
+  static const int _playerPoolSize = 250;
+  static const int _enemyPoolSize = 500;
 
   Future<void> initBulletPool() async {
     _playerBulletPool.clear();
@@ -66,11 +66,7 @@ mixin BulletPoolManager on FlameGame {
       return;
     }
 
-    recycled.reset(
-      position: position,
-      velocity: velocity,
-      damage: damage,
-    );
+    recycled.reset(position: position, velocity: velocity, damage: damage);
   }
 
   void clearBulletPools() {
