@@ -56,31 +56,31 @@ mixin AudioManager on FlameGame {
     await FlameAudio.audioCache.loadAll(allAudioFiles);
 
     // Initialize AudioPools for high-frequency gameplay sound effects to prevent memory leaks/stutter
-    _playerLaserPool = await FlameAudio.createPool('laserLarge.ogg', minPlayers: 2, maxPlayers: 6);
+    _playerLaserPool = await FlameAudio.createPool('laserLarge.ogg', minPlayers: 4, maxPlayers: 12);
 
     _enemyLaserPools.clear();
     for (final file in _enemyLaserFiles) {
-      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 3);
+      final pool = await FlameAudio.createPool(file, minPlayers: 2, maxPlayers: 6);
       _enemyLaserPools.add(pool);
     }
 
     _explosionPools.clear();
     for (final file in _explosionFiles) {
-      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 4);
+      final pool = await FlameAudio.createPool(file, minPlayers: 2, maxPlayers: 8);
       _explosionPools.add(pool);
     }
 
-    _shieldHitPool = await FlameAudio.createPool('forceField.ogg', minPlayers: 1, maxPlayers: 4);
-    _hullHitPool = await FlameAudio.createPool('impactMetal.ogg', minPlayers: 1, maxPlayers: 4);
+    _shieldHitPool = await FlameAudio.createPool('forceField.ogg', minPlayers: 2, maxPlayers: 8);
+    _hullHitPool = await FlameAudio.createPool('impactMetal.ogg', minPlayers: 2, maxPlayers: 8);
 
     _spaceEnginePools.clear();
     for (final file in _spaceEngineFiles) {
-      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 2);
+      final pool = await FlameAudio.createPool(file, minPlayers: 1, maxPlayers: 3);
       _spaceEnginePools.add(pool);
     }
 
-    _powerUpPool = await FlameAudio.createPool('powerUp.ogg', minPlayers: 1, maxPlayers: 3);
-    _buttonTonePool = await FlameAudio.createPool('ui/tone.ogg', minPlayers: 1, maxPlayers: 3);
+    _powerUpPool = await FlameAudio.createPool('powerUp.ogg', minPlayers: 2, maxPlayers: 5);
+    _buttonTonePool = await FlameAudio.createPool('ui/tone.ogg', minPlayers: 2, maxPlayers: 5);
   }
 
   void playPlayerLaser() {
@@ -153,5 +153,24 @@ mixin AudioManager on FlameGame {
       await player.stop();
       await player.dispose();
     }
+  }
+
+  @override
+  void onRemove() {
+    _playerLaserPool?.dispose();
+    for (final pool in _enemyLaserPools) {
+      pool.dispose();
+    }
+    for (final pool in _explosionPools) {
+      pool.dispose();
+    }
+    _shieldHitPool?.dispose();
+    _hullHitPool?.dispose();
+    for (final pool in _spaceEnginePools) {
+      pool.dispose();
+    }
+    _powerUpPool?.dispose();
+    _buttonTonePool?.dispose();
+    super.onRemove();
   }
 }

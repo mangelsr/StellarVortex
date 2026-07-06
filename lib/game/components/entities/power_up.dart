@@ -17,6 +17,10 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
   double _particleTimer = 0;
   final double driftSpeed = PowerUpConstants.driftSpeed;
 
+  // Cached rendering paints
+  final Paint _auraPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _techPaint = Paint()..style = PaintingStyle.stroke;
+
   PowerUp({
     required super.position,
     required this.type,
@@ -42,8 +46,14 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
 
     sprite = game.spaceShooterAtlas.getSprite(spriteName, game.spaceShooterImage);
 
-    // Add hitbox
-    add(CircleHitbox(radius: size.x * PowerUpConstants.hitboxRadiusFactor, anchor: Anchor.center, position: size / 2));
+    // Add passive hitbox (collides only with active PlayerShip, ignores other powerups/bullets)
+    final hitbox = CircleHitbox(
+      radius: size.x * PowerUpConstants.hitboxRadiusFactor,
+      anchor: Anchor.center,
+      position: size / 2,
+    );
+    hitbox.collisionType = CollisionType.passive;
+    add(hitbox);
   }
 
   @override
@@ -177,34 +187,33 @@ class PowerUp extends SpriteComponent with CollisionCallbacks, HasGameReference<
     final auraOpacity = 0.35 + 0.15 * progress;
     final auraRadius = radius * (1.0 + 0.15 * progress);
     
-    final paint = Paint()
-      ..shader = ui.Gradient.radial(
-        center.toOffset(),
-        auraRadius,
-        [
-          auraColor.withValues(alpha: auraOpacity),
-          auraColor.withValues(alpha: 0.0),
-        ],
-      )
-      ..style = PaintingStyle.fill;
+    _auraPaint.shader = ui.Gradient.radial(
+      center.toOffset(),
+      auraRadius,
+      [
+        auraColor.withValues(alpha: auraOpacity),
+        auraColor.withValues(alpha: 0.0),
+      ],
+    );
     
-    canvas.drawCircle(center.toOffset(), auraRadius, paint);
+    canvas.drawCircle(center.toOffset(), auraRadius, _auraPaint);
     
     // Draw outer technical tech rings
-    final techPaint = Paint()
+    _techPaint
       ..color = auraColor.withValues(alpha: auraOpacity * 0.45)
-      ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     
-    canvas.drawCircle(center.toOffset(), radius * 0.85, techPaint);
+    canvas.drawCircle(center.toOffset(), radius * 0.85, _techPaint);
     
     // Draw rotating tech dash
     canvas.save();
     canvas.translate(center.x, center.y);
     canvas.rotate(_time * 2.0);
     final rect = Rect.fromCircle(center: Offset.zero, radius: radius * 0.85);
-    canvas.drawArc(rect, 0, pi / 3, false, techPaint..strokeWidth = 1.5);
-    canvas.drawArc(rect, pi, pi / 3, false, techPaint);
+    _techPaint.strokeWidth = 1.5;
+    canvas.drawArc(rect, 0, pi / 3, false, _techPaint);
+    _techPaint.strokeWidth = 1.0;
+    canvas.drawArc(rect, pi, pi / 3, false, _techPaint);
     canvas.restore();
     
     super.render(canvas);

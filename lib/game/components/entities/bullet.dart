@@ -67,7 +67,7 @@ class Bullet extends PositionComponent with CollisionCallbacks, HasGameReference
 
     // 2. Add hitbox
     _hitbox = RectangleHitbox();
-    _hitbox.collisionType = isActive ? CollisionType.active : CollisionType.inactive;
+    _hitbox.collisionType = isActive ? CollisionType.passive : CollisionType.inactive;
     add(_hitbox);
   }
 
@@ -131,7 +131,7 @@ class Bullet extends PositionComponent with CollisionCallbacks, HasGameReference
     angle = atan2(velocity.y, velocity.x) + pi / 2;
 
     // Reactivate hitbox
-    _hitbox.collisionType = CollisionType.active;
+    _hitbox.collisionType = CollisionType.passive;
   }
 
   void deactivate() {

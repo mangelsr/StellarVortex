@@ -42,6 +42,10 @@ class SpaceShooterGame extends FlameGame
   double _postProcessDuration = 0.55;
   double _debugPrintTimer = 0;
 
+  // Cached rendering paints for postprocessing
+  final Paint _postProcessPaint = Paint();
+  final Paint _vignettePaint = Paint()..blendMode = BlendMode.srcOver;
+
   @override
   Future<void> onLoad() async {
     // 0. Initialize session and load settings
@@ -301,30 +305,27 @@ class SpaceShooterGame extends FlameGame
     if (_postProcessTimer > 0 && _postProcessColor.a > 0) {
       final progress = _postProcessTimer / _postProcessDuration;
       // 1. Fullscreen color grade filter using saveLayer
-      final paint = Paint()
-        ..colorFilter = ColorFilter.mode(
-          _postProcessColor.withValues(alpha: progress * 0.18),
-          BlendMode.color,
-        );
+      _postProcessPaint.colorFilter = ColorFilter.mode(
+        _postProcessColor.withValues(alpha: progress * 0.18),
+        BlendMode.color,
+      );
 
-      canvas.saveLayer(null, paint);
+      canvas.saveLayer(null, _postProcessPaint);
       super.render(canvas);
       canvas.restore();
 
       // 2. Fullscreen vignette overlay
       final rect = Offset.zero & size.toSize();
-      final vignettePaint = Paint()
-        ..shader = ui.Gradient.radial(
-          size.toOffset() / 2,
-          size.length / 2,
-          [
-            _postProcessColor.withValues(alpha: 0.0),
-            _postProcessColor.withValues(alpha: progress * 0.38),
-          ],
-          [0.0, 1.0],
-        )
-        ..blendMode = BlendMode.srcOver;
-      canvas.drawRect(rect, vignettePaint);
+      _vignettePaint.shader = ui.Gradient.radial(
+        size.toOffset() / 2,
+        size.length / 2,
+        [
+          _postProcessColor.withValues(alpha: 0.0),
+          _postProcessColor.withValues(alpha: progress * 0.38),
+        ],
+        [0.0, 1.0],
+      );
+      canvas.drawRect(rect, _vignettePaint);
     } else {
       super.render(canvas);
     }
