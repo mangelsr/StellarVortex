@@ -129,12 +129,12 @@ mixin AudioManager on FlameGame {
   }
 
   void playPlayerLaser() {
-    if (_shouldThrottle('player_laser', 1000)) return;
+    if (_shouldThrottle('player_laser', 250)) return;
     _playerLaserPool?.start(volume: sfxVolume);
   }
 
   void playEnemyLaser() {
-    if (_shouldThrottle('enemy_laser', 1000)) return;
+    if (_shouldThrottle('enemy_laser', 250)) return;
     if (_enemyLaserPools.isNotEmpty) {
       final pool =
           _enemyLaserPools[_audioRandom.nextInt(_enemyLaserPools.length)];
@@ -143,7 +143,7 @@ mixin AudioManager on FlameGame {
   }
 
   void playExplosion() {
-    if (_shouldThrottle('explosion', 1000)) return;
+    if (_shouldThrottle('explosion', 250)) return;
     if (_explosionPools.isNotEmpty) {
       final pool =
           _explosionPools[_audioRandom.nextInt(_explosionPools.length)];
@@ -152,12 +152,12 @@ mixin AudioManager on FlameGame {
   }
 
   void playShieldHit() {
-    if (_shouldThrottle('shield_hit', 1000)) return;
+    if (_shouldThrottle('shield_hit', 250)) return;
     _shieldHitPool?.start(volume: sfxVolume);
   }
 
   void playHullHit() {
-    if (_shouldThrottle('hull_hit', 1000)) return;
+    if (_shouldThrottle('hull_hit', 250)) return;
     _hullHitPool?.start(volume: sfxVolume);
   }
 

@@ -133,6 +133,7 @@ void main() {
     tester.testGameWidget(
       'Game loads successfully and starts in menu state',
       setUp: (game, tester) async {
+        await game.ready();
         expect(game.state, GameState.menu);
         expect(game.overlays.isActive('startMenu'), isTrue);
       },
@@ -141,6 +142,7 @@ void main() {
     tester.testGameWidget(
       'startGame transitions state and initializes game components',
       setUp: (game, tester) async {
+        await game.ready();
         game.startGame(PlayerShipType.vanguard);
 
         expect(game.state, GameState.playing);
@@ -156,6 +158,7 @@ void main() {
     tester.testGameWidget(
       'playerHit inflicts damage to player ship',
       setUp: (game, tester) async {
+        await game.ready();
         game.startGame(PlayerShipType.vanguard);
 
         // Deplete shield to test direct health damage
@@ -172,6 +175,7 @@ void main() {
     tester.testGameWidget(
       'picking up a shield power-up restores shield',
       setUp: (game, tester) async {
+        await game.ready();
         game.startGame(PlayerShipType.vanguard);
         final ship = game.playerShip!;
         ship.shield = 10.0;
@@ -191,6 +195,7 @@ void main() {
     tester.testGameWidget(
       'picking up a weapon upgrade power-up upgrades weapon level',
       setUp: (game, tester) async {
+        await game.ready();
         game.startGame(PlayerShipType.vanguard);
         final ship = game.playerShip!;
         expect(ship.weaponLevel, 1);
@@ -210,6 +215,7 @@ void main() {
     tester.testGameWidget(
       'picking up a fire rate power-up upgrades fire rate timer',
       setUp: (game, tester) async {
+        await game.ready();
         game.startGame(PlayerShipType.vanguard);
         final ship = game.playerShip!;
         expect(ship.fireRateUpgradeTimer, 0.0);
