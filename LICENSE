@@ -11,15 +11,16 @@ Any reproduction, distribution, copying, modification, sublicensing, commerciali
 ---
 
 ### Third-Party Assets and Exceptions
+
 This project uses third-party assets and libraries under their respective licenses:
-*   **Flame Engine**: MIT License (Copyright (c) 2020 Blue Fire).
-*   **Flutter SDK**: BSD 3-Clause License.
-*   **Graphics & UI Assets (Kenney)**: Creative Commons Zero License (CC0 1.0 Universal).
+
+* **Flame Engine**: MIT License (Copyright (c) 2020 Blue Fire).
+* **Flutter SDK**: BSD 3-Clause License.
+* **Graphics & UI Assets (Kenney)**: Creative Commons Zero License (CC0 1.0 Universal).
 
 ---
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 
 ==============================================================================
 ESPAÑOL (SPANISH)
@@ -32,10 +33,12 @@ Queda estrictamente prohibida la reproducción, distribución, copia, modificaci
 ---
 
 ### Excepciones y Recursos de Terceros
+
 Este proyecto utiliza recursos y librerías creados por terceros bajo sus respectivas licencias:
-*   **Flame Engine**: Licencia MIT (Copyright (c) 2020 Blue Fire).
-*   **Flutter SDK**: Licencia BSD 3-Clause.
-*   **Recursos Gráficos y UI (Kenney)**: Licencia Creative Commons Zero (CC0 1.0 Universal).
+
+* **Flame Engine**: Licencia MIT (Copyright (c) 2020 Blue Fire).
+* **Flutter SDK**: Licencia BSD 3-Clause.
+* **Recursos Gráficos y UI (Kenney)**: Licencia Creative Commons Zero (CC0 1.0 Universal).
 
 ---
 
